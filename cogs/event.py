@@ -8,6 +8,32 @@ from cogs.giveaway import GWBUTTON
 import botinfo
 import database
 import emojis
+from cogs.music import interface
+from premium import check_upgraded
+import wavelink
+import asyncio
+
+async def loadmsetup(bot: commands.AutoShardedBot):
+    msetup_db = database.fetchall1("*", "setup")
+    for i, j, k in msetup_db:
+        try:
+            c = bot.get_channel(j)
+            if c is None:
+                check = False
+            else:
+                msg: discord.Message = await c.fetch_message(k)
+                if msg is None:
+                    check = False
+                else:
+                    check = True
+        except:
+            check = False
+        if check:
+            em = discord.Embed(title="No Song Currently Playing", description="To play your favourite songs playlist press <:fav_star:1238605811224416326> button.", color=8039167)
+            em.set_image(url="https://media.discordapp.net/attachments/1091162329720295557/1093663343279099904/wp6400060.png?width=1066&height=533")
+            em.set_footer(text=f"{bot.user.name} Song requester panel", icon_url=bot.user.avatar.url)
+            v = interface(bot, None, True, True, i)
+            await msg.edit(content="**__Join the voice channel and send songs name or spotify link for song or playlist to play in this channel__**", embed=em, view=v)
 
 async def loadselfroles(bot: commands.AutoShardedBot):
     self_db = database.fetchall1("*", "srmain")
@@ -63,6 +89,7 @@ class event(commands.Cog):
             await loadgw(bot)
         except:
             pass
+        bot.add_view(interface(bot))
         webhook = discord.SyncWebhook.from_url(webhook_shard_logs)
         webhook.send(f"Shard {shard_id} is Resumed", username=f"{str(self.bot.user)} | Shard Logs", avatar_url=self.bot.user.avatar.url)
 
@@ -78,6 +105,31 @@ class event(commands.Cog):
         except:
             pass
         await bot.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.listening, name="/help"))
+        bot.add_view(interface(bot))
+        await loadmsetup(bot)
+        await asyncio.sleep(3)
+        query = "SELECT * FROM  '247'"
+        with sqlite3.connect('./database.sqlite3') as db:
+            db.row_factory = sqlite3.Row
+            cursor = db.cursor()
+            cursor.execute("DROP TABLE help")
+            coun = 0
+            try:
+                cursor.execute(query)
+                m_db = cursor.fetchall()
+                for i in m_db:
+                    try:
+                        c = bot.get_channel(i['channel_id'])
+                        if check_upgraded(c.guild.id):
+                            vc: wavelink.Player = await c.connect(cls=wavelink.Player, self_deaf=True)
+                            coun+=1
+                    except:
+                        pass
+            except:
+                pass
+        db.commit()
+        cursor.close()
+        db.close()
         await database.create_tables()
         print(f'Logged in as {bot.user.name}({bot.user.id})')
 
