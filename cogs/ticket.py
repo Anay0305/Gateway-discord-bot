@@ -933,7 +933,7 @@ class ticket(commands.Cog):
         prefix = ctx.prefix
         if prefix == f"<@{self.bot.user.id}> ":
             prefix = f"@{str(self.bot.user)} "
-        anay = discord.utils.get(self.bot.users, id=994130204949745705)
+        anay = self.bot.main_owner
         ls = ["ticket", "ticket create", "ticket delete", "ticket edit", "ticket info", "ticket reopen"]
         des = ""
         for i in sorted(ls):
