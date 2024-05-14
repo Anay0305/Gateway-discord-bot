@@ -552,7 +552,7 @@ class interface(discord.ui.View):
         await interaction.channel.send(embed=emb2, mention_author=False, delete_after=5)
 
     #@discord.ui.button(label="Pause", custom_id='rp', row=1, style=discord.ButtonStyle.gray)
-    @discord.ui.button(emoji="<:pause:1091162575661711441>", custom_id='rp', row=1, style=discord.ButtonStyle.red)
+    @discord.ui.button(emoji="<:pause:1091162575661711441>", custom_id='rp', row=1, style=discord.ButtonStyle.blurple)
     async def rp(self, interaction: discord.Interaction, button: discord.ui.Button):
         vc = self.vc
         if not vc.paused:
@@ -565,7 +565,7 @@ class interface(discord.ui.View):
             await vc.pause(False)
             button.emoji = "<:pause:1091162575661711441>"
             #button.label = "Pause"
-            button.style = discord.ButtonStyle.gray
+            button.style = discord.ButtonStyle.blurple
             await interaction.response.edit_message(view=self)
         
     #@discord.ui.button(label="Next", custom_id='skip', row=1, style=discord.ButtonStyle.green)
@@ -609,16 +609,18 @@ class interface(discord.ui.View):
         elif q.mode.value == 1:
             await panelmsg(self.bot, self.ctx)
             button.emoji = "<:loop:1072813972727812116>"
+            await interaction.response.edit_message(view=self)
             q.mode = wavelink.QueueMode.loop_all
             await interaction.response.send_message(f"The current queue will now be looped", ephemeral=True)
         else:
             await panelmsg(self.bot, self.ctx)
             button.emoji = "<:loopsongqueue:1072814008429727754>"
+            await interaction.response.edit_message(view=self)
             q.mode = wavelink.QueueMode.normal
             await interaction.response.send_message(f"Now onwards nothing will be looped", ephemeral=True)
 
-    @discord.ui.button(label="Vol Down", custom_id='down', row=2, style=discord.ButtonStyle.green)
-    #@discord.ui.button(emoji="<:volume_down:1091162591356780545>", custom_id='down', row=4, style=discord.ButtonStyle.grey)
+    #@discord.ui.button(label="Vol Down", custom_id='down', row=2, style=discord.ButtonStyle.green)
+    @discord.ui.button(emoji="<:volume_down:1091162591356780545>", custom_id='down', row=2, style=discord.ButtonStyle.grey)
     async def down(self, interaction: discord.Interaction, button: discord.ui.Button):
         c = self.ctx.voice_client.volume
         if c >= 10:
@@ -629,8 +631,8 @@ class interface(discord.ui.View):
             await interaction.response.send_message(f"Changed the volume to 0%", ephemeral=True)
         await panelmsg(self.bot, self.ctx)
 
-    @discord.ui.button(label="Stop ", custom_id='stop', row=2, style=discord.ButtonStyle.red)
-    #@discord.ui.button(emoji="<:stop:1091166480583884871>", custom_id='stop', row=4, style=discord.ButtonStyle.red)
+    #@discord.ui.button(label="Stop ", custom_id='stop', row=2, style=discord.ButtonStyle.red)
+    @discord.ui.button(emoji="<:stop:1091166480583884871>", custom_id='stop', row=2, style=discord.ButtonStyle.red)
     async def stop(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.defer(ephemeral=False, thinking=False)
         self.vc.autoplay = wavelink.AutoPlayMode.disabled
@@ -641,8 +643,8 @@ class interface(discord.ui.View):
         v = discord.ui.View()
         await interaction.channel.send(embed=em, view=v, delete_after=10)
 
-    @discord.ui.button(label="Vol Up", custom_id='up', row=2, style=discord.ButtonStyle.primary)
-    #@discord.ui.button(emoji="<:volume_up:1091162580040548455>", custom_id='up', row=4, style=discord.ButtonStyle.grey)
+    #@discord.ui.button(label="Vol Up", custom_id='up', row=2, style=discord.ButtonStyle.primary)
+    @discord.ui.button(emoji="<:volume_up:1091162580040548455>", custom_id='up', row=2, style=discord.ButtonStyle.grey)
     async def up(self, interaction: discord.Interaction, button: discord.ui.Button):
         c = self.ctx.voice_client.volume
         if c <= 90:
