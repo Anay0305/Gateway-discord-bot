@@ -78,13 +78,6 @@ class event(commands.Cog):
         except:
             pass
         await bot.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.listening, name="/help"))
-        with sqlite3.connect('./database.sqlite3') as db:
-            db.row_factory = sqlite3.Row
-            cursor = db.cursor()
-            cursor.execute("DROP TABLE help")
-        db.commit()
-        cursor.close()
-        db.close()
         await database.create_tables()
         print(f'Logged in as {bot.user.name}({bot.user.id})')
 
