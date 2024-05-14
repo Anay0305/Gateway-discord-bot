@@ -2013,7 +2013,7 @@ class extra(commands.Cog):
                 if len(message.attachments) == 0:
                     try:
                         u = await guild.fetch_member(message.author.id)
-                        if not u.guild_permissions.administrator:
+                        if not u.guild_permissions.administrator or message.author.bot:
                             await asyncio.sleep(3)
                             await message.delete()
                     except:
