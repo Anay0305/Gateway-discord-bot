@@ -647,11 +647,12 @@ class antinuke(commands.Cog):
     @commands.hybrid_group(
         invoke_without_command=True, description="Shows the help menu for Antinuke commands"
     )
-    async def antinuke(self, ctx):
+    async def antinuke(self, ctx: commands.Context):
         prefix = ctx.prefix
         if prefix == f"<@{self.bot.user.id}> ":
             prefix = f"@{str(self.bot.user)} "
         anay = discord.utils.get(self.bot.users, id=1141685323299045517)
+        grp = self.bot.get_command(ctx.command.name)
         ls = ["antinuke", "antinuke anti", "antinuke punishment", "antinuke enable", "antinuke disable", "antinuke whitelist", "antinuke unwhitelist", "antinuke whitelisted", "antinuke config"]
         des = ""
         for i in sorted(ls):

@@ -25,7 +25,7 @@ cogs = {
        'Music': '<:music:1215454540254412852>', 
        'Raidmode': '<:raidmode:1215454577801830430>', 
        'Selfroles': '<:selfroles:1215454620273479741>', 
-
+       'Ticket': '<:ticket:1215454856832098395>', 
        'Voice': '<:voice:1215454876432076800>', 
        'Welcome': '<:welcome:1215454934993207305>'
        }
