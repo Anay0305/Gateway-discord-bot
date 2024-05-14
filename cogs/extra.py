@@ -1385,7 +1385,7 @@ class extra(commands.Cog):
                 em = discord.Embed(description=f"Girl role is set to {role.mention}\nJust type `girl <member>` to give or `rgirl <member>` to take {role.mention}", color=botinfo.root_color)
                 await ctx.reply(embed=em, mention_author=False)
 
-    @commands.hybrid_command(name="staff", aliases=['staffs', 'official', 'officials'], description="Gives the staff role to the user")
+    @commands.command(name="staff", aliases=['staffs', 'official', 'officials'], description="Gives the staff role to the user")
     @commands.bot_has_guild_permissions(manage_roles=True)
     async def _staff(self, ctx: commands.Context, user: discord.Member):
             if user.id == ctx.author.id:
@@ -1420,7 +1420,7 @@ class extra(commands.Cog):
             em=discord.Embed(description=f"{emojis.correct} Successfully Given {Role.mention} to {user.mention}", color=ctx.author.color)
             await ctx.send(embed=em)
 
-    @commands.hybrid_command(name="friend", aliases=['friends'], description="Gives the friend role to the user")
+    @commands.command(name="friend", aliases=['friends'], description="Gives the friend role to the user")
     @commands.bot_has_guild_permissions(manage_roles=True)
     async def _friend(self, ctx, user: discord.Member):
             if user.id == ctx.author.id:
@@ -1455,7 +1455,7 @@ class extra(commands.Cog):
             em=discord.Embed(description=f"{emojis.correct} Successfully Given {Role.mention} to {user.mention}", color=ctx.author.color)
             await ctx.send(embed=em)
 
-    @commands.hybrid_command(name="vip", aliases=['vips'], description="Gives vip role to the user")
+    @commands.command(name="vip", aliases=['vips'], description="Gives vip role to the user")
     @commands.bot_has_guild_permissions(manage_roles=True)
     async def _vip(self, ctx, user: discord.Member):
             if user.id == ctx.author.id:
@@ -1490,7 +1490,7 @@ class extra(commands.Cog):
             em=discord.Embed(description=f"{emojis.correct} Successfully Given {Role.mention} to {user.mention}", color=ctx.author.color)
             await ctx.send(embed=em)
 
-    @commands.hybrid_command(name="guest", aliases=['guests'], description="Gives guest role to the user")
+    @commands.command(name="guest", aliases=['guests'], description="Gives guest role to the user")
     @commands.bot_has_guild_permissions(manage_roles=True)
     async def _guest(self, ctx, user: discord.Member):
             if user.id == ctx.author.id:
@@ -1525,7 +1525,7 @@ class extra(commands.Cog):
             em=discord.Embed(description=f"{emojis.correct} Successfully Given {Role.mention} to {user.mention}", color=ctx.author.color)
             await ctx.send(embed=em)
 
-    @commands.hybrid_command(name="girl", aliases=['girls'], description="Gives girl role to the user")
+    @commands.command(name="girl", aliases=['girls'], description="Gives girl role to the user")
     @commands.bot_has_guild_permissions(manage_roles=True)
     async def _girls(self, ctx, user: discord.Member):
             if user.id == ctx.author.id:
@@ -1560,7 +1560,7 @@ class extra(commands.Cog):
             em=discord.Embed(description=f"{emojis.correct} Successfully Given {Role.mention} to {user.mention}", color=ctx.author.color)
             await ctx.send(embed=em)
 
-    @commands.hybrid_command(aliases=['rstaffs', 'rofficial', 'rofficials'], description="Removes the staff role from the user")
+    @commands.command(aliases=['rstaffs', 'rofficial', 'rofficials'], description="Removes the staff role from the user")
     @commands.bot_has_guild_permissions(manage_roles=True)
     async def rstaff(self, ctx, user: discord.Member):
             if user.id == ctx.author.id:
@@ -1591,7 +1591,7 @@ class extra(commands.Cog):
             em=discord.Embed(description=f"{emojis.correct} Successfully Removed {Role.mention} from {user.mention}", color=ctx.author.color)
             await ctx.send(embed=em)
 
-    @commands.hybrid_command(aliases=['rfriends'], description="Removes the friend role from the user")
+    @commands.command(aliases=['rfriends'], description="Removes the friend role from the user")
     @commands.bot_has_guild_permissions(manage_roles=True)
     async def rfriend(self, ctx, user: discord.Member):
             if user.id == ctx.author.id:
@@ -1622,7 +1622,7 @@ class extra(commands.Cog):
             em=discord.Embed(description=f"{emojis.correct} Successfully Removed {Role.mention} from {user.mention}", color=ctx.author.color)
             await ctx.send(embed=em)
             
-    @commands.hybrid_command(aliases=["rvips"], description="Removes the vip role from the user")
+    @commands.command(aliases=["rvips"], description="Removes the vip role from the user")
     @commands.bot_has_guild_permissions(manage_roles=True)
     async def rvip(self, ctx, user: discord.Member):
             if user.id == ctx.author.id:
@@ -1653,7 +1653,7 @@ class extra(commands.Cog):
             em=discord.Embed(description=f"{emojis.correct} Successfully Removed {Role.mention} from {user.mention}", color=ctx.author.color)
             await ctx.send(embed=em)
 
-    @commands.hybrid_command(aliases=["rguests"], description="Removes the guest role from the user")
+    @commands.command(aliases=["rguests"], description="Removes the guest role from the user")
     @commands.bot_has_guild_permissions(manage_roles=True)
     async def rguest(self, ctx, user: discord.Member):
             if user.id == ctx.author.id:
@@ -1684,7 +1684,7 @@ class extra(commands.Cog):
             em=discord.Embed(description=f"{emojis.correct} Successfully Removed {Role.mention} from {user.mention}", color=ctx.author.color)
             await ctx.send(embed=em)
 
-    @commands.hybrid_command(aliases=["rgirls"], description="Removes the girls role from the user")
+    @commands.command(aliases=["rgirls"], description="Removes the girls role from the user")
     @commands.bot_has_guild_permissions(manage_roles=True)
     async def rgirl(self, ctx, user: discord.Member):
             if user.id == ctx.author.id:

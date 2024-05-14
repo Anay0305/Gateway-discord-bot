@@ -464,7 +464,7 @@ class moderation(commands.Cog):
             webhook = discord.SyncWebhook.from_url(webhook_cmd_logs)
             webhook.send(embed=em, username=f"{str(self.bot.user)} | Command Logs", avatar_url=self.bot.user.avatar.url)
         
-    @commands.hybrid_command(description="Creates a embed")
+    @commands.command(description="Creates a embed")
     @commands.has_permissions(manage_guild=True)
     async def embed(self, ctx):
         em = discord.Embed(description="\u200B", color=botinfo.root_color)
@@ -474,7 +474,7 @@ class moderation(commands.Cog):
         await ctx.reply("This is a sample of embed you have created till now", embed=em, view=v)
         await v.wait()
 
-    @commands.hybrid_command(description="Shows audit logs entry")
+    @commands.command(description="Shows audit logs entry")
     @commands.cooldown(1, 120, commands.BucketType.guild)
     @commands.has_permissions(administrator=True)
     async def audit(self, ctx):
@@ -712,7 +712,7 @@ class moderation(commands.Cog):
         page = PaginationView(embed_list=ok, ctx=ctx)
         await page.start(ctx)
         
-    @commands.hybrid_command(description="Shows the current prefix")
+    @commands.command(description="Shows the current prefix")
     async def prefix(self, ctx):
         prefix = database.get_guild_prefix()
         if ctx.author.guild_permissions.administrator == True:
@@ -722,7 +722,7 @@ class moderation(commands.Cog):
             em = discord.Embed(title=f"Current Prefix for {ctx.guild.name}", description=f"{prefix}", color=botinfo.root_color)
             await ctx.send(embed=em, mention_author=False)
         
-    @commands.hybrid_command(description="Changes the prefix for the bot")
+    @commands.command(description="Changes the prefix for the bot")
     @commands.has_permissions(administrator=True)
     async def setprefix(self, ctx, *,prefix):
         res = database.fetchone("*", "prefixes", "guild_id", ctx.guild.id)
@@ -738,7 +738,7 @@ class moderation(commands.Cog):
                 database.update("prefixes", "prefix", f"{prefix}", "guild_id", ctx.guild.id)
                 await ctx.reply(embed=discord.Embed(description=f"Changed prefix from {pre} to {prefix}", color=botinfo.root_color), mention_author=False)
 
-    @commands.hybrid_command(aliases=['as', 'stealsticker'], description="Adds the sticker to the server")
+    @commands.command(aliases=['as', 'stealsticker'], description="Adds the sticker to the server")
     @commands.has_permissions(manage_emojis=True)
     async def addsticker(self, ctx: commands.Context, *, name=None):
         if ctx.message.reference is None:
@@ -764,7 +764,7 @@ class moderation(commands.Cog):
         except:
             return await ctx.reply("Failed to create the sticker")
 
-    @commands.hybrid_command(aliases=["deletesticker", "removesticker"], description="Delete the sticker from the server")
+    @commands.command(aliases=["deletesticker", "removesticker"], description="Delete the sticker from the server")
     @commands.has_permissions(manage_emojis=True)
     async def delsticker(self, ctx: commands.Context, *, name=None):
         if ctx.message.reference is None:
@@ -781,7 +781,7 @@ class moderation(commands.Cog):
         except:
             await ctx.reply("Failed to delete the sticker")
             
-    @commands.hybrid_command(aliases=["deleteemoji", "removeemoji"], description="Deletes the emoji from the server")
+    @commands.command(aliases=["deleteemoji", "removeemoji"], description="Deletes the emoji from the server")
     @commands.has_permissions(manage_emojis=True)
     async def delemoji(self, ctx, emoji = None):
         init = await ctx.reply(f"{emojis.loading} Processing the command...", mention_author=False)
@@ -1063,7 +1063,7 @@ class moderation(commands.Cog):
                                                         message.author
                                                                )
 
-    @commands.hybrid_command(description="Snipes the recent message deleted in the channel")
+    @commands.command(description="Snipes the recent message deleted in the channel")
     async def snipe(self, ctx, channel: discord.TextChannel = None):
         if not channel:
             channel = ctx.channel
@@ -1109,7 +1109,7 @@ class moderation(commands.Cog):
             ls = [embed]
         return await ctx.channel.send(embeds=ls)
         
-    @commands.hybrid_command(description="Enables slowmode for the channel")
+    @commands.command(description="Enables slowmode for the channel")
     @commands.bot_has_guild_permissions(manage_channels=True)
     @commands.has_permissions(manage_channels=True)
     async def slowmode(self, ctx, *, time=None):
@@ -1139,7 +1139,7 @@ class moderation(commands.Cog):
         em = discord.Embed(description=f"{emojis.correct} Successfully changed slowmode for channel {ctx.channel.mention} to {t} seconds", color=botinfo.right_color)
         await ctx.channel.send(embed=em)
 
-    @commands.hybrid_command(usage="[#channel/id]", name="lock", description="Locks the channel")
+    @commands.command(usage="[#channel/id]", name="lock", description="Locks the channel")
     @commands.has_permissions(manage_channels=True)
     async def lock(self, ctx, channel: discord.TextChannel = None, *, reason = None):
         channel = channel or ctx.channel
@@ -1149,7 +1149,7 @@ class moderation(commands.Cog):
         em = discord.Embed(title="Channel Locked", description=f"Locked by {ctx.author.name} for {reason}", color=botinfo.root_color)
         await ctx.reply(embed=em)
 
-    @commands.hybrid_command(description="locks all channels in the server")
+    @commands.command(description="locks all channels in the server")
     @commands.cooldown(1, 60, commands.BucketType.guild)
     @commands.has_permissions(administrator=True)
     async def lockall(self, ctx):
@@ -1183,7 +1183,7 @@ class moderation(commands.Cog):
             em = discord.Embed(description="Canceled The Command", color=botinfo.wrong_color)
             return await ctx.reply(embed=em, mention_author=False)        
 
-    @commands.hybrid_command(usage="[#channel/id]", name="unlock", description="Unlocks the channel")
+    @commands.command(usage="[#channel/id]", name="unlock", description="Unlocks the channel")
     @commands.has_permissions(manage_channels=True)
     async def unlock(self, ctx, channel: discord.TextChannel = None, *, reason = None):
         channel = channel or ctx.channel
@@ -1193,7 +1193,7 @@ class moderation(commands.Cog):
         em = discord.Embed(title="Channel Unlocked", description=f"Unlocked by {ctx.author.name} for {reason}", color=botinfo.root_color)
         await ctx.reply(embed=em)
     
-    @commands.hybrid_command(description="Unlocks all channels in the server")
+    @commands.command(description="Unlocks all channels in the server")
     @commands.cooldown(1, 60, commands.BucketType.guild)
     @commands.has_permissions(administrator=True)
     async def unlockall(self, ctx):
@@ -1227,7 +1227,7 @@ class moderation(commands.Cog):
             em = discord.Embed(description="Canceled The Command", color=botinfo.wrong_color)
             return await ctx.reply(embed=em, mention_author=False)
 
-    @commands.hybrid_command(description="Hides the channel")
+    @commands.command(description="Hides the channel")
     @commands.has_permissions(manage_channels=True)
     async def hide(self, ctx, channel: discord.abc.GuildChannel = None, *, reason = None):
         channel = channel or ctx.channel
@@ -1237,7 +1237,7 @@ class moderation(commands.Cog):
         em = discord.Embed(title="Channel Hidden", description=f"Hidden by {ctx.author.name} for {reason}", color=botinfo.root_color)
         await ctx.reply(embed=em)
     
-    @commands.hybrid_command(description="Hide all channels in the server")
+    @commands.command(description="Hide all channels in the server")
     @commands.cooldown(1, 60, commands.BucketType.guild)
     @commands.has_permissions(administrator=True)
     async def hideall(self, ctx):
@@ -1271,7 +1271,7 @@ class moderation(commands.Cog):
             em = discord.Embed(description="Canceled The Command", color=botinfo.wrong_color)
             return await ctx.reply(embed=em, mention_author=False)
         
-    @commands.hybrid_command(description="Unhides the channel")
+    @commands.command(description="Unhides the channel")
     @commands.has_permissions(manage_channels=True)
     async def unhide(self, ctx, channel: discord.abc.GuildChannel = None, *, reason = None):
         channel = channel or ctx.channel
@@ -1281,7 +1281,7 @@ class moderation(commands.Cog):
         em = discord.Embed(title="Channel UnHidden", description=f"UnHidden by {ctx.author.name} for {reason}", color=botinfo.root_color)
         await ctx.reply(embed=em)
     
-    @commands.hybrid_command(description="Unhide all channels in the server")
+    @commands.command(description="Unhide all channels in the server")
     @commands.cooldown(1, 60, commands.BucketType.guild)
     @commands.has_permissions(administrator=True)
     async def unhideall(self, ctx):
@@ -1402,7 +1402,7 @@ class moderation(commands.Cog):
         elif isinstance(emoji, str) and not emoji.isalpha() and not emoji.isdigit():
             await ctx.send(emoji)
 
-    @commands.hybrid_command(description="Created a role in the server")
+    @commands.command(description="Created a role in the server")
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_guild_permissions(manage_roles=True)
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -1426,7 +1426,7 @@ class moderation(commands.Cog):
         em = discord.Embed(description=f"Created {role.mention} role", color=botinfo.root_color)
         await ctx.reply(embed=em, mention_author=False)
         
-    @commands.hybrid_command(description="Deletes a role in the server")
+    @commands.command(description="Deletes a role in the server")
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_guild_permissions(manage_roles=True)
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -1971,7 +1971,7 @@ class moderation(commands.Cog):
         em = discord.Embed(description="Cancelled the process", color=botinfo.root_color)
         await ctx.send(embed=em)
 
-    @commands.hybrid_command(aliases=["mute"], description="Timeouts a user for specific time\nIf you don't provide the time the user will be timeout for 5 minutes")
+    @commands.command(aliases=["mute"], description="Timeouts a user for specific time\nIf you don't provide the time the user will be timeout for 5 minutes")
     @commands.bot_has_guild_permissions(moderate_members=True)
     @commands.has_permissions(moderate_members=True)
     async def timeout(self, ctx, member: discord.Member, *, time = None):
@@ -2020,7 +2020,7 @@ class moderation(commands.Cog):
         em.set_footer(text=f'Muted by {ctx.author.name}')
         return await member.send(embed=em)
 
-    @commands.hybrid_command(description="Removes the timeout from the user")
+    @commands.command(description="Removes the timeout from the user")
     @commands.has_permissions(moderate_members=True)
     @commands.bot_has_guild_permissions(moderate_members=True)
     async def unmute(self, ctx, *,member: discord.Member):
@@ -2047,7 +2047,7 @@ class moderation(commands.Cog):
         em.set_footer(text=f'Unmuted by {ctx.author.name}')
         return await member.send(embed=em)
         
-    @commands.hybrid_command(description="Unmutes all the muted members in the server")
+    @commands.command(description="Unmutes all the muted members in the server")
     @commands.cooldown(1, 120, commands.BucketType.guild)
     @commands.has_permissions(administrator=True)
     @commands.bot_has_guild_permissions(ban_members=True)
@@ -2088,7 +2088,7 @@ class moderation(commands.Cog):
             em = discord.Embed(description="Canceled The Command", color=botinfo.wrong_color)
             return await ctx.reply(embed=em, mention_author=False)
             
-    @commands.hybrid_command(aliases=["setnick"], description="Changes the user's nickname for the server")
+    @commands.command(aliases=["setnick"], description="Changes the user's nickname for the server")
     @commands.has_permissions(manage_nicknames=True)
     @commands.bot_has_guild_permissions(manage_nicknames=True)
     async def nick(self, ctx, member : discord.Member, *, Name=None):
@@ -2117,7 +2117,7 @@ class moderation(commands.Cog):
             em = discord.Embed(description=f"Successfully Changed nickname of {str(member)} to **{Name}**", color=botinfo.root_color)
             return await ctx.reply(embed=em, mention_author=False)
 
-    @commands.hybrid_command(description="Kicks a member from the server")
+    @commands.command(description="Kicks a member from the server")
     @commands.has_permissions(kick_members=True)
     @commands.bot_has_guild_permissions(kick_members=True)
     async def kick(self, ctx, member : discord.Member, *, reason=None):
@@ -2148,7 +2148,7 @@ class moderation(commands.Cog):
         await ctx.channel.send(embed=em)
         await member.send(embed=discord.Embed(description=f'You Have Been Kicked From **{ctx.guild.name}** For The Reason: `{reason}`', color=botinfo.root_color))
 
-    @commands.hybrid_command(description="Unbans a member from the server")
+    @commands.command(description="Unbans a member from the server")
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_guild_permissions(ban_members=True)
     async def unban(self, ctx: commands.Context, user: discord.User):
@@ -2158,7 +2158,7 @@ class moderation(commands.Cog):
                 return await ctx.send(f'{emojis.correct} Unbanned **{str(user)}**!')
         await ctx.send(f'**{str(user)}** is not banned!')
     
-    @commands.hybrid_command(description="Unban all the banned members in the server")
+    @commands.command(description="Unban all the banned members in the server")
     @commands.cooldown(1, 120, commands.BucketType.guild)
     @commands.has_permissions(administrator=True)
     @commands.bot_has_guild_permissions(ban_members=True)
@@ -2189,7 +2189,7 @@ class moderation(commands.Cog):
             em = discord.Embed(description="Canceled The Command", color=botinfo.wrong_color)
             return await ctx.reply(embed=em, mention_author=False)
 
-    @commands.hybrid_command(description="Warns the user")
+    @commands.command(description="Warns the user")
     @commands.has_permissions(manage_messages=True)
     async def warn(self, ctx, user: discord.Member,*,reason=None):
         if user.top_role.position >= ctx.guild.me.top_role.position:
@@ -2452,7 +2452,7 @@ class moderation(commands.Cog):
         em = discord.Embed(description=f"Successfully removed the warning of {u.mention} with the id `{id}`", color=botinfo.root_color).set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar.url)
         await ctx.reply(embed=em)
 
-    @commands.hybrid_command(description="Bans the user from the server", aliases=['fuckoff', 'hackban'])
+    @commands.command(description="Bans the user from the server", aliases=['fuckoff', 'hackban'])
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_guild_permissions(ban_members=True)
     async def ban(self, ctx, member : discord.Member, *, reason=None):
@@ -2482,7 +2482,7 @@ class moderation(commands.Cog):
         await ctx.channel.send(embed=em)
         await member.send(embed=discord.Embed(description=f'You Have Been Banned From **{ctx.guild.name}** For The Reason: `{reason}`', color=botinfo.root_color))
 
-    @commands.hybrid_command(aliases=['nuke', 'clonechannel'], description="Clones the channel")
+    @commands.command(aliases=['nuke', 'clonechannel'], description="Clones the channel")
     @commands.cooldown(1, 15, commands.BucketType.guild)
     @commands.has_permissions(administrator=True)
     @commands.bot_has_guild_permissions(manage_channels=True)
@@ -2546,7 +2546,7 @@ class moderation(commands.Cog):
             emb.add_field(name="Error:", value=f"Missing role", inline=False)
             webhook.send(embed=emb, username=f"{str(self.bot.user)} | Error Command Logs", avatar_url=self.bot.user.avatar.url)
             return
-        if isinstance(error, commands.hybrid_commandOnCooldown):
+        if isinstance(error, commands.commandOnCooldown):
             em = discord.Embed(description=f"{emojis.wrong} This command is on cooldown. Please retry after `{round(error.retry_after, 1)} Seconds` .", color=botinfo.wrong_color)
             await ctx.send(embed=em, delete_after=7)
             emb.add_field(name="Error:", value=f"Command On Cooldown", inline=False)
