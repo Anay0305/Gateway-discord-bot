@@ -9,10 +9,8 @@ import datetime
 import re
 import random
 import database
-import requests
-import urllib
+from typing import Union
 import sqlite3
-import time
 from paginators import PaginationView
 from ast import literal_eval
 from premium import check_upgraded
@@ -2077,7 +2075,7 @@ class music(commands.Cog):
             await ctx.send("Fixed the player")
         except:
             await ctx.send("Error occured")
-            
+
     @commands.hybrid_command(name="msetup", description="Setups the song request channel")
     @commands.has_guild_permissions(administrator=True)
     async def setup(self, ctx: commands.Context, *, channel: Union[discord.VoiceChannel, discord.TextChannel]=None):
