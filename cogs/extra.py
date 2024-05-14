@@ -8,6 +8,7 @@ import database
 import emojis
 import botinfo
 import re
+import difflib
 from scogs.antinuke import check_lockrole_bypass
 
 class BasicView(discord.ui.View):
@@ -111,6 +112,7 @@ async def autopfp(self, c_id, type):
                 except:
                     return
                 c += 1
+    del u
 
 async def get_prefix(message: discord.Message):
     res = database.fetchone("prefix", "prefixes", "guild_id", message.guild.id)
@@ -396,9 +398,12 @@ class extra(commands.Cog):
         await view.wait()
         if view.value == 'stop':
             return await init.delete()
+        if len(self.bot.users) < 10000:
+            u = random.sample(self.bot.users, len(self.bot.users))
+        else:
+            u = random.sample(self.bot.users, 10000)
         if view.value == 'mix':
             await init.delete()
-            u = random.sample(self.bot.users, 10000)
             c = 1
             for i in u:
                 if i.avatar and c <= abs(number):
@@ -406,7 +411,6 @@ class extra(commands.Cog):
                         c += 1
         if view.value == 'png':
             await init.delete()
-            u = random.sample(self.bot.users, 10000)
             c = 1
             for i in u:
                 if i.avatar and c <= abs(number):
@@ -415,13 +419,13 @@ class extra(commands.Cog):
                         c += 1
         if view.value == 'gif':
             await init.delete()
-            u = random.sample(self.bot.users, 10000)
             c = 1
             for i in u:
                 if i.avatar and c <= abs(number):
                     if 'gif' in i.avatar.url:
                         await ctx.send(i.avatar.url)
                         c += 1
+        del u
 
     @commands.group(
         invoke_without_command=True, description="Shows The help menu for nightmode"
@@ -945,10 +949,6 @@ class extra(commands.Cog):
                                                  f"To remove an alias from giving and taking specific roles\n\n"
                                                  f"`{prefix}setup official`\n"
                                                  f"Set The Official role\n\n"
-                                                 f"`{prefix}setup tag`\n"
-                                                 f"Set The Tag for Official role\n\n"
-                                                 f"`{prefix}setup stag`\n"
-                                                 f"Set The Small Tag for Official role\n\n"
                                                  f"`{prefix}setup friend`\n"
                                                  f"Set The Friend role\n\n"
                                                  f"`{prefix}setup guest`\n"
@@ -1003,8 +1003,6 @@ class extra(commands.Cog):
                                      description=f"<...> Duty | [...] Optional\n\n" 
                                                  f"`{prefix}official <member>`\n"
                                                  f"{off}\n\n"
-                                                 f"`{prefix}applied`\n"
-                                                 f"{off} but only if your name has tag\n\n"
                                                  f"`{prefix}friend <member>`\n"
                                                  f"{fr}\n\n"
                                                  f"`{prefix}guest <member>`\n"
@@ -1044,9 +1042,9 @@ class extra(commands.Cog):
                 await ctx.reply("Mention a badge to Remove")
             msg = option
             msg = msg.lower()
-            valid = ["all", "reqrole", "custom", "official", "officials", "staff", "staffs", "tag", "stag", "friend", "friends", "guest", "guests", "girls", "girl", "vip", "vips"]
+            valid = ["all", "reqrole", "custom", "official", "officials", "staff", "staffs", "friend", "friends", "guest", "guests", "girls", "girl", "vip", "vips"]
             if msg not in valid:
-                return await ctx.send("Please send A valid Option\nValid Options ARE: All, Reqrole, Custom, Official/Staff, Tag, Stag, Friend, Guest, Vip, Girl")
+                return await ctx.send("Please send A valid Option\nValid Options ARE: All, Reqrole, Custom, Official/Staff, Friend, Guest, Vip, Girl")
             welcome_db = database.fetchone("*", "roles", "guild_id", ctx.guild.id)
             if msg == "reqrole":
               msg = "role"
@@ -1072,13 +1070,10 @@ class extra(commands.Cog):
                     dic = {
                         'role': 0,
                         'official': 0,
-                        'tag': None,
-                        'stag': None,
                         'friend': 0,
                         'guest': 0,
                         'vip': 0,
                         'girls': 0,
-                        'ar': 0,
                         'custom': "{}"
                     }
                     database.update_bulk("roles", dic, "guild_id", ctx.guild.id)
@@ -1087,24 +1082,9 @@ class extra(commands.Cog):
                 msg = msg.upper()
                 return await ctx.send(f"{msg} Is Not set")
             else:
-                if msg == "tag" or msg == "official"or msg == "stag" or msg == "custom":
-                    if msg == "tag":
+                if msg == "official" or msg == "custom":
+                    if msg == "official":
                         dic = {
-                            'tag': None,
-                            'ar': 0,
-                        }
-                        database.update_bulk("roles", dic, "guild_id", ctx.guild.id)
-                    elif msg == "stag":
-                        dic = {
-                            'stag': None,
-                            'ar': 0,
-                        }
-                        database.update_bulk("roles", dic, "guild_id", ctx.guild.id)
-                    elif msg == "official":
-                        dic = {
-                            'tag': None,
-                            'stag': None,
-                            'ar': 0,
                             'official': 0
                         }
                         database.update_bulk("roles", dic, "guild_id", ctx.guild.id)
@@ -1127,17 +1107,6 @@ class extra(commands.Cog):
             guest = welcome_db['guest']
             vip = welcome_db['vip']
             girl = welcome_db['girls']
-            if welcome_db['stag'] is not None and welcome_db['tag'] is not None:
-                tag = f"{welcome_db['tag']} or {welcome_db['stag']}"
-                pass
-            elif welcome_db['stag'] is None:
-                tag = f"{welcome_db['tag']}"
-                pass
-            elif welcome_db['tag'] is None:
-                tag = f"{welcome_db['stag']}"
-                pass
-            else:
-                tag = None
             if reqrole == 0:
               rr = f"Required Role is not set"
             else:
@@ -1145,10 +1114,7 @@ class extra(commands.Cog):
             if official == 0:
               off = f"Official role is not set"
             else:
-              if tag is None:
-                off = f"<@&{official}>"
-              else:
-                off = f"<@&{official}> ({tag})"
+              off = f"<@&{official}>"
             if friend == 0:
               fr = f"Friend Role is not set"
             else:
@@ -1205,76 +1171,7 @@ class extra(commands.Cog):
               database.update("roles", "role", role.id, "guild_id", ctx.guild.id)
             em = discord.Embed(description=f"Reqiured role role to run custom role commands is set to {role.mention}", color=botinfo.root_color)
             await ctx.reply(embed=em, mention_author=False)
-
-    @setup.command(name="tag", description="Setups the tag for the server")
-    @commands.has_permissions(administrator=True)
-    @commands.bot_has_guild_permissions(manage_roles=True)
-    async def setup_tag(self, ctx, *, tag: str):
-        if ctx.guild.owner.id == ctx.author.id:
-            pass
-        else:
-            if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in botinfo.main_devs:
-                em = discord.Embed(description=f"{emojis.wrong} You must Have Higher Role than Bot To run This Command", color=botinfo.wrong_color)
-                return await ctx.send(embed=em)
-        welcome_db = database.fetchone("*", "roles", "guild_id", ctx.guild.id)
-        if welcome_db['official'] == 0:
-            return await ctx.reply('First setup Your Staff/Official role by Running `-setup staff/official @role/id`')
-        else:
-            database.update("roles", "tag", tag, "guild_id", ctx.guild.id)
-            view = OnOrOff(ctx)
-            em = discord.Embed(description=f'Should there be an autorespond for "tag"', color=botinfo.root_color)
-            test = await ctx.reply(embed=em, view=view, mention_author=False)
-            await view.wait()
-            if not view.value:
-                await test.delete()
-                return await ctx.reply(content="Timed out!", mention_author=False)
-            if view.value == 'Yes':
-                await test.delete()
-                if welcome_db['ar'] == 0:
-                    database.update("roles", "ar", 1, "guild_id", ctx.guild.id)
-                em = discord.Embed(description=f"Tag setup successful with autoresponding on", color=botinfo.root_color)
-                await ctx.reply(embed=em, mention_author=False)
-            if view.value == 'No':
-                await test.delete()
-                if welcome_db['ar'] == 1:
-                    database.update("roles", "ar", 0, "guild_id", ctx.guild.id)
-                em = discord.Embed(description=f"Tag setup successful with autoresponding off", color=botinfo.root_color)
-                await ctx.reply(embed=em, mention_author=False)
-
-    @setup.command(name="stag", description="Setups the small tag for the server")
-    @commands.has_permissions(administrator=True)
-    @commands.bot_has_guild_permissions(manage_roles=True)
-    async def setup_stag(self, ctx, *, tag: str):
-        if ctx.guild.owner.id == ctx.author.id:
-            pass
-        else:
-            if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in botinfo.main_devs:
-                em = discord.Embed(description=f"{emojis.wrong} You must Have Higher Role than Bot To run This Command", color=botinfo.wrong_color)
-                return await ctx.send(embed=em)
-        welcome_db = database.fetchone("*", "roles", "guild_id", ctx.guild.id)
-        if welcome_db['official'] == 0:
-            return await ctx.reply('First setup Your Staff/Official role by Running `-setup staff/official @role/id`')
-        else:
-            database.update("roles", "stag", tag, "guild_id", ctx.guild.id)
-            view = OnOrOff(ctx)
-            em = discord.Embed(description=f'Should there be an autorespond for "tag"', color=botinfo.root_color)
-            test = await ctx.reply(embed=em, view=view, mention_author=False)
-            await view.wait()
-            if not view.value:
-                await test.delete()
-                return await ctx.reply(content="Timed out!", mention_author=False)
-            if view.value == 'Yes':
-                await test.delete()
-                if welcome_db['ar'] == 0:
-                    database.update("roles", "ar", 0, "guild_id", ctx.guild.id)
-                em = discord.Embed(description=f"Small Tag setup successful with autoresponding on", color=botinfo.root_color)
-                await ctx.reply(embed=em, mention_author=False)
-            if view.value == 'No':
-                await test.delete()
-                if welcome_db['ar'] == 1:
-                    database.update("roles", "ar", 1, "guild_id", ctx.guild.id)
-                em = discord.Embed(description=f"Small Tag setup successful with autoresponding off", color=botinfo.root_color)
-                await ctx.reply(embed=em, mention_author=False)
+            
             
     @setup.command(name="create", aliases=['add'], description="To add alias for giving and taking specific roles")
     @commands.has_permissions(administrator=True)
@@ -1783,57 +1680,6 @@ class extra(commands.Cog):
             await user.remove_roles(Role)
             em=discord.Embed(description=f"{emojis.correct} Successfully Removed {Role.mention} from {user.mention}", color=ctx.author.color)
             await ctx.send(embed=em)
-    
-    @commands.command()
-    @commands.bot_has_guild_permissions(manage_roles=True)
-    async def applied(self, ctx):
-        welcome_db = database.fetchone("*", "roles", "guild_id", ctx.guild.id)
-        if welcome_db['official'] == 0:
-            em = discord.Embed(description=f"{emojis.wrong} Official Role Is Not Set.", color=botinfo.wrong_color)
-            return await ctx.send(embed=em)
-        if welcome_db['tag'] is None and welcome_db['stag'] is None:
-            em = discord.Embed(description=f"{emojis.wrong} Tag Is Not Set.", color=botinfo.wrong_color)
-            return await ctx.send(embed=em)
-        check = False
-        if welcome_db['tag'] is not None:
-            if welcome_db['stag'] is None:
-                if welcome_db['tag'] not in ctx.author.name:
-                    check = True
-            else:
-                if welcome_db['stag'] not in ctx.author.name and welcome_db['tag'] not in ctx.author.name:
-                    check = True
-        elif welcome_db['stag'] is not None:
-            if welcome_db['tag'] is None:
-                if welcome_db['stag'] not in ctx.author.name:
-                    check = True
-            else:
-                if welcome_db['stag'] not in ctx.author.name and welcome_db['tag'] not in ctx.author.name:
-                    check = True
-        else:
-            pass
-        if check:
-            if welcome_db['stag'] is not None and welcome_db['tag'] is not None:
-                tag = f"'{welcome_db['tag']}' or '{welcome_db['stag']}'"
-                pass
-            elif welcome_db['stag'] is None:
-                tag = f"'{welcome_db['tag']}'"
-                pass
-            elif welcome_db['tag'] is None:
-                tag = f"'{welcome_db['stag']}'"
-                pass
-            else:
-                tag = None
-            return await ctx.reply(f"First apply {tag} in username to get official role")
-        Role = discord.utils.get(ctx.guild.roles, id=welcome_db['official'])
-        if Role in ctx.author.roles:
-            em=discord.Embed(description=f"You already have {Role.mention}", color=ctx.author.color)
-            return await ctx.send(embed=em)
-        if Role.position >= ctx.guild.me.top_role.position:
-                em = discord.Embed(description=f"{emojis.wrong} {Role.mention} is above my top role.", color=botinfo.wrong_color)
-                return await ctx.send(embed=em)
-        await ctx.author.add_roles(Role)
-        em=discord.Embed(description=f"{emojis.correct} Successfully Given {Role.mention}", color=ctx.author.color)
-        await ctx.send(embed=em)
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -1854,7 +1700,6 @@ class extra(commands.Cog):
         welcome_db = database.fetchone("*", "roles", "guild_id", ctx.guild.id)
         content = ""
         if welcome_db is not None:
-            official = welcome_db['official']
             ls = literal_eval(welcome_db['custom'])
             content = message.content.lower()
         else:
@@ -1942,22 +1787,67 @@ class extra(commands.Cog):
                                     else:
                                         em=discord.Embed(description=f"{emojis.wrong} {u.mention} Does't Have {Role.mention}", color=ctx.author.color)
                                         return await ctx.reply(embed=em)
-        if content == "tag" or content == "stag":
-            if welcome_db['ar'] == 0:
-                return
-            prefix = database.get_guild_prefix(message.guild.id)
-            if welcome_db['stag'] is not None and welcome_db['tag'] is not None:
-                tg = f"'{welcome_db['tag']}' or '{welcome_db['stag']}'"
-                pass
-            elif welcome_db['stag'] is None:
-                tg = f"'{welcome_db['tag']}'"
-                pass
-            elif welcome_db['tag'] is None:
-                tg = f"'{welcome_db['stag']}'"
-                pass
+
+    #@commands.group(invoke_without_command=True, description="Mentions a role by providing its custom name")
+    async def tag(self, ctx: commands.Context, name: str=None, *, message: str=None):
+        if name is None:
+            ls = ["tag", "tag create", "tag delete", "tag show"]
+            prefix = ctx.prefix
+            if prefix == f"<@{self.bot.user.id}> ":
+                prefix = f"@{str(self.bot.user)} "
+            anay = self.bot.main_owner
+            des = ""
+            for i in sorted(ls):
+                cmd = self.bot.get_command(i)
+                des += f"`{prefix}{i}`\n{cmd.description}\n\n"
+            listem = discord.Embed(colour=botinfo.root_color,
+                                        description=f"<...> Duty | [...] Optional\n\n{des}")
+            listem.set_author(name=f"{str(ctx.author)}", icon_url=ctx.author.display_avatar.url)
+            listem.set_footer(text=f"Made by {str(anay)}" ,  icon_url=anay.avatar.url)
+            return await ctx.send(embed=listem)
+        tag_db = database.fetchone("*", "tagroles", "guild_id", ctx.guild.id)
+        em=discord.Embed(description=f"{emojis.wrong} There is no role set with tag name `{name}`", color=botinfo.wrong_color)
+        if tag_db is None:
+            return await ctx.reply(embed=em, mention_author=False)
+        dic = literal_eval(tag_db['data'])
+        if name.lower() not in dic:
+            close_matches = difflib.get_close_matches(name.lower(), 
+                [i for i in dic], 3, 0.75)
+            if len(close_matches) == 0:
+                return await ctx.reply(embed=em, mention_author=False)
             else:
-                tg = None
-            return await message.channel.send(embed=discord.Embed(description=f"Tag for becoming official/staff of the server is: {tg} \nAfter applying tag in username just write `{prefix}applied` to get <@&{official}> role", color=botinfo.root_color), delete_after=60)
+                des = ""
+                for i in close_matches:
+                    des += f"> {i} \n"
+                em=discord.Embed(description=f"{emojis.wrong} I couldn't find any role set with tag name `{name}`, but I found some roles with similar name:\n{des}", color=ctx.author.top_role.color)
+                return await ctx.reply(embed=em)
+        else:
+            role = ctx.guild.get_role(dic[name.lower()])
+            if role is None:
+                em=discord.Embed(description=f"{emojis.wrong} The role set with this tag name has been deleted", color=botinfo.wrong_color)
+                return await ctx.reply(embed=em, mention_author=False)
+            else:
+                view = OnOrOff(ctx)
+                em = discord.Embed(description=f"Would You Like To mention {role.mention} with {len(role.members)} in it?", color=botinfo.root_color)
+                em.set_author(name=str(ctx.author), icon_url=ctx.author.display_avatar.url)
+                test = await ctx.reply(embed=em, view=view)
+                await view.wait()
+                if not view.value:
+                    return await test.edit(content="Timed out!", view=None)
+                if view.value == 'Yes':
+                    await test.delete()
+                    em = discord.Embed(description=f"", color=botinfo.root_color)
+                    return await ctx.reply(embed=em, mention_author=False)
+                if view.value == 'No':
+                    await test.delete()
+                    em = discord.Embed(description="Alright I won't mention the role.", color=botinfo.wrong_color)
+                    return await ctx.reply(embed=em, mention_author=False)
+
+    #@tag.command(name="create", aliases=['add'], description="Assigns a tag name to a role in the server")
+    @commands.has_guild_permissions(manage_guild=True)
+    async def tag_create(self, ctx: commands.Context, *, role: discord.Role):
+        pass
+
 
 async def setup(bot):
     await bot.add_cog(extra(bot))

@@ -374,12 +374,6 @@ class welcome(commands.Cog):
             database.update("welcome", "ping", 0, "guild_id", ctx.guild.id)
             await ctx.reply(embed=discord.Embed(description=f'Ping is Disabled', color=botinfo.root_color), mention_author=False)
 
-    @welcome.command(name="keywords", aliases=["keyword"], description="Shows the keyword to use for setting the message")
-    async def keywords(self, ctx):
-      em = discord.Embed(title="Here are some keywords, which you can use in your welcome embed.", description="```$user_name - displays username.\n$user_username - display users username with his discriminator.\n$user_discriminator - display users discriminator.\n$user_id - display users ID.\n$user_avatar - display users avatar.\n$user_mention - mentions the user.\n$user_created - displays the timestamp of when the user id was created.\n$user_joined - displays the timestamp of when the user joined the server.\n$user_profile - direct link for the user's profile\n$server_name - displays server name.\n$server_id - displays server ID.\n$server_icon - displays server icon.\n$membercount - show the member count of the server.\n$membercount_ordinal - same as membercount but includes ordinal number (st, th, rd).\n\n```", color=botinfo.root_color)
-      em.set_author(name="Welcome Keywords", icon_url=self.bot.user.avatar.url)
-      await ctx.reply(embed=em)
-
     @welcome.command(name="message", aliases=["msg"], description="Setup the message for welcome")
     @commands.has_permissions(administrator=True)
     async def message(self, ctx, *, message=None):

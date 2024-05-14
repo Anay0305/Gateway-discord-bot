@@ -4,16 +4,18 @@ import platform
 from discord.ext import commands
 from discord import *
 import os
-import urllib.parse
-import re
+import sqlite3
+import emojis
 import datetime
 import requests
 from typing import Union
 import os
 import time
+import wavelink
 from paginators import PaginationView
 from ast import literal_eval
 from botinfo import *
+from PIL import Image, ImageDraw, ImageFont
 import requests
 import numpy as np
 from io import BytesIO
@@ -22,6 +24,8 @@ import database
 import emojis
 import botinfo
 import asyncio
+from premium import check_upgraded
+from cogs.music import voiceortext, interface
 
 def identify_code_language(code):
     # Define regular expressions for common programming languages
@@ -105,6 +109,177 @@ class globalorlocal(BasicView):
         await interaction.response.defer(ephemeral=False, thinking=False)
         self.value = 'local'
         self.stop()
+
+async def profile(bot: commands.Bot, ctx: commands.Context, user: discord.Member, b_db, u_db, p_ls, init, bot_bdg: list[discord.Emoji], user_bdg: list[discord.Emoji], total_cmd, user_rank, title):
+    if u_db is None:
+        totaltime = 0
+        s_dic = {}
+        f_dic = {}
+        a_dic = {}
+        t_dic = {}
+    else:
+        totaltime = u_db['totaltime']
+        s_dic = literal_eval(u_db['server'])
+        f_dic = literal_eval(u_db['friend'])
+        a_dic = literal_eval(u_db['artist'])
+        t_dic = literal_eval(u_db['track'])
+    if b_db is None:
+        bf_dic = {}
+    else:
+        bf_dic = literal_eval(b_db['user'])
+    #response = requests.get("https://media.discordapp.net/attachments/1208408003703734282/1239335638709440582/Picsart_24-05-13_03-27-14-507.jpg?ex=66448702&is=66433582&hm=aaa675e8e5e8693aa0e9c620154363d08805ec53cf52e252e79dc1eed9b71705&=&format=webp&width=909&height=511")
+    width = 1280
+    height = 720
+
+    # Create new image and ImageDraw object
+    with open("profile_bg.jpg", 'rb') as file:
+        image = Image.open(BytesIO(file.read())).convert("RGBA")
+        file.close()
+    image = image.resize((width,height))
+    draw = ImageDraw.Draw(image)
+    pfp = user.display_avatar.url
+    pfp = pfp.replace("gif", "png").replace("webp", "png").replace("jpeg", "png")
+    logo_res = requests.get(pfp)
+    AVATAR_SIZE = 128
+    avatar_image = Image.open(BytesIO(logo_res.content)).convert("RGB")
+    avatar_image = avatar_image.resize((AVATAR_SIZE, AVATAR_SIZE)) #
+    circle_image = Image.new('L', (AVATAR_SIZE, AVATAR_SIZE))
+    circle_draw = ImageDraw.Draw(circle_image)
+    circle_draw.ellipse((0, 0, AVATAR_SIZE, AVATAR_SIZE), fill=255)
+    image.paste(avatar_image, (160, 120), circle_image)
+    font = ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 28)
+    draw.text( (300, 120), f"{str(user)}", fill="black", font=font)
+    px = 300
+    for i in user_bdg:
+        url = i.url
+        url = url.replace("gif", "png").replace("webp", "png").replace("jpeg", "png")
+        res = requests.get(url)
+        size = 28
+        avatar_image = Image.open(BytesIO(res.content)).convert("RGBA")
+        avatar_image = avatar_image.resize((size, size))
+        pixel_data = avatar_image.load()
+        background_color = (0, 0, 0)  # specify the background color in RGB format
+        for y in range(avatar_image.size[1]):
+            for x in range(avatar_image.size[0]):
+                if pixel_data[x, y] == background_color:
+                    pixel_data[x, y] = (0, 0, 0, 0)
+        #circle_image = Image.new('L', (spotify_size, spotify_size))
+        #circle_draw = ImageDraw.Draw(circle_image)
+        #circle_draw.ellipse((0, 0, spotify_size, spotify_size), fill=255)
+        image.paste(avatar_image, (px, 158), avatar_image)
+        px+=32
+    if title is not None:
+        draw.text( (300, 184), text=title.title(), font=ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 28), fill="black")
+    px = 300
+    for i in bot_bdg:
+        url = i.url
+        url = url.replace("gif", "png").replace("webp", "png").replace("jpeg", "png")
+        res = requests.get(url)
+        size = 28
+        avatar_image = Image.open(BytesIO(res.content)).convert("RGBA")
+        avatar_image = avatar_image.resize((size, size))
+        pixel_data = avatar_image.load()
+        background_color = (0, 0, 0)  # specify the background color in RGB format
+        for y in range(avatar_image.size[1]):
+            for x in range(avatar_image.size[0]):
+                if pixel_data[x, y] == background_color:
+                    pixel_data[x, y] = (0, 0, 0, 0)
+        #circle_image = Image.new('L', (spotify_size, spotify_size))
+        #circle_draw = ImageDraw.Draw(circle_image)
+        #circle_draw.ellipse((0, 0, spotify_size, spotify_size), fill=255)
+        image.paste(avatar_image, (px, 222), avatar_image)
+        px+=32
+    #draw.rounded_rectangle((970, 0, 1180, 50), radius=3, fill=(255, 0, 0, 128))
+    draw.text( (640, 28), text="Snaps Music", font=ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 34), fill=(165,42,42), anchor="mm")
+    #draw.rounded_rectangle((100, 0, 310, 50), radius=3, fill=(255, 0, 0, 128))
+    draw.text( (215, 28), text=f"Rank #{user_rank}", font=ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 34), fill=(0, 10, 36), anchor="mm")
+    count = 1
+    for i in bf_dic:
+        if user.id == i:
+            break
+        count +=1
+    if user.id not in bf_dic:
+        draw.text( (1065, 28), text="Music Rank Null", font=ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 34), fill=(0, 10, 36), anchor="mm")
+    else:
+        draw.text( (1065, 28), text=f"Music Rank #{count}", font=ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 34), fill=(0, 10, 36), anchor="mm")
+    tt = converttime(totaltime)
+    if tt is None or tt == "":
+        tt = "0m"
+    draw.text((990, 215), text=f"Total Commands Runned:\n{total_cmd}\nTotal Listening Time:\n{tt}", font=ImageFont.truetype('Fonts/Alkatra-SemiBold.ttf', 28), fill="black", anchor="mm")
+    mask = Image.new('RGBA', image.size, (0, 0, 0, 0))
+    draw.text( (110, 305), text="Your Playlists", font=ImageFont.truetype('Fonts/Alkatra-SemiBold.ttf', 24), fill=(165,42,42), anchor="lt")
+    p_pixel = 305
+    count = 0
+    for i, j, k in p_ls:
+        if count >= 3:
+            break
+        count +=1
+        p_pixel+=25
+        k = converttime(k)
+        draw.text( (110, p_pixel), text=f"{count}. {i} ({j} songs) - {k}", font=ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 22), fill="black", anchor="lt")
+    if len(p_ls) == 0:
+        draw.text( (110, 330), text=f"No Playlist Found", font=ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 22), fill="black", anchor="lt")
+
+    draw.text( (665, 353), text="Top Servers", font=ImageFont.truetype('Fonts/Alkatra-SemiBold.ttf', 26), fill=(165,42,42), anchor="lt")
+    p_pixel = 357
+    count = 0
+    for i in s_dic:
+        if count >= 5:
+            break
+        count +=1
+        p_pixel+=25
+        k = converttime(s_dic[i])
+        g = bot.get_guild(i)
+        if g is None:
+            n = "Unknown Server"
+        else:
+            n = g.name
+        draw.text( (665, p_pixel), text=f"{count}. {k} - {n}", font=ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 22), fill="black", anchor="lt")
+    if len(s_dic) == 0:
+        draw.text( (665, 384), text="No Data", font=ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 22), fill="black", anchor="lt")
+
+    draw.text( (110, 435), text="Top Friends", font=ImageFont.truetype('Fonts/Alkatra-SemiBold.ttf', 24), fill=(165,42,42), anchor="lt")
+    p_pixel = 435
+    count = 0
+    for i in f_dic:
+        if count >= 3:
+            break
+        count +=1
+        p_pixel+=25
+        k = converttime(f_dic[i])
+        g = await bot.fetch_user(i)
+        if g is None:
+            n = "Unknown User"
+        else:
+            n = str(g)
+        x = f"{count}. {k} - {n}"
+        if len(x) >= 42:
+            x = x[:40]+"..."
+        draw.text( (110, p_pixel), text=f"{x}", font=ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 22), fill="black", anchor="lt")
+    if len(f_dic) == 0 :
+        draw.text( (110, 460), text="No Data", font=ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 22), fill="black", anchor="lt")
+
+    draw.text( (110, 567), text="Top Tracks", font=ImageFont.truetype('Fonts/Alkatra-SemiBold.ttf', 24), fill=(165,42,42), anchor="lt")
+    p_pixel = 567
+    count = 0
+    for i in t_dic:
+        if count >= 3:
+            break
+        count +=1
+        p_pixel+=25
+        k = converttime(t_dic[i])
+        x = f"{count}. {k} - {i}"
+        if len(x) >= 100:
+            x = x[:95]+"..."
+        draw.text( (110, p_pixel), text=f"{x}", font=ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 22), fill="black", anchor="lt")
+    if len(t_dic) == 0:
+        draw.text( (110, 592), text="No Data", font=ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 22), fill="black", anchor="lt")
+
+    with BytesIO() as image_binary:
+        image.save(image_binary, 'PNG')
+        image_binary.seek(0)
+        await init.delete()
+        await ctx.reply(file=discord.File(fp=image_binary, filename='profile.png'))
 
 def converttime(seconds):
     time = int(seconds)
@@ -207,8 +382,8 @@ class general(commands.Cog):
                               color=botinfo.root_color)
         embed.set_footer(text=f"Requested by {ctx.author.name}" ,  icon_url=pfp)
         await ctx.send(embed=embed)
-
-    @commands.command(aliases=["bi", "stats"], description="Gets information of the bot")
+    
+    @commands.hybrid_command(aliases=["bi", "stats"], description="Gets information of the bot")
     async def botinfo(self, ctx):
         bot = self.bot
         s_id = ctx.guild.shard_id
@@ -219,6 +394,8 @@ class general(commands.Cog):
         txt = 0
         vc = 0
         cat = 0
+        join = 0
+        play = 0
         for i in self.bot.guilds:
             for j in i.channels:
                 if isinstance(j, discord.TextChannel):
@@ -227,6 +404,10 @@ class general(commands.Cog):
                     vc+=1
                 elif isinstance(j, discord.CategoryChannel):
                     cat+=1
+            if wavelink.Pool.get_node().get_player(i.id):
+                join += 1
+                if wavelink.Pool.get_node().get_player(i.id).playing:
+                    play += 1
         files = 0
         lines = 0
         for i in os.scandir():
@@ -248,25 +429,28 @@ class general(commands.Cog):
                                 continue
                         files+=1
         embed = discord.Embed(colour=botinfo.root_color)
+        aadvik = discord.utils.get(self.bot.users, id=800781151581110303)
         anay = self.bot.main_owner
+        byte = discord.utils.get(self.bot.users, id=563766170675576873)
         embed.set_author(name=f"| {self.bot.user.name}'s Information", icon_url=ctx.guild.me.display_avatar.url)
         embed.description = (f"**• Developers**\n> **[Anay](https://discord.com/users/{anay.id})**\n"
                              f"**• Bot Stats**\n**\u2192** Total Guilds: **{len(self.bot.guilds)} Guilds**\n**\u2192** Total users: **{count} Users**\n**\u2192** Channels:\n- Total: **{str(len(set(self.bot.get_all_channels())))} Channels**\n- Text: {txt} Channels\n- Voice: {vc} Channels\n- Categories:  {cat} Categories\n"
+                             f"**• Players**\n**\u2192** Total: {join}\n**\u2192** Playing: {play}\n"
                              f"**• Server Usage**\n**\u2192** CPU Usage: {psutil.cpu_percent()}%\n**\u2192** Memory Usage: {psutil.virtual_memory().percent}%\n"
                              f"**• Latency:** {round(sh.latency * 1000)}ms\n"
                              f"**• Shards:** {ctx.guild.shard_id+1}/{len(self.bot.shards.items())}\n"
                              f"**• Python Version:** {platform.python_version()}\n"
                              f"**• Discord.py Version:** **{discord.__version__}**\n"
                              f"**• __Code Information__:**\n"
-                             f"**\u2192** **Total no. of Files:** **[{files} Files](https://discord.gg/gZ2yzbqhyX)**\n"
-                             f"**\u2192** **Total no. of Lines:** **[{lines} Lines](https://discord.gg/gZ2yzbqhyX)**")
+                             f"**\u2192** **Total no. of Files:** **[{files} Files](https://discord.gg/snaps)**\n"
+                             f"**\u2192** **Total no. of Lines:** **[{lines} Lines](https://discord.gg/snaps)**")
         embed.set_thumbnail(url=self.bot.user.avatar.url)
         embed.set_footer(text=f"Requested By {str(ctx.author)}", icon_url=ctx.author.display_avatar.url)
         page = discord.ui.View()
         page.add_item(discord.ui.Button(label="Invite me", url=discord.utils.oauth_url(self.bot.user.id)))
-        page.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/gZ2yzbqhyX"))
+        page.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/snaps"))
         await ctx.reply(embed = embed, mention_author=False, view=page)
-    
+
     @commands.command(name="afk", description="Changes the afk status of user")
     async def afk(self, ctx, *,reason=None):
         if reason is None:
@@ -386,99 +570,144 @@ class general(commands.Cog):
         await init.delete()
         await page.start(ctx)
 
-    @commands.group(
+    @commands.hybrid_group(
         invoke_without_command=True, description="Shows the user's profile for bot",
         aliases=['badges', 'badge', 'pr', 'pf']
     )
     async def profile(self, ctx, member: discord.Member = None):
-        member = member or ctx.author
-        user_columns = database.fetchone("*", "badges", "user_id", member.id)
-        des = []
-        if user_columns is None:
-            pass
-        else:
-            if user_columns['OWNER'] == 1:
-                bdg = f"{emojis.owner} ***Owner***"
-                des.append(bdg)
-            if user_columns['DEVELOPER'] == 1:
-                bdg = f"{emojis.dev} **Developer**"
-                des.append(bdg)
-            if user_columns['ADMIN'] == 1:
-                bdg = f"{emojis.admin} Admin"
-                des.append(bdg)
-            if user_columns['MOD'] == 1:
-                bdg = f"{emojis.mod} Mod"
-                des.append(bdg)
-            if user_columns['STAFF'] == 1:
-                bdg = f"{emojis.staff} Staff"
-                des.append(bdg)
-            if user_columns['PARTNER'] == 1:
-                bdg = f"{emojis.partner} Partner"
-                des.append(bdg)
-            if user_columns['SUPPORTER'] == 1:
-                bdg = f"{emojis.early_sup} Early Supporter"
-                des.append(bdg)
-            if user_columns['SPECIAL'] == 1:
-                bdg = f"{emojis.hype} Special One's"
-                des.append(bdg)
-        balance = f"{emojis.balance} Balance Hypesqaud House"
-        bravery = f"{emojis.bravery} Bravery Hypesqaud House"
-        brilliance = f"{emojis.brilliance} Brilliance Hypesqaud House"
-        bug_1 = f"{emojis.bug_1} Bug Hunter"
-        bug_2 = f"{emojis.bug_2} Golden Bug Hunter"
-        early = f"{emojis.early_sup} Early Supporter"
-        hype = f"{emojis.hype} Hypesqaud Events"
-        partner = f"{emojis.partner} Partnered Server Owner"
-        staff = f"{emojis.staff} Staff"
-        system = f"{emojis.system} System"
-        veri_bot = f"{emojis.verified_bot} Verified Bot"
-        veri_dev = f"{emojis.verified_dev} Verified Bot Developer"
-        act_dev = f"{emojis.active_dev} Active Developer"
-        badge = []
-        if member.public_flags.bug_hunter == True:
-            badge.append(bug_1)
-        if member.public_flags.bug_hunter_level_2 == True:
-            badge.append(bug_2)
-        if member.public_flags.hypesquad_bravery == True:
-            badge.append(bravery)
-        if member.public_flags.hypesquad_balance == True:
-            badge.append(balance)
-        if member.public_flags.hypesquad_brilliance == True:
-            badge.append(brilliance)
-        if member.public_flags.hypesquad == True:
-            badge.append(hype)
-        if member.public_flags.early_supporter == True:
-            badge.append(early)
-        if member.public_flags.early_verified_bot_developer == True:
-            badge.append(veri_dev)
-        if member.public_flags.verified_bot == True:
-            badge.append(veri_bot)
-        if member.public_flags.staff == True:
-            badge.append(staff)
-        if member.public_flags.system == True:
-            badge.append(system)
-        if member.public_flags.partner == True:
-            badge.append(partner)
-        if member.public_flags.active_developer == True:
-            badge.append(act_dev)
-        count_db = database.fetchone("*", "count", "xd", 1)
-        user = literal_eval(count_db['user_count'])
-        if member.id in user:
-            cmd_runned = f"{user[member.id]} Commands"
-        else:
-            cmd_runned = "0 Command"
-        if len(des) == 0:
-            des.append("None")
-        if len(badge) == 0:
-            badge.append("None")
-        mem = member
-        em = discord.Embed(title=f"{mem.name}'s Profile", color=mem.top_role.color)
-        em.set_footer(text=f"Requested by {str(ctx.author)}", icon_url=ctx.author.display_avatar.url)
-        em.description = f"Total {cmd_runned} Runned by {mem.mention}"
-        em.add_field(name="Bot Badges", value='\n'.join(des))
-        em.add_field(name="Used Badges", value='\n'.join(badge))
-        em.set_thumbnail(url=mem.display_avatar.url)
-        await ctx.reply(embed=em)
+            member = member or ctx.author
+            init = await ctx.reply(f"Building up the profile of {str(member)}...", mention_author=False)
+            query = "SELECT * FROM  badges WHERE user_id = ?"
+            val = (member.id,)
+            with sqlite3.connect('./database.sqlite3') as db:
+              db.row_factory = sqlite3.Row
+              cursor = db.cursor()
+              cursor.execute(query, val)
+              user_columns = cursor.fetchone()
+            des = []
+            if user_columns is None:
+                pass
+            else:
+                if user_columns['OWNER'] == 1:
+                    bdg = f"{emojis.owner}"
+                    des.append(discord.PartialEmoji.from_str(bdg))
+                if user_columns['DEVELOPER'] == 1:
+                    bdg = f"{emojis.dev}"
+                    des.append(discord.PartialEmoji.from_str(bdg))
+                if user_columns['ADMIN'] == 1:
+                    bdg = f"{emojis.admin}"
+                    des.append(discord.PartialEmoji.from_str(bdg))
+                if user_columns['MOD'] == 1:
+                    bdg = f"{emojis.mod}"
+                    des.append(discord.PartialEmoji.from_str(bdg))
+                if user_columns['STAFF'] == 1:
+                    bdg = f"{emojis.staff}"
+                    des.append(discord.PartialEmoji.from_str(bdg))
+                if user_columns['PARTNER'] == 1:
+                    bdg = f"{emojis.partner}"
+                    des.append(discord.PartialEmoji.from_str(bdg))
+                if user_columns['SUPPORTER'] == 1:
+                    bdg = f"{emojis.early_sup}"
+                    des.append(discord.PartialEmoji.from_str(bdg))
+                if user_columns['SPECIAL'] == 1:
+                    bdg = f"{emojis.hype}"
+                    des.append(discord.PartialEmoji.from_str(bdg))
+            balance = discord.PartialEmoji.from_str("<:balance:933685821092016158>")
+            bravery = discord.PartialEmoji.from_str("<:bravery:933685857582448671>")
+            brillance = discord.PartialEmoji.from_str("<:brillance:933685893024337980>")
+            bug_1 = discord.PartialEmoji.from_str("<:bug_hunter_1:933685410738085899>")
+            bug_2 = discord.PartialEmoji.from_str("<:bug_hunter_2:933685491486847036>")
+            early = discord.PartialEmoji.from_str("<:early_sup:933685551012397107>")
+            hype = discord.PartialEmoji.from_str("<a:hype:933685735905710080>")
+            partner = discord.PartialEmoji.from_str("<:partner:933685923567251517>")
+            staff = discord.PartialEmoji.from_str("<a:staff:933685961932558337>")
+            system = discord.PartialEmoji.from_str("<:system:933686023995682848>")
+            veri_bot = discord.PartialEmoji.from_str("<:verified_bot:933686190920564736>")
+            veri_dev = discord.PartialEmoji.from_str("<:verified_dev:933685666477379647>")
+            act_dev = discord.PartialEmoji.from_str("<:active_developer:1040478576581029928>")
+            badge = []
+            if member.public_flags.bug_hunter == True:
+                badge.append(bug_1)
+            if member.public_flags.bug_hunter_level_2 == True:
+                badge.append(bug_2)
+            if member.public_flags.hypesquad_bravery == True:
+                badge.append(bravery)
+            if member.public_flags.hypesquad_balance == True:
+                badge.append(balance)
+            if member.public_flags.hypesquad_brilliance == True:
+                badge.append(brillance)
+            if member.public_flags.hypesquad == True:
+                badge.append(hype)
+            if member.public_flags.early_supporter == True:
+                badge.append(early)
+            if member.public_flags.early_verified_bot_developer == True:
+                badge.append(veri_dev)
+            if member.public_flags.verified_bot == True:
+                badge.append(veri_bot)
+            if member.public_flags.staff == True:
+                badge.append(staff)
+            if member.public_flags.system == True:
+                badge.append(system)
+            if member.public_flags.partner == True:
+                badge.append(partner)
+            if member.public_flags.active_developer == True:
+                badge.append(act_dev)
+            query = "SELECT * FROM  count WHERE xd = ?"
+            val = (1,)
+            cursor.execute(query, val)
+            count_db = cursor.fetchone()
+            user = literal_eval(count_db['user_count'])
+            if member.id in user:
+                cmd_runned = f"{user[member.id]} Commands"
+            else:
+                cmd_runned = "0 Command"
+            mem = member
+            query = "SELECT * FROM bot WHERE bot_id = ?"
+            val = (self.bot.user.id,)
+            cursor.execute(query, val)
+            b_db = cursor.fetchone()
+            query = "SELECT * FROM user WHERE user_id = ?"
+            val = (mem.id,)
+            cursor.execute(query, val)
+            u_db = cursor.fetchone()
+            query = "SELECT * FROM  pl WHERE user_id = ?"
+            val = (mem.id,)
+            cursor.execute(query, val)
+            p_db = cursor.fetchone()
+            if p_db is None:
+                p_ls = []
+            else:
+                xd = literal_eval(p_db['pl'])
+                p_ls = []
+                for i in xd:
+                    tm = 0
+                    for j in xd[i]:
+                        tm += int(j['info']['length'])/1000
+                    p_ls.append((i, len(xd[i]), tm))
+            query = "SELECT * FROM  count WHERE xd = ?"
+            val = (1,)
+            cursor.execute(query, val)
+            count_db = cursor.fetchone()
+            user = literal_eval(count_db['user_count'])
+            query = "SELECT * FROM  titles WHERE user_id = ?"
+            val = (mem.id,)
+            cursor.execute(query, val)
+            x = cursor.fetchone()
+            if x is not None:
+                if x['title'] is not None:
+                    title = str(x['title']).capitalize()
+                else:
+                    title = None
+            else:
+                title = None
+            cursor.close()
+            db.close()
+            u_count = 1
+            for i in user:
+                if i == mem.id:
+                    break
+                u_count+=1
+            await profile(self.bot, ctx, mem, b_db, u_db, p_ls, init, des, badge, cmd_runned, u_count, title)
 
     @profile.command(name="add", aliases=["a"], description="Gives the badge to user")
     async def badge_add(self, ctx, member: discord.User, *, badge):
@@ -644,7 +873,7 @@ class general(commands.Cog):
         ls, emo = [], []
         count = 1
         for emoji in self.bot.emojis:
-            emo.append(f"`[{'0' + str(count) if count < 10 else count}]` | {emoji} - \{emoji}")
+            emo.append(f"`[{'0' + str(count) if count < 10 else count}]` | {emoji} - \\{emoji}")
             count += 1
         for i in range(0, len(emo), 10):
            ls.append(emo[i: i + 10])
@@ -1412,50 +1641,11 @@ class general(commands.Cog):
         embed.set_footer(text=f"{len(ctx.guild.members)} Total Members", icon_url=i)
         await ctx.reply(embed=embed)
 
-    #@commands.command(name="google", aliases=["googlesearch"], description="Search google for your query and returns the top 10 results")
-    @commands.cooldown(1, 60, commands.BucketType.user)
-    async def google(self, ctx, *, search: str):
-        """Simple google search Engine"""
-        search = urllib.parse.quote(search)
+    @commands.command(name="keywords", aliases=["keyword"], description="Shows the keyword to use for setting the embed/message")
+    async def keywords(self, ctx):
+      em = discord.Embed(title="Here are some keywords, which you can use in your embed/message.", description="```$user_name - displays username.\n$user_username - display users username with his discriminator.\n$user_discriminator - display users discriminator.\n$user_id - display users ID.\n$user_avatar - display users avatar.\n$user_mention - mentions the user.\n$user_created - displays the timestamp of when the user id was created.\n$user_joined - displays the timestamp of when the user joined the server.\n$user_profile - direct link for the user's profile\n$server_name - displays server name.\n$server_id - displays server ID.\n$server_icon - displays server icon.\n$membercount - show the member count of the server.\n$membercount_ordinal - same as membercount but includes ordinal number (st, th, rd).\n\n```", color=botinfo.root_color)
+      em.set_author(name="\Keywords", icon_url=self.bot.user.avatar.url)
+      await ctx.reply(embed=em)
 
-        url = f"https://www.googleapis.com/customsearch/v1?key=AIzaSyBHuEaTZ18Is8CiR1P_iij4ltSrKdmT6A0&cx=786c5664fab118c39&q={search}"
-        async with requests.Session() as session:
-            async with session.get(url) as response:
-                if response.status == 200:
-                    json_ = await response.json()
-                else:
-                    return await ctx.reply(
-                        f"{ctx.author.mention} No results found.```\n{search}```"
-                    )
-        pages = []
-        count = 1
-
-        for item in json_["items"]:
-            title = item["title"]
-            link = item["link"]
-            displaylink = item["displayLink"]
-            snippet = item.get("snippet")
-            try:
-                img = item["pagemap"]["cse_thumbnail"][0]["src"]
-            except KeyError:
-                img = None
-            em = discord.Embed(
-                title=f"{title}",
-                description=f"{snippet}",
-                timestamp=datetime.datetime.utcnow(),
-                url=f"{link}",
-            )
-            em.set_author(name=str(self.bot.user), icon_url=self.bot.user.display_avatar.url)
-            em.set_footer(text=f"{str(ctx.author)} • Page {count}/10 ", icon_url=ctx.author.display_avatar.url)
-            count +=1
-            if not img:
-                pass
-            else:
-                em.set_thumbnail(url=img)
-            pages.append(em)
-
-        page = PaginationView(embed_list=pages, ctx=ctx)
-        await page.start(ctx)
-        
 async def setup(bot):
     await bot.add_cog(general(bot))

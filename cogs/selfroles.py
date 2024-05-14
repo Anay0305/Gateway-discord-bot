@@ -143,6 +143,20 @@ class SelfRoleButton(discord.ui.Button):
         self.reqrole = reqrole
 
     async def callback(self, interaction: discord.Interaction):
+        self_db = database.fetchone("*", "srmain", "guild_id", interaction.guild.id)
+        lsb = literal_eval(self_db['data_button'])
+        for i in lsb:
+            if i['message_id'] == interaction.message.id:
+                break
+        role_ = []
+        for j in i['data']:
+            role_.append(j['role'])
+        count = 0
+        for k in interaction.user.roles:
+            if k.id in role_ and k.id != self.role:
+                count+=1
+        if count >= i['max_roles']:
+            return await interaction.response.send_message(f"You can have maximum {i['max_roles']} no. of roles from this selfrole panel.", ephemeral=True)
         r = discord.utils.get(interaction.guild.roles, id=self.role)
         if r is None:
             return
@@ -513,7 +527,7 @@ class selfroles(commands.Cog):
         if prefix == f"<@{self.bot.user.id}> ":
             prefix = f"@{str(self.bot.user)} "
         anay = self.bot.main_owner
-        ls = ["selfroles", "selfroles create", "selfroles delete", "selfroles list"]
+        ls = ["selfroles", "selfroles create", "selfroles delete", "selfroles list", "sr edit"]
         des = ""
         for i in sorted(ls):
             cmd = self.bot.get_command(i)
@@ -819,6 +833,36 @@ class selfroles(commands.Cog):
                 reqrole = None
             else:
                 reqrole = await getrole(ctx.guild.id)
+            em.description = f"Maximum number of roles a user can have from this selfrole panel?\nType 'Max' for maximum limit of roles."
+            await init.edit(embed=em, view=None)
+            def check(message):
+                    return message.author == ctx.author and message.channel == ctx.channel
+            try:
+                    user_response = await self.bot.wait_for("message", timeout=120, check=check)
+                    await user_response.delete()
+            except asyncio.TimeoutError:
+                await init.delete()
+                return
+            chhh = True
+            while chhh:
+                if user_response.content.lower() == 'max':
+                    max_roles = len(x)
+                    break
+                elif user_response.content.isdigit():
+                    if abs(int(user_response.content)) > len(x):
+                        em.description = f"You have entered a digit more than roles available for the user to select\nType a number below {len(x)}"
+                    else:
+                        max_roles = abs(int(user_response.content))
+                        break
+                else:
+                    em.description = f"You have not entered a digit\nPlease type a digit only"
+                await init.edit(embed=em)
+                try:
+                    user_response = await self.bot.wait_for("message", timeout=120, check=check)
+                    await user_response.delete()
+                except asyncio.TimeoutError:
+                    await init.delete()
+                    return
             em.description = f"What should be the message for the panel"
             for i in x:
                 l = i['label']
@@ -894,7 +938,8 @@ class selfroles(commands.Cog):
                 "message_id": m.id,
                 "message": msg,
                 "embed": emb,
-                "data": x
+                "data": x,
+                "max_roles": max_roles
             }
             lsb.append(ok)
         elif val == "dropdown":
@@ -1201,9 +1246,9 @@ class selfroles(commands.Cog):
             if len(lsm) == 0:
                 return await ctx.reply(embed=no_panel)
             c = False
-            INDEX = 0
+            INDEXB, INDEXD = 0, 0
             for i in lsb:
-                INDEX +=1
+                INDEXB +=1
                 if i["message_id"] == int(message_id):
                     c_id = i["channel_id"]
                     msg = i["message"]
@@ -1211,15 +1256,16 @@ class selfroles(commands.Cog):
                     c = True
                     b = True
                     break
-            for i in lsd:
-                INDEX +=1
-                if i["message_id"] == int(message_id):
-                    c_id = i["channel_id"]
-                    msg = i["message"]
-                    em_main = i["embed"]
-                    c = True
-                    b = False
-                    break
+            if not c:
+                for i in lsd:
+                    INDEXD +=1
+                    if i["message_id"] == int(message_id):
+                        c_id = i["channel_id"]
+                        msg = i["message"]
+                        em_main = i["embed"]
+                        c = True
+                        b = False
+                        break
             if c == False:
                 no_panel.description = f"There are no selfrole panels with message id `{message_id}` in this server"
                 return await ctx.send(embed=no_panel)
@@ -1249,11 +1295,11 @@ class selfroles(commands.Cog):
                     em_main = await getembed(ctx.guild, ctx.author, r_no)
                     await sr_msg.edit(embed=discord.Embed.from_dict(em_main))
                 if b:
-                    lsb[INDEX-1]["message"] = msg
-                    lsb[INDEX-1]["embed"] = em_main
+                    lsb[INDEXB-1]["message"] = msg
+                    lsb[INDEXB-1]["embed"] = em_main
                 else:
-                    lsd[INDEX-1]["message"] = msg
-                    lsd[INDEX-1]["embed"] = em_main
+                    lsd[INDEXD-1]["message"] = msg
+                    lsd[INDEXD-1]["embed"] = em_main
         dic = {
             'data_button': f"{lsb}",
             'data_dropdown': f"{lsd}"

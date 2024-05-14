@@ -22,26 +22,13 @@ cogs = {
        'Invc': '<:invc:1215454419781689354>', 
        'Logging': '<:logging:1215454462693343242>',  
        'Moderation': '<:moderation:1215454540795740170>', 
-
+       'Music': '<:music:1215454540254412852>', 
        'Raidmode': '<:raidmode:1215454577801830430>', 
        'Selfroles': '<:selfroles:1215454620273479741>', 
 
        'Voice': '<:voice:1215454876432076800>', 
        'Welcome': '<:welcome:1215454934993207305>'
        }
-
-snaps_cogs = {
-       'Antinuke': '<:antinuke:1215453909674369075>',
-       'Extra': '<:extra:1215454280572473376>', 
-       'General': '<:general:1215454322758914068>', 
-       'Giveaway': '<:giveaway:1215455467388665898>', 
-       'Ignore': '<:ignore:1215454377473613875>', 
-       'Invc': '<:invc:1215454419781689354>', 
-       'Moderation': '<:moderation:1215454540795740170>',
-       'Selfroles': '<:selfroles:1215454620273479741>', 
-       'Snaps': '<:snaps:1210539342318141520>',
-       'Welcome': '<:welcome:1215454934993207305>'}
-
 
 help_index = None
 wrong = '<:wrong:1215452950176989224>'

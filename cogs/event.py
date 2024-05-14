@@ -117,13 +117,13 @@ class event(commands.Cog):
         in_vc = database.fetchone("*", "invc", "guild_id", guild.id)
         x = {}
         for i in guild.channels:
-            if i.type == 'voice':
+            if str(i.type) == 'voice':
                 x[i.id] = None
         if in_vc is None:
             val = (guild.id, f"{x}")
             database.insert("invc", "guild_id, vc", val)
         else:
-            database.update("invc", "vc", f"{x}", "guild_id", guild.id)        
+            database.update("invc", "vc", f"{x}", "guild_id", guild.id)
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):

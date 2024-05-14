@@ -361,15 +361,6 @@ async def create_tables():
         )
         ''')
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS "snaps_lb" (
-                "main"	INTEGER DEFAULT 1,
-                "event_name"	TEXT DEFAULT "Snaps Exclusive",
-                "team_lb"	TEXT DEFAULT "{}",
-                "team_users"	TEXT DEFAULT "{}",
-                PRIMARY KEY("main")
-        )
-        ''')
-    cursor.execute('''
         CREATE TABLE IF NOT EXISTS "sticky_msg" (
                 "guild_id"	INTEGER,
                 "data"	TEXT DEFAULT "{}",

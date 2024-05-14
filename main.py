@@ -11,7 +11,7 @@ import aiohttp
 import logging
 import database
 from cogs.extra import by_channel, by_cmd, by_module, by_role, get_prefix
-
+from premium import check_upgraded
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
@@ -143,6 +143,32 @@ async def process_commands(message: discord.Message) -> None:
         xd = literal_eval(ig_db['cmd'])
         xdd = literal_eval(ig_db['module'])
         if ctx.command:
+            if check_upgraded(ctx.guild.id):
+                if str(ctx.command.cog_name.lower()) == "music":
+                    cmd_name = str(ctx.command.full_parent_name)
+                    if cmd_name == "247" or cmd_name == "msetup":
+                        pass
+                    else:
+                        s_db = database.fetchone("*", "setup", "guild_id", ctx.guild.id)
+                        c = None
+                        if s_db is None:
+                            check = False
+                        else:
+                            try:
+                                c = bot.get_channel(s_db['channel_id'])
+                                if c is None:
+                                    check = False
+                                else:
+                                    msg: discord.Message = await c.fetch_message(s_db['msg_id'])
+                                    if msg is None:
+                                        check = False
+                                    else:
+                                        check = True
+                                check = check and ctx.channel.id == s_db['channel_id']
+                            except:
+                                check = False
+                        if not check and c is not None:
+                            return await ctx.reply(f"You can only use the music commands of the bot in {c.mention}.")
             c_cmd = await by_cmd(ctx, message.author, ctx.command.qualified_name)
             c_module = await by_module(ctx, message.author, str(ctx.command.cog_name.lower()))
             if ctx.command.qualified_name in xd and not c_cmd:
@@ -221,47 +247,47 @@ async def on_message(message: discord.Message) -> None:
     elif message.channel.id != s_db['channel_id']:
         return await bot.process_commands(message)
     else:
-            pre = await get_prefix(message)
-            check = False
-            content = message.content
-            prefix = None
-            for k in pre:
-                if content.startswith(k):
-                    content = content.replace(k, "").strip()
-                    check = True
-                    prefix = k
-            s = ""
-            for i in content:
-                if i == " ":
-                    break
-                s+=i
-            cmd = bot.get_command(s)
-            if cmd is None:
-                if check and prefix != "":
-                    message.content = f"<@{message.guild.me.id}> {content}"
-                else:
-                    message.content = f"<@{message.guild.me.id}> play {message.content}"
+        pre = await get_prefix(message)
+        check = False
+        content = message.content
+        prefix = None
+        for k in pre:
+            if content.startswith(k):
+                content = content.replace(k, "").strip()
+                check = True
+                prefix = k
+        s = ""
+        for i in content:
+            if i == " ":
+                break
+            s+=i
+        cmd = bot.get_command(s)
+        if cmd is None:
+            if check and prefix != "":
+                message.content = f"<@{message.guild.me.id}> {content}"
             else:
-                if cmd.cog_name != "music":
-                    return await ctx.send(f"{message.author.mention} You can only runs command from music module, no other command can be runned in this channel.", delete_after=15)
-                if check:
-                    message.content = prefix + content
-                else:
-                    message.content = f"<@{message.guild.me.id}> {message.content}"
-            await bot.process_commands(message)
-            try:
-                await message.delete()
-            except:
+                message.content = f"<@{message.guild.me.id}> play {message.content}"
+        else:
+            if cmd.cog_name != "music":
+                return await ctx.send(f"{message.author.mention} You can only runs command from music module, no other command can be runned in this channel.", delete_after=15)
+            if check:
+                message.content = prefix + content
+            else:
+                message.content = f"<@{message.guild.me.id}> {message.content}"
+        await bot.process_commands(message)
+        try:
+            await message.delete()
+        except:
+            pass
+        await asyncio.sleep(60)
+        async for msg in message.channel.history(limit=100):
+            if msg.id == s_db['msg_id'] or len(msg.components) != 0:
                 pass
-            await asyncio.sleep(60)
-            async for msg in message.channel.history(limit=100):
-                if msg.id == s_db['msg_id']:
+            else:
+                try:
+                    await msg.delete()
+                except:
                     pass
-                else:
-                    try:
-                        await msg.delete()
-                    except:
-                        pass
 
 @bot.event
 async def on_message_edit(before: discord.Message, after: discord.Message):

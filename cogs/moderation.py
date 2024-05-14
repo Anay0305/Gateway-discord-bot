@@ -1053,51 +1053,62 @@ class moderation(commands.Cog):
       if not message.guild.me.guild_permissions.view_audit_log:
          return
       if not message.author.bot:
-        async for i in message.guild.audit_logs(limit=1, after=datetime.datetime.now() - datetime.timedelta(minutes = 1), action=discord.AuditLogAction.message_delete):
-            url = None
-            for x in message.attachments:
-                url = x.url
-            if message.content == "":
-                content = "***Content Unavailable***"
-            else:
-                content = message.content
-            if i.target == message.author:
-                self.bot.sniped_messages[message.guild.id] = (content, url, message.author,
-                                                        message.channel,
-                                                        i.user,
-                                                        message.created_at)
-            else:
-                self.bot.sniped_messages[message.guild.id] = (content, url, message.author,
-                                                        message.channel,
-                                                        None,
-                                                        message.created_at)
+        async for i in message.guild.audit_logs(limit=1, after=datetime.datetime.now() - datetime.timedelta(seconds=5), action=discord.AuditLogAction.message_delete):
+            if i.target.id == message.author.id:
+                self.bot.sniped_messages[message.channel.id] = (message,
+                                                        i.user
+                                                        )
+                return
+        self.bot.sniped_messages[message.channel.id] = (message,
+                                                        message.author
+                                                               )
 
     @commands.command(description="Snipes the recent message deleted in the channel")
     async def snipe(self, ctx, channel: discord.TextChannel = None):
         if not channel:
             channel = ctx.channel
         try:
-            contents, url, author, channel_xyz, mod, time = self.bot.sniped_messages[ctx.guild.id]
+            message, mod = self.bot.sniped_messages[channel.id]
         except:
             await ctx.channel.send(f"{emojis.wrong} Couldn't find a message to snipe!")
             return
-        if channel_xyz == channel:
-            embed = discord.Embed(description=f":put_litter_in_its_place: Message sent by {author.mention} deleted in {channel_xyz.mention}",
+        embed = discord.Embed(description=f":put_litter_in_its_place: Message sent by {message.author.mention} deleted in {message.channel.mention}",
                                 color=botinfo.root_color,
-                                timestamp=time)
-            embed.add_field(name="__Content__:",
-                                  value=f"{contents}",
+                                )
+        if message.content == "":
+            contents = "**Contents unavailable.**"
+        else:
+            contents = message.content
+        embed.add_field(name="__Content__:",
+                                  value=contents,
                                   inline=False)
-            if mod is not None:
-                embed.add_field(name="**Deleted By:**",
+        if message.reference is not None:
+            ref = await message.channel.fetch_message(message.reference.message_id)
+            embed.add_field(name="Replying to:", value=f"[{str(ref.author)}]({ref.jump_url})")
+        if mod is not None:
+            embed.add_field(name="**Deleted By:**",
                                 value=f"{mod.mention} (ID: {mod.id})")
-            if url is not None:
-                if url.startswith("http") or url.startswith("http"):
-                    embed.set_image(url=url)
+        des = ""
+        for i in message.attachments:
+            if i.is_voice_message():
+                continue
+            des += f"[{i.filename}]({str(i.url)})\n"
+        embed1 = None
+        if not des == "":
+            embed1 = discord.Embed(description=des,
+                                color=botinfo.root_color,
+                                timestamp=message.created_at)
+            embed1.set_author(name=f"Message Attachments({len(message.attachments)}):")
+            embed1.set_footer(text=f"Requested By {ctx.author.name}", icon_url=ctx.author.display_avatar.url)
+        else:
             embed.set_footer(text=f"Requested By {ctx.author.name}", icon_url=ctx.author.display_avatar.url)
-            return await ctx.channel.send(embed=embed)
-        return await ctx.channel.send(f"{emojis.wrong} Couldn't find a message to snipe!")
-
+            embed.timestamp = message.created_at
+        if embed1 is not None:
+            ls = [embed, embed1]
+        else:
+            ls = [embed]
+        return await ctx.channel.send(embeds=ls)
+        
     @commands.command(description="Enables slowmode for the channel")
     @commands.bot_has_guild_permissions(manage_channels=True)
     @commands.has_permissions(manage_channels=True)
@@ -1445,9 +1456,9 @@ class moderation(commands.Cog):
             if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in botinfo.main_devs:
                 em = discord.Embed(description=f"{emojis.wrong} You must Have Higher Role than Bot To run This Command", color=botinfo.wrong_color)
                 return await ctx.send(embed=em, delete_after=15)
-            if role.position >= ctx.author.top_role.position:
-                em = discord.Embed(description=f"{emojis.wrong} That role has the same or higher position from your top role!", color=botinfo.wrong_color)
-                return await ctx.send(embed=em, delete_after=15)
+        if role.position >= ctx.author.top_role.position:
+            em = discord.Embed(description=f"{emojis.wrong} That role has the same or higher position from your top role!", color=botinfo.wrong_color)
+            return await ctx.send(embed=em, delete_after=15)
 
         if role.position >= ctx.guild.me.top_role.position:
             em = discord.Embed(description=f"{emojis.wrong} This role is higher than my role, move it to the top!", color=botinfo.wrong_color)
@@ -2110,16 +2121,20 @@ class moderation(commands.Cog):
     @commands.has_permissions(kick_members=True)
     @commands.bot_has_guild_permissions(kick_members=True)
     async def kick(self, ctx, member : discord.Member, *, reason=None):
+            
         if ctx.guild.owner.id == ctx.author.id:
             pass
         else:
             if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in botinfo.main_devs:
                 em = discord.Embed(description=f"{emojis.wrong} You must Have Higher Role than Bot To run This Command", color=botinfo.wrong_color)
                 return await ctx.send(embed=em)
-            
+
         if member.id == ctx.guild.owner.id:
             em = discord.Embed(description=f"{emojis.wrong} Idiot! You cannot kick owner of the server", color=botinfo.wrong_color)
             return await ctx.send(embed=em)
+        if ctx.author.top_role.position <= member.top_role.position:
+            em = discord.Embed(description=f"{emojis.wrong} Your Top role should be above the top role of {str(member)}", color=botinfo.wrong_color)
+            return await ctx.reply(embed=em, mention_author=False)
 
         if ctx.guild.me.top_role.position == member.top_role.position:
             em = discord.Embed(description=f"{emojis.wrong} My highest role is same as of {str(member)}!", color=botinfo.wrong_color)
@@ -2148,12 +2163,6 @@ class moderation(commands.Cog):
     @commands.has_permissions(administrator=True)
     @commands.bot_has_guild_permissions(ban_members=True)
     async def unbanall(self, ctx):
-        if ctx.guild.owner.id == ctx.author.id:
-            pass
-        else:
-            if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in botinfo.main_devs:
-                em = discord.Embed(description=f"{emojis.wrong} You must Have Higher Role than Bot To run This Command", color=botinfo.wrong_color)
-                return await ctx.send(embed=em)
         xd = [member async for member in ctx.guild.bans()]
         if len(xd) == 0:
             return await ctx.send("No Banned Users")
@@ -2453,6 +2462,9 @@ class moderation(commands.Cog):
             if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in botinfo.main_devs:
                 em = discord.Embed(description=f"{emojis.wrong} You must Have Higher Role than Bot To run This Command", color=botinfo.wrong_color)
                 return await ctx.send(embed=em)
+        if ctx.author.top_role.position <= member.top_role.position:
+            em = discord.Embed(description=f"{emojis.wrong} Your Top role should be above the top role of {str(member)}", color=botinfo.wrong_color)
+            return await ctx.reply(embed=em, mention_author=False)
             
         if member.id == ctx.guild.owner.id:
             em = discord.Embed(description=f"{emojis.wrong} Idiot! You cannot ban owner of the server", color=botinfo.wrong_color)

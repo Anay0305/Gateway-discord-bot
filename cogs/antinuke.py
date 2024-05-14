@@ -1066,14 +1066,16 @@ class antinuke(commands.Cog):
                 lr.append(r.mention)
             except:
                 pass
+        if len(lr) == 0:
+            return await ctx.reply(embed=discord.Embed(description=f"There are no locked roles for this server", color=botinfo.root_color))
         em.add_field(name="Locked Roles:", value="\n".join(lr), inline=False)
         u_id = literal_eval(rl_db['bypass_uid'])
         um = []
         for i in u_id:
             u = discord.utils.get(ctx.guild.members, id=i)
-            try:
+            if u is not None:
                 um.append(u.mention)
-            except:
+            else:
                 pass
         if len(um) == 0:
             em.add_field(name="Whitelisted Users", value="No Users are whitelisted", inline=False)
@@ -1081,16 +1083,16 @@ class antinuke(commands.Cog):
             em.add_field(name="Whitelisted Users", value="\n".join(um), inline=False)
         r_id = literal_eval(rl_db['bypass_rid'])
         rm = []
-        for r in u_id:
-            ru = discord.utils.get(ctx.guild.roles, id=i)
-            try:
+        for r in r_id:
+            ru = discord.utils.get(ctx.guild.roles, id=r)
+            if ru is not None:
                 rm.append(ru.mention)
-            except:
+            else:
                 pass
         if len(rm) == 0:
             em.add_field(name="Whitelisted Roles", value="No Roles are whitelisted", inline=False)
         else:
-            em.add_field(name="Whitelisted Roles", value="\n".join(um), inline=False)
+            em.add_field(name="Whitelisted Roles", value="\n".join(rm), inline=False)
         await ctx.reply(embed=em)
 
     @lockrole.command(name="add", description="Locks a role")

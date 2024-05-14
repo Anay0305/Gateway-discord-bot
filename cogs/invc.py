@@ -7,37 +7,86 @@ import io
 import emojis
 from paginators import PaginationView, PaginatorView
 import botinfo
+import asyncio
 
-class enablemenu(discord.ui.Select):
+class BasicView(discord.ui.View):
+    def __init__(self, ctx: commands.Context, timeout = 60):
+        super().__init__(timeout=timeout)
+        self.ctx = ctx
+
+    async def interaction_check(self, interaction: discord.Interaction):
+        if interaction.user.id != self.ctx.author.id and interaction.user.id not in botinfo.main_devs:
+            await interaction.response.send_message(f"Um, Looks like you are not the author of the command...", ephemeral=True)
+            return False
+        return True
+    
+class OnOrOff(BasicView):
+    def __init__(self, ctx: commands.Context):
+        super().__init__(ctx, timeout=60)
+        self.value = None
+
+    @discord.ui.button(emoji=f"{emojis.correct}", custom_id='Yes', style=discord.ButtonStyle.green)
+    async def dare(self, interaction, button):
+        self.value = 'Yes'
+        self.stop()
+
+    @discord.ui.button(emoji=f"{emojis.wrong} ", custom_id='No', style=discord.ButtonStyle.danger)
+    async def truth(self, interaction, button):
+        self.value = 'No'
+        self.stop()
+
+
+class enablemenu(discord.ui.ChannelSelect):
     def __init__(self, ctx: commands.Context, role: discord.Role):
-        options = []
-        log_db = database.fetchone("*", "invc", "guild_id", ctx.guild.id)
-        x = literal_eval(log_db['vc'])
-        c = 0
-        for i in x:
-            if x[i] is None:
-                xx = discord.utils.get(ctx.guild.channels, id=i)
-                options.append(discord.SelectOption(label=f"{xx.name}", value=i))
-                c = c+1
+        if len(ctx.guild.voice_channels) <= 25:
+            c = len(ctx.guild.voice_channels)
+        else:
+            c = 25
         super().__init__(placeholder="Select voice channels",
             min_values=1,
             max_values=c,
-            options=options,
+            channel_types=[discord.ChannelType.voice]
         )
         self.ctx = ctx
         self.role = role
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=False, thinking=False)
         ctx = self.ctx
         role = self.role
         log_db = database.fetchone("*", "invc", "guild_id", ctx.guild.id)
         x = literal_eval(log_db['vc'])
         des= ""
+        count = 0
+        no_vals = []
         for i in self.values:
-            if x[int(i)] is None:
-                x[int(i)] = role.id
-                xx = discord.utils.get(ctx.guild.channels, id=int(i))
-                des += f"{xx.mention}, "
+            if x[int(i.id)] is not None:
+                count += 1
+                r = ctx.guild.get_role(x[int(i.id)])
+                des += f"[{'0' + str(count) if count < 10 else count}] | {i.mention} -> {r.mention}\n"
+            else:
+                no_vals.append(i)
+        if count > 0:
+            em = discord.Embed(title=f"{count} vc's already have a invc role setup", description=f"Do you want to override all of the invc role with {role.mention}?\n\n{des}", color=botinfo.root_color)
+            view = OnOrOff(ctx)
+            await interaction.message.edit(embed=em, view=view)
+            await view.wait()
+            if view.value == "Yes":
+                vals = self.values
+            elif view.value == "No":
+                vals = no_vals
+            else:
+                return await interaction.message.delete()
+        else:
+            vals = self.values
+        des = ""
+        if len(vals) == 0:
+            em = discord.Embed(description=f"You have selected all the channels with pre vc role setup, so I won't change it for any vc.", color=botinfo.root_color)
+            return await interaction.message.edit(embed=em, view=None)
+        for i in vals:
+            x[int(i.id)] = role.id
+            xx = discord.utils.get(ctx.guild.channels, id=int(i.id))
+            des += f"{xx.mention}, "
         database.update("invc", "vc", f"{x}", "guild_id", ctx.guild.id)
         em = discord.Embed(description=f"{role.mention} is now invc role for {des[:-2]}", color=botinfo.root_color)
         await self.ctx.reply(embed=em)
@@ -73,22 +122,7 @@ class enableview(discord.ui.View):
         await interaction.message.delete()
 
 class disablemenu(discord.ui.Select):
-    def __init__(self, ctx: commands.Context, role: discord.Role=None):
-        options = []
-        log_db = database.fetchone("*", "invc", "guild_id", ctx.guild.id)
-        x = literal_eval(log_db['vc'])
-        c = 0
-        for i in x:
-            if x[i] is not None:
-                if role is None:
-                    xx = discord.utils.get(ctx.guild.channels, id=i)
-                    options.append(discord.SelectOption(label=f"{xx.name}", value=i))
-                    c +=1
-                else:
-                    if x[i] == role.id:
-                        xx = discord.utils.get(ctx.guild.channels, id=i)
-                        options.append(discord.SelectOption(label=f"{xx.name}", value=i))
-                        c +=1
+    def __init__(self, ctx: commands.Context, c, options, role: discord.Role=None):
         super().__init__(placeholder="Select voice channels",
             min_values=1,
             max_values=c,
@@ -125,7 +159,23 @@ class disablemenu(discord.ui.Select):
 class disableview(discord.ui.View):
     def __init__(self, ctx: commands.Context, role: discord.Role=None):
         super().__init__()
-        self.add_item(disablemenu(ctx, role))
+        options = []
+        log_db = database.fetchone("*", "invc", "guild_id", ctx.guild.id)
+        x = literal_eval(log_db['vc'])
+        c = 0
+        for i in x:
+            if x[i] is not None:
+                if role is None:
+                    xx = discord.utils.get(ctx.guild.channels, id=i)
+                    options.append(discord.SelectOption(label=f"{xx.name}", value=i))
+                    c +=1
+                else:
+                    if x[i] == role.id:
+                        xx = discord.utils.get(ctx.guild.channels, id=i)
+                        options.append(discord.SelectOption(label=f"{xx.name}", value=i))
+                        c +=1
+        if c <= 25:
+            self.add_item(disablemenu(ctx, c, options, role))
         self.ctx = ctx
         self.role = role
 
@@ -199,19 +249,18 @@ class invc(commands.Cog):
         log_db = database.fetchone("*", "invc", "guild_id", ctx.guild.id)
         em = discord.Embed(title="Invc Role setting for the server", color=botinfo.root_color)
         x = literal_eval(log_db['vc'])
-        c = 0
+        des = ""
+        count = 0
         for i in x:
             if x[i] is not None:
                 cc = discord.utils.get(ctx.guild.channels, id=i)
                 r = discord.utils.get(ctx.guild.roles, id=x[i])
-                if r is None:
-                    rr = "The role is deleted"
-                else:
-                    rr = r.mention
-                em.add_field(name=f"{cc.name}:", value=f"{rr}", inline=True)
-                c+=1
-        if c==0:
+                count += 1
+                des += f"[{'0' + str(count) if count < 10 else count}] | {cc.mention} -> {r.mention}\n"
+        if des=="":
             em.description = "No Invc Role is setup in this server"
+        else:
+            em.description = des
         em.set_footer(text=f"Invc Role system", icon_url=self.bot.user.display_avatar.url)
         await ctx.reply(embed=em)
 
@@ -282,7 +331,6 @@ class invc(commands.Cog):
             em = discord.Embed(description=f"Which Voice channel should not have any invc role?", color=botinfo.root_color)
         m = await ctx.reply(embed=em, view=view)
         await view.wait()
-    
 
     @commands.Cog.listener()
     async def on_guild_channel_create(self, channel: discord.abc.GuildChannel) -> None:
@@ -320,26 +368,34 @@ class invc(commands.Cog):
     @commands.Cog.listener()
     async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
         await self.bot.wait_until_ready()
+        await asyncio.sleep(1)
         guild = member.guild
         if not guild.me.guild_permissions.manage_roles:
           return
+        if before.channel is None and after.channel is None:
+            return
         log_db = database.fetchone("*", "invc", "guild_id", guild.id)
         if log_db is None:
             return
         ls = literal_eval(log_db['vc'])
-        if before.channel:
+        ra = None
+        rb = None
+        if before.channel and member.voice:
+            if before.channel.id in ls and member.voice.channel.id in ls:
+                if ls[before.channel.id] == ls[member.voice.channel.id]:
+                    return
+        if member.voice:
+            if member.voice.channel.id in ls:
+                if ls[member.voice.channel.id] is not None:
+                    ra = member.guild.get_role(ls[member.voice.channel.id])
+                    if ra not in member.roles:
+                        await member.add_roles(ra, reason=f"{self.bot.user.name} | INVC ROLE")
+        if before.channel is not None:
             if before.channel.id in ls:
-                r = discord.utils.get(guild.roles, id=ls[before.channel.id])
-                if r is not None:
-                  if r.position < guild.me.top_role.position:
-                    await member.remove_roles(r, reason=f"{self.bot.user.name} | INVC ROLE")
-        if after.channel:
-            if after.channel.id in ls:
-                r = discord.utils.get(guild.roles, id=ls[after.channel.id])
-                if r is not None:
-                  if r.position < guild.me.top_role.position:
-                    await member.add_roles(r, reason=f"{self.bot.user.name} | INVC ROLE")
-                
+                if ls[before.channel.id] is not None:
+                    rb = member.guild.get_role(ls[before.channel.id])
+                    if rb in member.roles:
+                        await member.remove_roles(rb, reason=f"{self.bot.user.name} | INVC ROLE")
 
 async def setup(bot):
 	await bot.add_cog(invc(bot))
