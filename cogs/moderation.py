@@ -17,7 +17,7 @@ from embed import *
 import database
 import emojis
 import botinfo
-from scogs.antinuke import check_lockrole_bypass
+from cogs.antinuke import check_lockrole_bypass
 
 xd = {}
 async def getchannel(guild_id):
