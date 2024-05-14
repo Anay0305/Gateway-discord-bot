@@ -22,31 +22,6 @@ async def create_tables():
         )
         ''')
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS "panel" (
-                "guild_id"  INTEGER,
-                "channel_id" INTEGER,
-                "msg_id" INTEGER,
-                "opencategory" INTEGER,
-                "closedcategory" INTEGER,
-                "claimedrole" INTEGER,
-                "supportrole" INTEGER,
-                "pingrole" INTEGER,
-                "name" TEXT,
-                "msg" TEXT DEFAULT '\nTo create a ticket interact with the button below 📩',
-                PRIMARY KEY("guild_id")
-        )
-        ''')
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS "ticket" (
-                "guild_id"  INTEGER,
-                "name" TEXT,
-                "count" INTEGER DEFAULT 0000,
-                "opendata" TEXT DEFAULT "{}",
-                "closeddata" TEXT DEFAULT "{}",
-                PRIMARY KEY("guild_id")
-        )
-        ''')
-    cursor.execute('''
         CREATE TABLE IF NOT EXISTS "noprefix" (
                 "user_id"	INTEGER,
                 "servers"	TEXT,
@@ -404,6 +379,31 @@ async def create_tables():
                 "guild_id"	INTEGER,
                 "data"	TEXT DEFAULT "{}",
                 "ignore_channels"	TEXT DEFAULT "[]",
+                PRIMARY KEY("guild_id")
+        )
+        ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS "panel" (
+                "guild_id"  INTEGER,
+                "channel_id" INTEGER,
+                "msg_id" INTEGER,
+                "opencategory" INTEGER,
+                "closedcategory" INTEGER,
+                "claimedrole" INTEGER,
+                "supportrole" INTEGER,
+                "pingrole" INTEGER,
+                "name" TEXT,
+                "msg" TEXT DEFAULT '\nTo create a ticket interact with the button below 📩',
+                PRIMARY KEY("guild_id")
+        )
+        ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS "ticket" (
+                "guild_id"  INTEGER,
+                "name" TEXT,
+                "count" INTEGER DEFAULT 0000,
+                "opendata" TEXT DEFAULT "{}",
+                "closeddata" TEXT DEFAULT "{}",
                 PRIMARY KEY("guild_id")
         )
         ''')
