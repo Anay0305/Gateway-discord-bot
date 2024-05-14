@@ -12,6 +12,7 @@ import difflib
 from cogs.antinuke import check_lockrole_bypass
 import asyncio
 import pytz
+import datetime
 
 class BasicView(discord.ui.View):
     def __init__(self, ctx: commands.Context, timeout = 60):
@@ -27,15 +28,17 @@ class BasicView(discord.ui.View):
 class OnOrOff(BasicView):
     def __init__(self, ctx: commands.Context):
         super().__init__(ctx, timeout=60)
-        self.value = None    
+        self.value = None
 
     @discord.ui.button(emoji=f"{emojis.correct}", custom_id='Yes', style=discord.ButtonStyle.green)
     async def dare(self, interaction, button):
+        await interaction.response.defer(ephemeral=False, thinking=False)
         self.value = 'Yes'
         self.stop()
 
     @discord.ui.button(emoji=f"{emojis.wrong} ", custom_id='No', style=discord.ButtonStyle.danger)
     async def truth(self, interaction, button):
+        await interaction.response.defer(ephemeral=False, thinking=False)
         self.value = 'No'
         self.stop()
 
