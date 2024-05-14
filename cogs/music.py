@@ -519,8 +519,8 @@ class interface(discord.ui.View):
             await interaction.response.send_message(f"Um, Looks like you are not in the voice channel...", ephemeral=True)
             return False
 
-    @discord.ui.button(label="First", custom_id='first', row=1, style=discord.ButtonStyle.gray)
-    #@discord.ui.button(emoji="<:first:1091162596511580250>", custom_id='first', row=3, style=discord.ButtonStyle.gray)
+    #@discord.ui.button(label="First", custom_id='first', row=1, style=discord.ButtonStyle.gray)
+    @discord.ui.button(emoji="<:first:1091162596511580250>", custom_id='first', row=1, style=discord.ButtonStyle.gray)
     async def first(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.defer(ephemeral=False, thinking=False)
         if len(self.vc.queue.history) == 1:
@@ -535,8 +535,8 @@ class interface(discord.ui.View):
         emb2.set_footer(text="| Started the first song of the queue.", icon_url=interaction.user.display_avatar.url)
         await interaction.channel.send(embed=emb2, mention_author=False, delete_after=5)
         
-    @discord.ui.button(label="Back", custom_id='back', row=1, style=discord.ButtonStyle.green)
-    #@discord.ui.button(emoji="<:back:1091162558725099642>", custom_id='prev', row=3, style=discord.ButtonStyle.gray)
+    #@discord.ui.button(label="Back", custom_id='back', row=1, style=discord.ButtonStyle.green)
+    @discord.ui.button(emoji="<:back:1091162558725099642>", custom_id='prev', row=1, style=discord.ButtonStyle.gray)
     async def prev(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.defer(ephemeral=False, thinking=False)
         if len(self.vc.queue.history) == 1:
@@ -551,25 +551,25 @@ class interface(discord.ui.View):
         emb2.set_footer(text="| Started the previous song of the queue.", icon_url=interaction.user.display_avatar.url)
         await interaction.channel.send(embed=emb2, mention_author=False, delete_after=5)
 
-    @discord.ui.button(label="Pause", custom_id='rp', row=1, style=discord.ButtonStyle.gray)
-    #@discord.ui.button(emoji="<:pause:1091162575661711441>", custom_id='rp', row=3, style=discord.ButtonStyle.red)
+    #@discord.ui.button(label="Pause", custom_id='rp', row=1, style=discord.ButtonStyle.gray)
+    @discord.ui.button(emoji="<:pause:1091162575661711441>", custom_id='rp', row=1, style=discord.ButtonStyle.red)
     async def rp(self, interaction: discord.Interaction, button: discord.ui.Button):
         vc = self.vc
         if not vc.paused:
             await vc.pause(True)
-            #button.emoji = "<:play:1091162569781301278>"
-            button.label = "Resume"
+            button.emoji = "<:play:1091162569781301278>"
+            #button.label = "Resume"
             button.style = discord.ButtonStyle.green
             await interaction.response.edit_message(view=self)
         else:
             await vc.pause(False)
-            #button.emoji = "<:pause:1091162575661711441>"
-            button.label = "Pause"
+            button.emoji = "<:pause:1091162575661711441>"
+            #button.label = "Pause"
             button.style = discord.ButtonStyle.gray
             await interaction.response.edit_message(view=self)
         
-    @discord.ui.button(label="Next", custom_id='skip', row=1, style=discord.ButtonStyle.green)
-    #@discord.ui.button(emoji="<:next:1091162563670184015>", custom_id='skip', row=3, style=discord.ButtonStyle.gray)
+    #@discord.ui.button(label="Next", custom_id='skip', row=1, style=discord.ButtonStyle.green)
+    @discord.ui.button(emoji="<:next:1091162563670184015>", custom_id='skip', row=1, style=discord.ButtonStyle.gray)
     async def skip(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.defer(ephemeral=False, thinking=False)
         await self.vc.stop()
@@ -577,8 +577,8 @@ class interface(discord.ui.View):
         emb2.set_footer(text="| Skipped the song", icon_url=interaction.user.display_avatar.url)
         await interaction.channel.send(embed=emb2, mention_author=False, delete_after=5)
 
-    @discord.ui.button(label="Last", custom_id='last', row=1, style=discord.ButtonStyle.gray)
-    #@discord.ui.button(emoji="<:fastforward:1091162556321767544>", custom_id='last', row=3, style=discord.ButtonStyle.gray)
+    #@discord.ui.button(label="Last", custom_id='last', row=1, style=discord.ButtonStyle.gray)
+    @discord.ui.button(emoji="<:fastforward:1091162556321767544>", custom_id='last', row=1, style=discord.ButtonStyle.gray)
     async def last(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.defer(ephemeral=False, thinking=False)
         queue = self.vc.queue
@@ -598,8 +598,8 @@ class interface(discord.ui.View):
             emb2.set_footer(text="| Started the last song of the queue.", icon_url=interaction.user.display_avatar.url)
             await interaction.channel.send(embed=emb2, mention_author=False, delete_after=5)
 
-    @discord.ui.button(label="Loop", custom_id='loop', row=2, style=discord.ButtonStyle.gray)
-    #@discord.ui.button(emoji="<:repeat:1091162584901763143>", custom_id='loop', row=4, style=discord.ButtonStyle.gray)
+    #@discord.ui.button(label="Loop", custom_id='loop', row=2, style=discord.ButtonStyle.gray)
+    @discord.ui.button(emoji="<:repeat:1091162584901763143>", custom_id='loop', row=2, style=discord.ButtonStyle.gray)
     async def loop(self, interaction: discord.Interaction, button: discord.ui.Button):
         vc = self.vc
         q = vc.queue
@@ -607,14 +607,15 @@ class interface(discord.ui.View):
             q.mode = wavelink.QueueMode.loop
             await interaction.response.send_message(f"The current song is set to loop", ephemeral=True)
         elif q.mode.value == 1:
-            #button.emoji = "<:loop:1072813972727812116>"
+            await panelmsg(self.bot, self.ctx)
+            button.emoji = "<:loop:1072813972727812116>"
             q.mode = wavelink.QueueMode.loop_all
             await interaction.response.send_message(f"The current queue will now be looped", ephemeral=True)
         else:
-            #button.emoji = "<:loopsongqueue:1072814008429727754>"
+            await panelmsg(self.bot, self.ctx)
+            button.emoji = "<:loopsongqueue:1072814008429727754>"
             q.mode = wavelink.QueueMode.normal
             await interaction.response.send_message(f"Now onwards nothing will be looped", ephemeral=True)
-        await panelmsg(self.bot, self.ctx)
 
     @discord.ui.button(label="Vol Down", custom_id='down', row=2, style=discord.ButtonStyle.green)
     #@discord.ui.button(emoji="<:volume_down:1091162591356780545>", custom_id='down', row=4, style=discord.ButtonStyle.grey)
