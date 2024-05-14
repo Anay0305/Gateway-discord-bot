@@ -348,10 +348,10 @@ class extraaction(discord.ui.Select):
         elif val == "autoplay":
             if vc.autoplay.value == 0:
                 vc.autoplay = wavelink.AutoPlayMode.disabled
-                em = discord.Embed(description=f"{interaction.user.mention} Disabled the autoplay")
+                em = discord.Embed(description=f"{interaction.user.mention} Disabled the autoplay", color=root_color)
             else:
                 vc.autoplay = wavelink.AutoPlayMode.enabled
-                em = discord.Embed(description=f"{interaction.user.mention} Enabled the autoplay")
+                em = discord.Embed(description=f"{interaction.user.mention} Enabled the autoplay", color=root_color)
             await interaction.response.send_message(embed=em, ephemeral=True)
             await panelmsg(self.bot, self.ctx)
         elif val == "add to favourite":
