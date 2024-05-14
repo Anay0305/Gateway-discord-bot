@@ -897,7 +897,7 @@ class general(commands.Cog):
             await init.delete()
             return await ctx.reply("No emojis in the server", mention_author=False)
         for emoji in ctx.guild.emojis:
-            emo.append(f"`[{'0' + str(count) if count < 10 else count}]` | {emoji} - \{emoji}")
+            emo.append(f"`[{'0' + str(count) if count < 10 else count}]` | {emoji} - \\{emoji}")
             count += 1
         for i in range(0, len(emo), 10):
            ls.append(emo[i: i + 10])
