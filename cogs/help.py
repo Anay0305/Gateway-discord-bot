@@ -14,9 +14,9 @@ class help(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(description="Get Help with the bot's commands or modules")
-    async def help(self, interaction: discord.Interaction, command: Optional[str]):
-        ctx = await self.bot.get_context(interaction, cls=commands.Context)
+    @commands.hybrid_command(description="Get Help with the bot's commands or modules")
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def help(self, ctx: commands.Context, command: Optional[str]):
         if command is not None:
             cmd = self.bot.get_command(command)
             cog = command
@@ -166,165 +166,6 @@ class help(commands.Cog):
             for command in await help_command.filter_commands(self.bot.walk_commands(), sort=True)
             if needle in command.qualified_name
         ][:25]
-        
-    @commands.command(
-        name="help", aliases=["h"]
-    )
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _help(self, ctx, *, command: str=None):
-        if command is not None:
-            cmd = self.bot.get_command(command)
-            dc = {
-                "mod": "moderation",
-                "mods": "moderation",
-                "security": "antinuke",
-                "gw": "giveaway",
-                "giveaways": "giveaway",
-                "logs": "logging",
-                "log": "logging",
-                "tickets": "ticket",
-                "welcomer": "welcome",
-                "vc": "voice",
-                "invc roles": "invc",
-                "selfrole": "selfroles",
-                "rr": "selfroles",
-                "reactionrole": "selfroles"}
-            cog = command
-            for i in dc:
-                if command.lower() == i:
-                    cog = dc[i]
-            cog = self.bot.get_cog(cog.lower())
-            if cmd is None and cog is None:
-                return await ctx.reply(embed=discord.Embed(description=f"No command or module found named `{command}`", color=botinfo.root_color), mention_author=False)
-            if cog is not None:
-                if cog.qualified_name.capitalize() in emojis.cogs:
-                    if cog.qualified_name == "nsfw":
-                        if not ctx.channel.is_nsfw():
-                            return
-                    if cog.qualified_name == "extra":
-                        return await self.extra(ctx=ctx)
-                    command = cog.qualified_name
-                    ls = []
-                    for j in cog.walk_commands():
-                        ls.append(j.qualified_name)
-                    prefix = ctx.prefix
-                    if prefix == f"<@{self.bot.user.id}> ":
-                        prefix = f"@{str(self.bot.user)} "
-                    xd = self.bot.main_owner
-                    anay = str(xd)
-                    pfp = xd.display_avatar.url
-                    ls1, hey = [], []
-                    for i in sorted(ls):
-                        cmd = self.bot.get_command(i)
-                        if cmd is not None:
-                            if cmd.description is None:
-                                cmd.description = "No Description"
-                        hey.append(f"`{prefix}{i}`\n{cmd.description}\n\n")
-                    for i in range(0, len(hey), 10):
-                        ls1.append(hey[i: i + 10])
-                    em_list = []
-                    no = 1
-                    lss = emojis.cogs[command.capitalize()]
-                    for k in ls1:
-                        listem = discord.Embed(title=f"{lss} {command.capitalize()} Commands", color=botinfo.root_color,
-                                                description=f"<...> Duty | [...] Optional\n\n{''.join(k)}")
-                        listem.set_author(name=f"{str(ctx.author)}", icon_url=ctx.author.display_avatar.url)
-                        listem.set_footer(text=f"Made by {str(anay)}" ,  icon_url=pfp)
-                        em_list.append(listem)
-                        no+=1
-                    page = PaginationView(embed_list=em_list, ctx=ctx)
-                    await page.start(ctx)
-                    return
-            if isinstance(cmd, discord.ext.commands.core.Group):
-                command = cmd.name
-                ls = []
-                for j in cmd.walk_commands():
-                    ls.append(j.qualified_name)
-                prefix = ctx.prefix
-                if prefix == f"<@{self.bot.user.id}> ":
-                    prefix = f"@{str(self.bot.user)} "
-                xd = self.bot.main_owner
-                anay = str(xd)
-                pfp = xd.display_avatar.url
-                ls1, hey = [], []
-                for i in sorted(ls):
-                    cmd = self.bot.get_command(i)
-                    if cmd is not None:
-                        if cmd.description is None:
-                            cmd.description = "No Description"
-                    hey.append(f"`{prefix}{i}`\n{cmd.description}\n\n")
-                for i in range(0, len(hey), 10):
-                    ls1.append(hey[i: i + 10])
-                em_list = []
-                no = 1
-                for k in ls1:
-                    listem = discord.Embed(title=f"{command.capitalize()} Commands", color=botinfo.root_color,
-                                            description=f"<...> Duty | [...] Optional\n\n{''.join(k)}")
-                    listem.set_author(name=f"{str(ctx.author)}", icon_url=ctx.author.display_avatar.url)
-                    listem.set_footer(text=f"Made by {str(anay)}" ,  icon_url=pfp)
-                    em_list.append(listem)
-                    no+=1
-                page = PaginationView(embed_list=em_list, ctx=ctx)
-                await page.start(ctx)
-                return
-            if cmd.cog_name == "nsfw":
-                if not ctx.channel.is_nsfw():
-                    return
-            em = discord.Embed(description="> ```[] is Optional argument```\n> ```<> is Required argument```", color=botinfo.root_color)
-            if cmd.cog_name:
-                em.set_author(name=cmd.cog_name.capitalize(), icon_url=self.bot.user.avatar.url)
-            else:
-                em.set_author(name=f"{self.bot.user.name}", icon_url=self.bot.user.avatar.url)
-            if cmd.description:
-                em.add_field(name="Description", value=cmd.description, inline=False)
-            else:
-                em.add_field(name="Description", value="No description provided", inline=False)
-            if cmd.aliases: 
-                em.add_field(name="Aliases", value=f'{" | ".join(cmd.aliases)}', inline=False)
-            else:
-                em.add_field(name="Aliases", value="No Aliases", inline=False)
-            em.add_field(name="Usage", value=f"> {ctx.prefix}{cmd.qualified_name} {cmd.signature}", inline=False)
-            return await ctx.reply(embed=em, mention_author=False)
-        prefix = database.get_guild_prefix(ctx.guild.id)
-        xd = self.bot.main_owner
-        anay = str(xd)
-        pfp = xd.display_avatar.url
-        v = ""
-        for i in sorted(emojis.cogs):
-            ls = emojis.cogs[i]
-            v+=f"{ls} {i.capitalize()}\n"
-        help = discord.Embed(title="Overview",
-                                description=f"Prefix for this server is `{prefix}`\nType `{prefix}help <command/module>` to get more info regarding it\n{len(tuple(self.bot.walk_commands())) - 32} Commands",
-                                color=botinfo.root_color)
-        help.set_author(name=f"{str(ctx.author)}", icon_url=ctx.author.display_avatar.url)
-        help.add_field(name=f"Module", value=v)
-        help.set_footer(text=f"Made by {anay}" ,  icon_url=pfp)
-        em_list = []
-        em_list.append(help)
-        for i in sorted(emojis.cogs):
-            x = self.bot.get_cog(i.lower())
-            ls = []
-            for j in x.walk_commands():
-                ls.append(j.qualified_name)
-            ok = ""
-            for k in sorted(ls):
-                ok+= f"`{k}`, "
-            lss = emojis.cogs[i]
-            help_ = discord.Embed(title=f"{lss} {i.capitalize()} Commands", color=botinfo.root_color, description=ok[:-2])
-            help_.set_footer(text=f"Made by {anay}" ,  icon_url=pfp)
-            em_list.append(help_)
-        x = round(random.random()*100000)
-        no = {}
-        count = 1
-        for i in emojis.cogs:
-            no[i] = count
-            count+=1
-        database.insert("help", "main, 'no'", (x, 0))
-        page = HPaginationView(embed_list=em_list, no=no, cogs=emojis.cogs, i=x, ctx=ctx)
-        page.add_item(discord.ui.Button(label="Invite me", url=discord.utils.oauth_url(self.bot.user.id)))
-        #page.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/gZ2yzbqhyX"))
-        #page.add_item(discord.ui.Button(label="Vote", url="https://top.gg/bot/880765863953858601/vote"))
-        await page.start(ctx)
 
     #@help.command(name="extra", description="Shows the extra's help menu")
     async def extra(self, ctx):
@@ -354,6 +195,19 @@ class help(commands.Cog):
                                                   f"Give the role their permissions back\n\n")
         listem1.set_author(name=f"{str(ctx.author)}", icon_url=ctx.author.display_avatar.url)
         listem1.set_footer(text=f"Made by {str(anay)}" ,  icon_url=anay.avatar.url)
+        ls = ["ar", "ar add", "ar remove", "ar show", "ar reset"]
+        prefix = ctx.prefix
+        if prefix == f"<@{self.bot.user.id}> ":
+            prefix = f"@{str(self.bot.user)} "
+        anay = self.bot.main_owner
+        des = ""
+        for i in sorted(ls):
+            cmd = self.bot.get_command(i)
+            des += f"`{prefix}{i}`\n{cmd.description}\n\n"
+        listem2 = discord.Embed(colour=botinfo.root_color,
+                                     description=f"<...> Duty | [...] Optional\n\n{des}")
+        listem2.set_author(name=f"{str(ctx.author)}", icon_url=ctx.author.display_avatar.url)
+        listem2.set_footer(text=f"Made by {str(anay)}" ,  icon_url=anay.avatar.url)
         setupem = discord.Embed(color=botinfo.root_color,
                                      description=f"<...> Duty | [...] Optional\n\n" 
                                                  f"`{prefix}setup`\n"
@@ -449,6 +303,7 @@ class help(commands.Cog):
         em_list = []
         em_list.append(listem)
         em_list.append(listem1)
+        em_list.append(listem2)
         em_list.append(setupem)
         em_list.append(setupem1)
         page = PaginationView(embed_list=em_list, ctx=ctx)

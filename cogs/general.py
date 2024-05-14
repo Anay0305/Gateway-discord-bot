@@ -429,9 +429,7 @@ class general(commands.Cog):
                                 continue
                         files+=1
         embed = discord.Embed(colour=botinfo.root_color)
-        aadvik = discord.utils.get(self.bot.users, id=800781151581110303)
         anay = self.bot.main_owner
-        byte = discord.utils.get(self.bot.users, id=563766170675576873)
         embed.set_author(name=f"| {self.bot.user.name}'s Information", icon_url=ctx.guild.me.display_avatar.url)
         embed.description = (f"**• Developers**\n> **[Anay](https://discord.com/users/{anay.id})**\n"
                              f"**• Bot Stats**\n**\u2192** Total Guilds: **{len(self.bot.guilds)} Guilds**\n**\u2192** Total users: **{count} Users**\n**\u2192** Channels:\n- Total: **{str(len(set(self.bot.get_all_channels())))} Channels**\n- Text: {txt} Channels\n- Voice: {vc} Channels\n- Categories:  {cat} Categories\n"
