@@ -11,6 +11,8 @@ import random
 import database
 from typing import Union
 import sqlite3
+import botinfo
+import emojis
 from paginators import PaginationView
 from ast import literal_eval
 from premium import check_upgraded
@@ -2097,14 +2099,17 @@ class music(commands.Cog):
             em.set_image(url="https://media.discordapp.net/attachments/1091162329720295557/1093663343279099904/wp6400060.png?width=1066&height=533")
             em.set_footer(text=f"{self.bot.user.name} Song requester panel", icon_url=self.bot.user.avatar.url)
             if channel is None:
+                if not ctx.guild.me.guild_permissions.manage_channels:
+                    em = discord.Embed(description=f"{emojis.wrong} Unfortunately I am missing **`Manage Channels`** permissions to create a new channel in the server\nYou can mention a channel if you don't want to create a new one.", color=botinfo.wrong_color)
+                    return await ctx.send(embed=em, delete_after=7)
                 view = voiceortext(ctx, ctx.author)
                 init = await ctx.reply(embed=discord.Embed(description=f"You didn't mention any channel so do you want me to create a music channel for this server?", color=root_color), view=view)
                 await view.wait()
                 await init.delete()
                 if view.value == "voice":
-                    c = await ctx.guild.create_voice_channel(name=f"snaps song request")
+                    c = await ctx.guild.create_voice_channel(name=f"sputnik song request")
                 elif view.value == "text":
-                    c = await ctx.guild.create_text_channel(name=f"snaps song request")
+                    c = await ctx.guild.create_text_channel(name=f"sputnik song request")
                 else:
                     return
             else:

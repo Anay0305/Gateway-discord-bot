@@ -190,7 +190,7 @@ async def profile(bot: commands.Bot, ctx: commands.Context, user: discord.Member
         image.paste(avatar_image, (px, 222), avatar_image)
         px+=32
     #draw.rounded_rectangle((970, 0, 1180, 50), radius=3, fill=(255, 0, 0, 128))
-    draw.text( (640, 28), text="Snaps Music", font=ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 34), fill=(165,42,42), anchor="mm")
+    draw.text( (640, 28), text="Sputnik Music", font=ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 34), fill=(165,42,42), anchor="mm")
     #draw.rounded_rectangle((100, 0, 310, 50), radius=3, fill=(255, 0, 0, 128))
     draw.text( (215, 28), text=f"Rank #{user_rank}", font=ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 34), fill=(0, 10, 36), anchor="mm")
     count = 1
