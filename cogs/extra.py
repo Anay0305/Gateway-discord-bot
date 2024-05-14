@@ -388,7 +388,7 @@ class extra(commands.Cog):
         listem.set_footer(text=f"Made by {anay}" ,  icon_url=pfp)
         await ctx.send(embed=listem)
 
-    @auto.command()
+    @auto.command(description="Enables the automatic pfp channel.")
     @commands.has_permissions(administrator=True)
     async def enable(self, ctx: commands.Context, *, channel: discord.TextChannel):
         view = PngOrGif(ctx)
@@ -407,7 +407,7 @@ class extra(commands.Cog):
         await ctx.reply(f"Now 5-10 profile pictures will be send in every 10 minutes in {channel.mention}.")
         await autopfp(self, channel.id, view.value)
 
-    @auto.command()
+    @auto.command(description="Disables the automatic pfp channel.")
     @commands.has_permissions(administrator=True)
     async def disable(self, ctx: commands.Context):
         pfp_db = database.fetchone("*", "pfp", "guild_id", ctx.guild.id)
@@ -417,7 +417,7 @@ class extra(commands.Cog):
             return await ctx.reply(f"It was already disabled")
         await ctx.reply(f"Now no profile pictures will be send.")
 
-    @pfp.command()
+    @pfp.command(description="Sends random pfp in the channel.")
     @commands.cooldown(1, 120, commands.BucketType.user)
     async def random(self, ctx: commands.Context, *, number):
         if number.isdigit():

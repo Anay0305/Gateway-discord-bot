@@ -485,7 +485,7 @@ class welcome(commands.Cog):
         database.delete("welcome", "guild_id", ctx.guild.id)
         await ctx.send(f"{ctx.author.mention} I Reset The Welcome settings for : {ctx.guild.name}")
     
-    @commands.hybrid_group(aliases=["autoroles"], invoke_without_command=True)
+    @commands.hybrid_group(aliases=["autoroles"], invoke_without_command=True, description="It will show the help page for autorole commands")
     async def autorole(self, ctx):
         prefix = ctx.prefix
         if prefix == f"<@{self.bot.user.id}> ":
@@ -513,7 +513,7 @@ class welcome(commands.Cog):
         listem.set_footer(text=f"Made by {anay}" ,  icon_url=pfp)
         await ctx.send(embed=listem)
 
-    @autorole.command(name="config")
+    @autorole.command(name="config", description="This will show the current autoroles setup for the server")
     @commands.has_permissions(administrator=True)
     async def _config(self, ctx):
         if ctx.guild.owner.id == ctx.author.id:
@@ -557,7 +557,7 @@ class welcome(commands.Cog):
         em.set_footer(text=f"{self.bot.user.name} Autorole", icon_url=self.bot.user.display_avatar.url)
         return await ctx.reply(embed=em, mention_author=False)
 
-    @autorole.command(name="reset")
+    @autorole.command(name="reset", description="It will reset the autoroles settings for the server.")
     @commands.has_permissions(administrator=True)
     async def _reset(self, ctx):
         if ctx.guild.owner.id == ctx.author.id:
@@ -597,7 +597,7 @@ class welcome(commands.Cog):
             em = discord.Embed(description="Canceled The Command", color=botinfo.wrong_color)
             return await ctx.reply(embed=em, mention_author=False)
 
-    @autorole.group(aliases=['human'], invoke_without_command=True)
+    @autorole.group(aliases=['human'], invoke_without_command=True, description="This will show help page for autorole humans")
     @commands.has_permissions(administrator=True)
     async def humans(self, ctx):
         prefix = ctx.prefix
@@ -618,7 +618,7 @@ class welcome(commands.Cog):
         listem.set_footer(text=f"Made by {anay}" ,  icon_url=pfp)
         await ctx.send(embed=listem)
 
-    @humans.command()
+    @humans.command(description="It will add a human autorole in the server")
     @commands.has_permissions(administrator=True)
     async def add(self, ctx, *,role: discord.Role):
             if ctx.guild.owner.id == ctx.author.id:
@@ -651,7 +651,7 @@ class welcome(commands.Cog):
             em.set_footer(text=f"{self.bot.user.name} Autoroles", icon_url=self.bot.user.display_avatar.url)
             await ctx.reply(embed=em, mention_author=False)
 
-    @humans.command()
+    @humans.command(description="It will remove human autorole from the server.")
     @commands.has_permissions(administrator=True)
     async def remove(self, ctx, *,role: discord.Role):
             if ctx.guild.owner.id == ctx.author.id:
@@ -676,7 +676,7 @@ class welcome(commands.Cog):
             em.set_footer(text=f"{self.bot.user.name} Autoroles", icon_url=self.bot.user.display_avatar.url)
             await ctx.reply(embed=em, mention_author=False)
 
-    @autorole.group(aliases=['bot'], invoke_without_command=True)
+    @autorole.group(aliases=['bot'], invoke_without_command=True, description="This will show help page for autorole bots")
     @commands.has_permissions(administrator=True)
     async def bots(self, ctx):
         prefix = ctx.prefix
@@ -697,7 +697,7 @@ class welcome(commands.Cog):
         listem.set_footer(text=f"Made by {anay}" ,  icon_url=pfp)
         await ctx.send(embed=listem)
 
-    @bots.command(name="add")
+    @bots.command(name="add", description="It will add a bot autorole in the server")
     @commands.has_permissions(administrator=True)
     async def _add(self, ctx, *,role: discord.Role):
             if ctx.guild.owner.id == ctx.author.id:
@@ -727,7 +727,7 @@ class welcome(commands.Cog):
             em.set_footer(text=f"{self.bot.user.name} Autoroles", icon_url=self.bot.user.display_avatar.url)
             await ctx.reply(embed=em, mention_author=False)
 
-    @bots.command(name="remove")
+    @bots.command(name="remove", description="It will remove autorole bot from the server")
     @commands.has_permissions(administrator=True)
     async def _remove(self, ctx, *,role: discord.Role):
             if ctx.guild.owner.id == ctx.author.id:
