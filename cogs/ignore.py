@@ -1535,7 +1535,7 @@ class ignore(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.hybrid_group(invoke_without_command=True, name="ignore", description="Shows The help menu for ignore")
+    @commands.group(invoke_without_command=True, name="ignore", description="Shows The help menu for ignore")
     async def ignore(self, ctx:commands.Context):
         prefix = ctx.prefix
         if prefix == f"<@{self.bot.user.id}> ":
