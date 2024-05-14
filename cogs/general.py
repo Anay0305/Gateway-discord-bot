@@ -1541,7 +1541,7 @@ class general(commands.Cog):
             embed.set_footer(text=f"Requested by {ctx.author.name}" ,  icon_url=ctx.author.display_avatar.url)
             return await ctx.send(embed=embed)
     
-    @commands.hybrid_command(name="banner",invoke_without_command=True, description="Shows the banner's help menu")
+    @commands.hybrid_group(name="banner",invoke_without_command=True, description="Shows the banner's help menu")
     async def banner(self, ctx):
         prefix = ctx.prefix
         if prefix == f"<@{self.bot.user.id}> ":
@@ -1642,7 +1642,7 @@ class general(commands.Cog):
     @commands.hybrid_command(name="keywords", aliases=["keyword"], description="Shows the keyword to use for setting the embed/message")
     async def keywords(self, ctx):
       em = discord.Embed(title="Here are some keywords, which you can use in your embed/message.", description="```$user_name - displays username.\n$user_username - display users username with his discriminator.\n$user_discriminator - display users discriminator.\n$user_id - display users ID.\n$user_avatar - display users avatar.\n$user_mention - mentions the user.\n$user_created - displays the timestamp of when the user id was created.\n$user_joined - displays the timestamp of when the user joined the server.\n$user_profile - direct link for the user's profile\n$server_name - displays server name.\n$server_id - displays server ID.\n$server_icon - displays server icon.\n$membercount - show the member count of the server.\n$membercount_ordinal - same as membercount but includes ordinal number (st, th, rd).\n\n```", color=botinfo.root_color)
-      em.set_author(name="\Keywords", icon_url=self.bot.user.avatar.url)
+      em.set_author(name="Keywords", icon_url=self.bot.user.avatar.url)
       await ctx.reply(embed=em)
 
 async def setup(bot):
