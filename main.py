@@ -149,7 +149,7 @@ async def process_commands(message: discord.Message) -> None:
         if ctx.command:
             if check_upgraded(ctx.guild.id):
                 if str(ctx.command.cog_name.lower()) == "music":
-                    cmd_name = str(ctx.command.full_parent_name)
+                    cmd_name = str(ctx.command.name)
                     if cmd_name == "247" or cmd_name == "msetup":
                         pass
                     else:
