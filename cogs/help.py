@@ -208,6 +208,19 @@ class help(commands.Cog):
                                      description=f"<...> Duty | [...] Optional\n\n{des}")
         listem2.set_author(name=f"{str(ctx.author)}", icon_url=ctx.author.display_avatar.url)
         listem2.set_footer(text=f"Made by {str(anay)}" ,  icon_url=anay.avatar.url)
+        ls = ["mediaonly", "mediaonly add", "mediaonly remove", "mediaonly show"]
+        prefix = ctx.prefix
+        if prefix == f"<@{self.bot.user.id}> ":
+            prefix = f"@{str(self.bot.user)} "
+        anay = self.bot.main_owner
+        des = ""
+        for i in sorted(ls):
+            cmd = self.bot.get_command(i)
+            des += f"`{prefix}{i}`\n{cmd.description}\n\n"
+        listem3 = discord.Embed(colour=botinfo.root_color,
+                                     description=f"<...> Duty | [...] Optional\n\n{des}")
+        listem3.set_author(name=f"{str(ctx.author)}", icon_url=ctx.author.display_avatar.url)
+        listem3.set_footer(text=f"Made by {str(anay)}" ,  icon_url=anay.avatar.url)
         setupem = discord.Embed(color=botinfo.root_color,
                                      description=f"<...> Duty | [...] Optional\n\n" 
                                                  f"`{prefix}setup`\n"
@@ -304,6 +317,7 @@ class help(commands.Cog):
         em_list.append(listem)
         em_list.append(listem1)
         em_list.append(listem2)
+        em_list.append(listem3)
         em_list.append(setupem)
         em_list.append(setupem1)
         page = PaginationView(embed_list=em_list, ctx=ctx)

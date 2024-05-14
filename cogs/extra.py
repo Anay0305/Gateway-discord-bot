@@ -1901,6 +1901,86 @@ class extra(commands.Cog):
             database.update("autoresponder", "data", f"{lss}", "guild_id", ctx.guild.id)
             await ctx.reply(embed=discord.Embed(description=f"Successfully deleted an autoresponder with \nName -> `{name}`", color=botinfo.root_color))
             
+    @commands.hybrid_group(invoke_without_command=True, aliases=['onlymedia'], description="Shows the help menu for media only commands.")
+    async def mediaonly(self, ctx: commands.Context):
+        ls = ["mediaonly", "mediaonly add", "mediaonly remove", "mediaonly show"]
+        prefix = ctx.prefix
+        if prefix == f"<@{self.bot.user.id}> ":
+            prefix = f"@{str(self.bot.user)} "
+        anay = self.bot.main_owner
+        des = ""
+        for i in sorted(ls):
+            cmd = self.bot.get_command(i)
+            des += f"`{prefix}{i}`\n{cmd.description}\n\n"
+        listem = discord.Embed(colour=botinfo.root_color,
+                                     description=f"<...> Duty | [...] Optional\n\n{des}")
+        listem.set_author(name=f"{str(ctx.author)}", icon_url=ctx.author.display_avatar.url)
+        listem.set_footer(text=f"Made by {str(anay)}" ,  icon_url=anay.avatar.url)
+        await ctx.send(embed=listem)
+    
+    @mediaonly.command(name="show", aliases=['config'], description="Shows the media only channels of the server")
+    @commands.has_guild_permissions(manage_guild=True)
+    async def om_show(self, ctx: commands.Context):
+        mo_db = database.fetchone("*", "media_only", "guild_id", ctx.guild.id)
+        if mo_db is None:
+            return await ctx.reply(embed=discord.Embed(description=f"There is no Media only channel in this server.", color=botinfo.root_color))
+        else:
+            lss = literal_eval(mo_db['channels'])
+            if len(lss) == 0:
+                return await ctx.reply(embed=discord.Embed(description=f"There is no Media only channel in this server.", color=botinfo.root_color))
+            else:
+                ls, roles = [], []
+                count = 1
+                for i in lss:
+                    ch = ctx.guild.get_channel(i)
+                    if ch is not None:
+                        roles.append(f"`[{'0' + str(count) if count < 10 else count}]` | {ch.mention}")
+                        count += 1
+                for i in range(0, len(roles), 10):
+                    ls.append(roles[i: i + 10])
+                em_list = []
+                no = 1
+                for k in ls:
+                    embed =discord.Embed(color=botinfo.root_color)
+                    embed.title = f"List of Media Only channels in server - {count-1}"
+                    embed.description = "\n".join(k)
+                    embed.set_footer(text=f"{self.bot.user.name} • Page {no}/{len(ls)}", icon_url=self.bot.user.display_avatar.url)
+                    em_list.append(embed)
+                    no+=1
+                page = PaginationView(embed_list=em_list, ctx=ctx)
+                await page.start(ctx)
+
+    @mediaonly.command(description="Makes a channel to media only channel.")
+    @commands.bot_has_guild_permissions(manage_messages=True)
+    @commands.has_guild_permissions(manage_guild=True)
+    async def add(self, ctx: commands.Context, *, channel: discord.TextChannel):
+        mo_db = database.fetchone("*", "media_only", "guild_id", ctx.guild.id)
+        if mo_db is None:
+            lss = [channel.id]
+            database.insert("media_only", "guild_id, channels", (ctx.guild.id, f"{lss}"))
+            return await ctx.reply(embed=discord.Embed(description=f"Added {channel.mention} to media only channels.", color=botinfo.root_color))
+        lss = literal_eval(mo_db['channels'])
+        if channel.id in lss:
+            return await ctx.reply(embed=discord.Embed(description=f"{channel.mention} is already added to media only channels.", color=botinfo.wrong_color))
+        else:
+            lss.append(channel.id)
+            database.update("media_only", "channels", f"{lss}", "guild_id", ctx.guild.id)
+            return await ctx.reply(embed=discord.Embed(description=f"Added {channel.mention} to media only channels.", color=botinfo.root_color))
+
+    @mediaonly.command(description="Removes a channel from media only channels.")
+    @commands.has_guild_permissions(manage_guild=True)
+    async def remove(self, ctx: commands.Context, *, channel: discord.TextChannel):
+        mo_db = database.fetchone("*", "media_only", "guild_id", ctx.guild.id)
+        if mo_db is None:
+            return await ctx.reply(embed=discord.Embed(description=f"{channel.mention} is not added to media only channels.", color=botinfo.wrong_color))
+        lss = literal_eval(mo_db['channels'])
+        if channel.id not in lss:
+            return await ctx.reply(embed=discord.Embed(description=f"{channel.mention} is not added to media only channels.", color=botinfo.wrong_color))
+        else:
+            lss.remove(channel.id)
+            database.update("media_only", "channels", f"{lss}", "guild_id", ctx.guild.id)
+            return await ctx.reply(embed=discord.Embed(description=f"Removed {channel.mention} from media only channels.", color=botinfo.root_color))
+
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         await self.bot.wait_until_ready()
@@ -1922,6 +2002,22 @@ class extra(commands.Cog):
         guild = message.guild
         if guild is None:
             return
+        mo_db = database.fetchone("*", "media_only", "guild_id", guild.id)
+        if mo_db is None:
+            pass
+        else:
+            lss = literal_eval(mo_db['channels'])
+            if message.channel.id not in lss:
+                pass
+            else:
+                if len(message.attachments) == 0:
+                    try:
+                        u = await guild.fetch_member(message.author.id)
+                        if not u.guild_permissions.administrator:
+                            await asyncio.sleep(3)
+                            await message.delete()
+                    except:
+                        pass
         if message.author.bot:
             return
         ar_db = database.fetchone("*", "autoresponder", "guild_id", guild.id)
