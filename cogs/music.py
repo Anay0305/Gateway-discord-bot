@@ -605,17 +605,14 @@ class interface(discord.ui.View):
         q = vc.queue
         if q.mode.value == 0:
             q.mode = wavelink.QueueMode.loop
+            await panelmsg(self.bot, self.ctx)
             await interaction.response.send_message(f"The current song is set to loop", ephemeral=True)
         elif q.mode.value == 1:
             await panelmsg(self.bot, self.ctx)
-            button.emoji = "<:loop:1072813972727812116>"
-            await interaction.response.edit_message(view=self)
             q.mode = wavelink.QueueMode.loop_all
             await interaction.response.send_message(f"The current queue will now be looped", ephemeral=True)
         else:
             await panelmsg(self.bot, self.ctx)
-            button.emoji = "<:loopsongqueue:1072814008429727754>"
-            await interaction.response.edit_message(view=self)
             q.mode = wavelink.QueueMode.normal
             await interaction.response.send_message(f"Now onwards nothing will be looped", ephemeral=True)
 
