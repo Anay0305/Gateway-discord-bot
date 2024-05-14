@@ -371,7 +371,7 @@ class general(commands.Cog):
             }
             database.update_bulk("afk", dic, "user_id", message.author.id)
 
-    @commands.command(name="uptime",
+    @commands.hybrid_command(name="uptime",
                     description="Shows you Bot's Uptime")
     async def uptime(self, ctx):
         bot = self.bot
@@ -449,7 +449,7 @@ class general(commands.Cog):
         page.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/snaps"))
         await ctx.reply(embed = embed, mention_author=False, view=page)
 
-    @commands.command(name="afk", description="Changes the afk status of user")
+    @commands.hybrid_command(name="afk", description="Changes the afk status of user")
     async def afk(self, ctx, *,reason=None):
         if reason is None:
             reason = "I'm Afk :))"
@@ -487,7 +487,7 @@ class general(commands.Cog):
             database.update("afk", "afkk", f"{ds}", "user_id", ctx.author.id)
             return
 
-    @commands.group(
+    @commands.hybrid_group(
         invoke_without_command=True, description="Shows the help menu for todo commands"
     )
     async def todo(self, ctx: commands.Context):
@@ -763,7 +763,7 @@ class general(commands.Cog):
         webhook = discord.SyncWebhook.from_url(webhook_badge_logs)
         webhook.send(embed=em, username=f"{str(self.bot.user)} | Badge Removed Logs", avatar_url=self.bot.user.avatar.url)
 
-    @commands.group(
+    @commands.hybrid_group(
         invoke_without_command=True, description="Shows the help menu for list commands"
     )
     async def list(self, ctx):
@@ -1203,7 +1203,7 @@ class general(commands.Cog):
         await init.delete()
         await page.start(ctx)
         
-    @commands.command(aliases=["ms"], description="Show's the Ping of bot")
+    @commands.hybrid_command(aliases=["ms"], description="Show's the Ping of bot")
     @commands.guild_only()
     async def ping(self, ctx: commands.Context):
       pfp = ctx.author.display_avatar.url
@@ -1214,7 +1214,7 @@ class general(commands.Cog):
       embed.timestamp = datetime.datetime.utcnow()
       await ctx.reply(embed=embed, mention_author = False)
 
-    @commands.command(aliases=["si"], description="Shows information about this server")
+    @commands.hybrid_command(aliases=["si"], description="Shows information about this server")
     async def serverinfo(self, ctx):
         guild_roles = len(ctx.guild.roles)
         guild_members = len(ctx.guild.members)
@@ -1241,7 +1241,7 @@ class general(commands.Cog):
         serverinfo.set_footer(text=f"Requested by {ctx.author.name}" ,  icon_url=pfp)
         await ctx.send(embed=serverinfo)
 
-    @commands.command(aliases=["ri"], description="Shows information about the Role")
+    @commands.hybrid_command(aliases=["ri"], description="Shows information about the Role")
     async def roleinfo(self, ctx, role: discord.Role):
         roleinfo = discord.Embed(colour=botinfo.root_color, title=f"{role.name}'s Information")
         roleinfo.add_field(name="Role Information:",
@@ -1269,7 +1269,7 @@ class general(commands.Cog):
                                      value=role_mem, inline=False)
         await ctx.send(embed=roleinfo)
 
-    @commands.command(description="Shows status information about the user")
+    @commands.hybrid_command(description="Shows status information about the user")
     async def status(self, ctx, member: discord.Member = None):
         member = member or ctx.author
         pfp = ctx.author.display_avatar.url
@@ -1310,7 +1310,7 @@ class general(commands.Cog):
         em.set_footer(text=f"Requested by {str(ctx.author)}", icon_url=i)
         await ctx.reply(embed=em, mention_author=False)
 
-    @commands.command(aliases=["ui", "whois"], description="Shows information about the user")
+    @commands.hybrid_command(aliases=["ui", "whois"], description="Shows information about the user")
     async def userinfo(self, ctx, member: discord.Member = None):
         member = member or ctx.author
         pfp = ctx.author.display_avatar.url
@@ -1476,7 +1476,7 @@ class general(commands.Cog):
            userinfo.set_thumbnail(url=member.display_avatar.url)
         await ctx.send(embed=userinfo)
         
-    @commands.command(description="Shows the server icon")
+    @commands.hybrid_command(description="Shows the server icon")
     async def servericon(self, ctx):
          pfp = ctx.author.display_avatar.url
          em=discord.Embed(title="SERVER ICON", color=botinfo.root_color)
@@ -1484,7 +1484,7 @@ class general(commands.Cog):
          em.set_footer(text=f"Requested by {ctx.author.name}" ,  icon_url=pfp)
          await ctx.send(embed=em)
 
-    @commands.command(aliases=["av"], brief="Avatar", description="Shows the avatar of user")
+    @commands.hybrid_command(aliases=["av"], brief="Avatar", description="Shows the avatar of user")
     @commands.guild_only()
     async def avatar(self, ctx, member: Union[discord.Member, discord.User] = None):
         member = (
@@ -1541,7 +1541,7 @@ class general(commands.Cog):
             embed.set_footer(text=f"Requested by {ctx.author.name}" ,  icon_url=ctx.author.display_avatar.url)
             return await ctx.send(embed=embed)
     
-    @commands.group(name="banner",invoke_without_command=True, description="Shows the banner's help menu")
+    @commands.hybrid_command(name="banner",invoke_without_command=True, description="Shows the banner's help menu")
     async def banner(self, ctx):
         prefix = ctx.prefix
         if prefix == f"<@{self.bot.user.id}> ":
@@ -1600,7 +1600,7 @@ class general(commands.Cog):
             em.set_image(url=pfp)
             await ctx.reply(embed=em)
 
-    @commands.command(name='first-message', aliases=['firstmsg', 'fm', 'firstmessage'], description="Shows the first message of the channel")
+    @commands.hybrid_command(name='first-message', aliases=['firstmsg', 'fm', 'firstmessage'], description="Shows the first message of the channel")
     async def _first_message(self, ctx, channel: discord.TextChannel = None):
         pfp = ctx.author.display_avatar.url
         if channel is None:
@@ -1611,7 +1611,7 @@ class general(commands.Cog):
         embed.set_footer(text=f"Requested by {ctx.author.name}" ,  icon_url=pfp)
         await ctx.send(embed=embed)
         
-    @commands.command(aliases=["mc"], description="Returns the members count for the server")
+    @commands.hybrid_command(aliases=["mc"], description="Returns the members count for the server")
     async def membercount(self, ctx):
         humans = [member for member in ctx.guild.members if not member.bot]
         bots = [member for member in ctx.guild.members if member.bot]
@@ -1621,7 +1621,7 @@ class general(commands.Cog):
         embed.add_field(name=f"**Total Bots:**", value=f"{len(bots)} Members")
         await ctx.reply(embed=embed)
         
-    @commands.command(aliases=["smc"], description="Returns the status members count for the server")
+    @commands.hybrid_command(aliases=["smc"], description="Returns the status members count for the server")
     async def statusmembercount(self, ctx):
         on = [member for member in ctx.guild.members if member.status == discord.Status.online]
         dnd = [member for member in ctx.guild.members if member.status == discord.Status.dnd]
@@ -1639,7 +1639,7 @@ class general(commands.Cog):
         embed.set_footer(text=f"{len(ctx.guild.members)} Total Members", icon_url=i)
         await ctx.reply(embed=embed)
 
-    @commands.command(name="keywords", aliases=["keyword"], description="Shows the keyword to use for setting the embed/message")
+    @commands.hybrid_command(name="keywords", aliases=["keyword"], description="Shows the keyword to use for setting the embed/message")
     async def keywords(self, ctx):
       em = discord.Embed(title="Here are some keywords, which you can use in your embed/message.", description="```$user_name - displays username.\n$user_username - display users username with his discriminator.\n$user_discriminator - display users discriminator.\n$user_id - display users ID.\n$user_avatar - display users avatar.\n$user_mention - mentions the user.\n$user_created - displays the timestamp of when the user id was created.\n$user_joined - displays the timestamp of when the user joined the server.\n$user_profile - direct link for the user's profile\n$server_name - displays server name.\n$server_id - displays server ID.\n$server_icon - displays server icon.\n$membercount - show the member count of the server.\n$membercount_ordinal - same as membercount but includes ordinal number (st, th, rd).\n\n```", color=botinfo.root_color)
       em.set_author(name="\Keywords", icon_url=self.bot.user.avatar.url)

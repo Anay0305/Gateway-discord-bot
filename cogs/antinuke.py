@@ -644,7 +644,7 @@ class antinuke(commands.Cog):
                     no+=1
                 await ch.send(embeds=em_list)
 
-    @commands.group(
+    @commands.hybrid_group(
         invoke_without_command=True, description="Shows the help menu for Antinuke commands"
     )
     async def antinuke(self, ctx):
@@ -1024,7 +1024,7 @@ class antinuke(commands.Cog):
         m = await ctx.reply(embed=em, view=view)
         await view.wait()
     
-    @commands.group(
+    @commands.hybrid_group(
         invoke_without_command=True, aliases=['lockr'], description="Shows the help menu for lockrole commands"
     )
     async def lockrole(self, ctx):
@@ -1378,7 +1378,7 @@ class antinuke(commands.Cog):
         await ctx.reply(embed=discord.Embed(description=f"Successfully unwhitelisted {role.mention} for locked roles", color=botinfo.right_color))
 
     
-    #@commands.group(invoke_without_command=True, aliases=['lockrp', 'lockrpos'], description="Shows the help menu for lockrolepos commands")
+    #@commands.hybrid_group(invoke_without_command=True, aliases=['lockrp', 'lockrpos'], description="Shows the help menu for lockrolepos commands")
     async def lockrolepos(self, ctx):
         prefix = ctx.prefix
         if prefix == f"<@{self.bot.user.id}> ":

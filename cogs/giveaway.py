@@ -167,7 +167,7 @@ class giveaway(commands.Cog):
                         except:
                             continue
     
-    @commands.command(aliases=['gcreate'], description="To start a giveaway")
+    @commands.hybrid_command(aliases=['gcreate'], description="To start a giveaway")
     async def gstart(self, ctx: commands.Context):
         check = False
         for role in ctx.author.roles:
@@ -292,7 +292,7 @@ class giveaway(commands.Cog):
             database.update("gwmain", "gw", f"{xd}", "guild_id", ctx.guild.id)
         await ctx.reply(f"Giveaway started in {channel.mention}")
 
-    @commands.command(description="To quickly start a giveaway")
+    @commands.hybrid_command(description="To quickly start a giveaway")
     async def gquick(self, ctx: commands.Context, time, winner, *, prize):
         check = False
         for role in ctx.author.roles:
@@ -353,7 +353,7 @@ class giveaway(commands.Cog):
             xd[giveaway_message.id] = data
             database.update("gwmain", "gw", f"{xd}", "guild_id", ctx.guild.id)
 
-    @commands.command(aliases=['gusers'], description="To get the list of all the participants of the giveaway")
+    @commands.hybrid_command(aliases=['gusers'], description="To get the list of all the participants of the giveaway")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def gparticipants(self, ctx: commands.Context, message_id):
         check = False
@@ -400,7 +400,7 @@ class giveaway(commands.Cog):
         page = PaginationView(embed_list=em_list, ctx=ctx)
         await page.start(ctx)
     
-    @commands.command(description="To get the list of all running giveaways in the server")
+    @commands.hybrid_command(description="To get the list of all running giveaways in the server")
     @commands.has_permissions(manage_guild=True)
     async def glist(self, ctx: commands.Context):
         check = False
@@ -456,7 +456,7 @@ class giveaway(commands.Cog):
         page = PaginationView(embed_list=em_list, ctx=ctx)
         await page.start(ctx)
 
-    @commands.command(aliases=['gstop'], description="To end a giveaway")
+    @commands.hybrid_command(aliases=['gstop'], description="To end a giveaway")
     async def gend(self, ctx: commands.Context, message_id):
         check = False
         for role in ctx.author.roles:
@@ -483,7 +483,7 @@ class giveaway(commands.Cog):
         else:
             return await ctx.send("Giveaway is already ended")
 
-    @commands.command(description="To reroll the winner for giveaway")
+    @commands.hybrid_command(description="To reroll the winner for giveaway")
     async def greroll(self, ctx: commands.Context, message_id):
         check = False
         for role in ctx.author.roles:
@@ -510,7 +510,7 @@ class giveaway(commands.Cog):
         else:
             return await ctx.send(f"Giveaway is not yet ended")
 
-    @commands.command(description="To cancel a giveaway")
+    @commands.hybrid_command(description="To cancel a giveaway")
     async def gcancel(self, ctx: commands.Context, message_id):
         check = False
         for role in ctx.author.roles:

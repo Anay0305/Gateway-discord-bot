@@ -225,7 +225,7 @@ class disableview(discord.ui.View):
 class logging(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    @commands.group(
+    @commands.hybrid_group(
         name="logging",
         invoke_without_command=True, description="Shows the logging's help menu"
     )

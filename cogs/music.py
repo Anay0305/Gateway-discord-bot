@@ -2210,6 +2210,459 @@ class music(commands.Cog):
             c = self.bot.get_channel(m_db['channel_id'])
             vc: wavelink.Player = await c.connect(cls=wavelink.Player, self_deaf=True)
             pass
-        
+
+    @commands.hybrid_group(
+        invoke_without_command=True, aliases=['pl'], description="Shows the help menu for playlist commands"
+    )
+    async def playlist(self, ctx):
+        prefix = ctx.prefix
+        if prefix == f"<@{self.bot.user.id}> ":
+            prefix = f"@{str(self.bot.user)} "
+        anay = self.bot.main_owner
+        ls = ["playlist", "playlist add", "playlist remove", "playlist create", "playlist delete", "playlist copy", "playlist show"]
+        des = ""
+        for i in sorted(ls):
+            cmd = self.bot.get_command(i)
+            des += f"`{prefix}{i}`\n{cmd.description}\n\n"
+        listem = discord.Embed(title=f"<:gateway_music:1040855483029913660> Playlist Commands", colour=0x7aaaff,
+                                     description=f"<...> Duty | [...] Optional\n\n{des}")
+        listem.set_author(name=f"{str(ctx.author)}", icon_url=ctx.author.display_avatar.url)
+        listem.set_footer(text=f"Made by {str(anay)}" ,  icon_url=anay.avatar.url)
+        await ctx.send(embed=listem)
+
+    @playlist.command(name="show", description="Shows your playlists")
+    async def show(self, ctx: commands.Context, name: str=None):
+        init = await ctx.reply(f"<:loading:1060851548869107782> Processing the command...", mention_author=False)
+        query = "SELECT * FROM  pl WHERE user_id = ?"
+        val = (ctx.author.id,)
+        with sqlite3.connect('./database.sqlite3') as db:
+            db.row_factory = sqlite3.Row
+            cursor = db.cursor()
+            cursor.execute(query, val)
+            p_db = cursor.fetchone()
+        if name is None:
+            em_no = discord.Embed(description="You have no playlist", color=0x7aaaff).set_footer(text=str(self.bot.user), icon_url=self.bot.user.avatar.url)
+            if p_db is None:
+                await init.delete()
+                return await ctx.reply(embed=em_no)
+            xd = literal_eval(p_db['pl'])
+            if len(xd) == 0:
+                await init.delete()
+                return await ctx.reply(embed=em_no)
+            else:
+                ls, q = [], []
+                count = 0
+                for i in xd:
+                    tm = 0
+                    for j in xd[i]:
+                        tm += j['info']['length']
+                    tm = str(datetime.timedelta(milliseconds=tm))
+                    try:
+                        tm = tm[:tm.index(".")]
+                    except:
+                        tm = tm
+                    count += 1
+                    q.append(f"`[{'0' + str(count) if count < 10 else count}]` | [{i}](https://discord.gg/snaps) - [{tm}]")
+                for i in range(0, len(q), 10):
+                    ls.append(q[i: i + 10])
+                em_list = []
+                no = 1
+                for k in ls:
+                    embed =discord.Embed(color=0x7aaaff)
+                    embed.title = f"{str(ctx.author)}'s Playlist - {count}"
+                    embed.description = "\n".join(k)
+                    embed.set_footer(text=f"{self.bot.user.name} • Page {no}/{len(ls)}", icon_url=self.bot.user.display_avatar.url)
+                    em_list.append(embed)
+                    no+=1
+                page = PaginationView(embed_list=em_list, ctx=ctx)
+                await init.delete()
+                await page.start(ctx)
+        else:
+            name = name.title()
+            em_no = discord.Embed(description=f"You have no playlist named `{name}`", color=0x7aaaff).set_footer(text=str(self.bot.user), icon_url=self.bot.user.avatar.url)
+            if p_db is None:
+                await init.delete()
+                return await ctx.reply(embed=em_no)
+            xd = literal_eval(p_db['pl'])
+            if name not in xd:
+                await init.delete()
+                return await ctx.reply(embed=em_no)
+            else:
+                ls, q = [], []
+                count = 0
+                for i in xd[name]:
+                    tm = str(datetime.timedelta(milliseconds=i['info']['length']))
+                    try:
+                        tm = tm[:tm.index(".")]
+                    except:
+                        tm = tm
+                    count += 1
+                    q.append(f"`[{'0' + str(count) if count < 10 else count}]` | [{i['info']['title']}]({i['info']['uri']}) - [{tm}]")
+                for i in range(0, len(q), 10):
+                    ls.append(q[i: i + 10])
+                em_list = []
+                no = 1
+                for k in ls:
+                    embed =discord.Embed(color=0x7aaaff)
+                    embed.title = f"{name} Playlist - {count}"
+                    embed.description = "\n".join(k)
+                    embed.set_footer(text=f"{self.bot.user.name} • Page {no}/{len(ls)}", icon_url=self.bot.user.display_avatar.url)
+                    em_list.append(embed)
+                    no+=1
+                page = PaginationView(embed_list=em_list, ctx=ctx)
+                await init.delete()
+                await page.start(ctx)
+
+    @show.autocomplete("name")
+    async def command_autocomplete(self, interaction: discord.Interaction, needle: str):
+        ctx = await self.bot.get_context(interaction, cls=commands.Context)
+        query1 = "SELECT * FROM  pl WHERE user_id = ?"
+        val1 = (ctx.author.id,)
+        with sqlite3.connect('./database.sqlite3') as db1:
+            db1.row_factory = sqlite3.Row
+            cursor1 = db1.cursor()
+            cursor1.execute(query1, val1)
+            p_db = cursor1.fetchone()
+        if p_db is None:
+            return []  
+        else:
+            x = literal_eval(p_db['pl'])
+        if x == "{}":
+            return []
+        ls = []
+        for i in x:
+            ls.append(i)
+        if needle:
+            xd = []
+            for i in ls:
+                if i.lower().startswith(needle.lower()):
+                    xd.append(i)
+            lss = []
+            for i in xd:
+                lss.append(app_commands.Choice(name=f"{i} Playlist", value=i))
+            return lss[:25]
+        else:
+            lss = [
+                app_commands.Choice(name=f"{cog_name} Playlist", value=cog_name)
+                for cog_name in sorted(ls)
+            ]
+            return lss[:25]
+
+    @playlist.command(name="copy", description="Copies a playlist from another user's playlist")
+    async def copy(self, ctx: commands.Context, name: str, *, user: discord.Member):
+        name = name.title()
+        query = "SELECT * FROM  pl WHERE user_id = ?"
+        val = (user.id,)
+        with sqlite3.connect('./database.sqlite3') as db:
+            db.row_factory = sqlite3.Row
+            cursor = db.cursor()
+            cursor.execute(query, val)
+            p_db = cursor.fetchone()
+        if p_db is None:
+            return await ctx.reply(embed=discord.Embed(description=f"{user.mention} don't have any playlist named {name}", color=0x7aaaff))
+        else:
+            xx = literal_eval(p_db['pl'])
+            if name not in xx:
+                return await ctx.reply(embed=discord.Embed(description=f"{user.mention} don't have any playlist named {name}", color=0x7aaaff))
+            else:
+                v = copyview(ctx, user)
+                em = discord.Embed(description=f"Do you want to allow {ctx.author.mention} to copy your playlist `{name}`?", color=0x7aaaff)
+                em.set_footer(text=str(self.bot.user), icon_url=self.bot.user.avatar.url)
+                init = await ctx.send(f"{user.mention}", embed=em, view=v)
+                await v.wait()
+                if v.value == 'No':
+                    await init.delete()
+                    await ctx.reply("The owner of the playlist denied to copy playlist for you")
+                if v.value == 'Yes':
+                    await init.delete()
+                    query = "SELECT * FROM  pl WHERE user_id = ?"
+                    val = (ctx.author.id,)
+                    with sqlite3.connect('./database.sqlite3') as db:
+                        db.row_factory = sqlite3.Row
+                        cursor = db.cursor()
+                        cursor.execute(query, val)
+                        p_db = cursor.fetchone()
+                    if p_db is None:
+                        xxx = {}
+                    else:
+                        xxx = literal_eval(p_db['pl'])
+                    if name in xxx:
+                        vv = copyview(ctx, ctx.author)
+                        init2 = await ctx.reply(f"You already have a playlist `{name}`\nDo you want to copy it with any other name?", view=vv)
+                        await vv.wait()
+                        if vv.value == 'No':
+                            await init2.delete()
+                        if vv.value == 'Yes':
+                            await init2.edit("What should be the name for the copied playlist?", view=None)
+                            def message_check(m):
+                                return ( 
+                                    m.author.id == ctx.author.id
+                                    and m.channel == ctx.channel
+                                )
+                            user_response = await self.bot.wait_for("message", check=message_check)
+                            await user_response.delete()
+                            await init2.delete()
+                            name1 = user_response.content
+                            try:
+                                w = name1.index(" ")
+                                name1 = name1[:w].strip()
+                            except ValueError:
+                                name1 = name
+                            xxx[name1] = xx[name]
+                    else:
+                        name1 = name
+                        xxx[name1] = xx[name]
+                    if p_db is None:
+                        sql = (f"INSERT INTO pl(user_id, pl) VALUES(?, ?)")
+                        val = (ctx.author.id, f"{xxx}")
+                        cursor.execute(sql, val)
+                    else:
+                        sql = (f"UPDATE pl SET pl = ? WHERE user_id = ?")
+                        val = (f"{xxx}", ctx.author.id)
+                        cursor.execute(sql, val)
+                    db.commit()
+                    cursor.close()
+                    db.close()
+                    em = discord.Embed(description=f"Successfully copied a playlist `{name1}` from {user.mention} with {len(xx[name])} song(s)", color=0x7aaaff)
+                    em.set_footer(text=str(self.bot.user), icon_url=self.bot.user.avatar.url)
+                    await ctx.reply(embed=em)
+
+    @playlist.command(name="create", description="Creates a playlist for you")
+    async def create(self, ctx: commands.Context, name: str, *, query: str):
+        name = name.title()
+        if "youtube.com" in query:
+            return await ctx.reply("Songs from Youtube are not supported")
+        query1 = "SELECT * FROM  pl WHERE user_id = ?"
+        val1 = (ctx.author.id,)
+        with sqlite3.connect('./database.sqlite3') as db:
+            db.row_factory = sqlite3.Row
+            cursor = db.cursor()
+            cursor.execute(query1, val1)
+            p_db = cursor.fetchone()
+        if p_db is not None:
+            try:
+                xx = literal_eval(p_db['pl'])
+            except:
+                xx = {}
+            if name.title() in xx:
+                return await ctx.reply(f"{ctx.author.mention} You already have a playlist named {name}")
+        queue = await pladd(self, ctx, query)
+        if p_db is None:
+            xd = {}
+            xd[name.title()] = queue
+            sql = (f"INSERT INTO pl(user_id, pl) VALUES(?, ?)")
+            val = (ctx.author.id, f"{xd}")
+            cursor.execute(sql, val)
+        else:
+            xd = literal_eval(p_db['pl'])
+            xd[name.title()] = queue
+            sql = (f"UPDATE pl SET pl = ? WHERE user_id = ?")
+            val = (f"{xd}", ctx.author.id)
+            cursor.execute(sql, val)
+        db.commit()
+        cursor.close()
+        db.close()
+        await ctx.reply(embed=discord.Embed(description=f"{ctx.author.mention} Created a playlist for you with name `{name.title()}` and {len(xd[name.title()])} Song(s)\nto play this playlist just type {ctx.prefix}play {name.title()}.", color=0x7aaaff))
+    
+    @playlist.command(name="delete", description="Delete a playlist for you")
+    async def delete(self, ctx: commands.Context, name: str):
+        name = name.title()
+        query = "SELECT * FROM  pl WHERE user_id = ?"
+        val = (ctx.author.id,)
+        with sqlite3.connect('./database.sqlite3') as db:
+            db.row_factory = sqlite3.Row
+            cursor = db.cursor()
+            cursor.execute(query, val)
+            p_db = cursor.fetchone()
+        if p_db is None:
+            return await ctx.reply(f"{ctx.author.mention} You don't have any playlist named {name}")
+        else:
+            xx = literal_eval(p_db['pl'])
+            if name.title() not in xx:
+                return await ctx.reply(f"{ctx.author.mention} You don't have any playlist named {name}")
+            else:
+                q = literal_eval(p_db['pl'])
+                del q[name.title()]
+                sql = (f"UPDATE pl SET pl = ? WHERE user_id = ?")
+                val = (f"{q}", ctx.author.id)
+                cursor.execute(sql, val)
+                db.commit()
+                cursor.close()
+                db.close()
+                await ctx.reply(embed=discord.Embed(description=f"{ctx.author.mention} Deleted your playlist with name `{name.title()}`", color=0x7aaaff))
+
+    @delete.autocomplete("name")
+    async def command_autocomplete(self, interaction: discord.Interaction, needle: str):
+        ctx = await self.bot.get_context(interaction, cls=commands.Context)
+        query1 = "SELECT * FROM  pl WHERE user_id = ?"
+        val1 = (ctx.author.id,)
+        with sqlite3.connect('./database.sqlite3') as db1:
+            db1.row_factory = sqlite3.Row
+            cursor1 = db1.cursor()
+            cursor1.execute(query1, val1)
+            p_db = cursor1.fetchone()
+        if p_db is None:
+            return []  
+        else:
+            x = literal_eval(p_db['pl'])
+        if x == "{}":
+            return []
+        ls = []
+        for i in x:
+            ls.append(i)
+        if needle:
+            xd = []
+            for i in ls:
+                if i.lower().startswith(needle.lower()):
+                    xd.append(i)
+            lss = []
+            for i in xd:
+                lss.append(app_commands.Choice(name=f"{i} Playlist", value=i))
+            return lss[:25]
+        else:
+            lss = [
+                app_commands.Choice(name=f"{cog_name} Playlist", value=cog_name)
+                for cog_name in sorted(ls)
+            ]
+            return lss[:25]
+                
+    @playlist.command(name="add", description="Adds a song/queue in your playlist")
+    async def _add(self, ctx: commands.Context, name, *, query):
+        name = name.title()
+        if "youtube.com" in query:
+            return await ctx.reply("Songs from Youtube are not supported")
+        query1 = "SELECT * FROM  pl WHERE user_id = ?"
+        val1 = (ctx.author.id,)
+        with sqlite3.connect('./database.sqlite3') as db:
+            db.row_factory = sqlite3.Row
+            cursor = db.cursor()
+            cursor.execute(query1, val1)
+            p_db = cursor.fetchone()
+        if p_db is not None:
+            xx = literal_eval(p_db['pl'])
+            if name.title() not in xx:
+                return await ctx.reply(f"{ctx.author.mention} You don't have any playlist named {name.title()}")
+        else:
+            return await ctx.reply(f"{ctx.author.mention} You don't have any playlist named {name.title()}")
+        queue = await pladd(self, ctx, query)
+        xx[name.title()] = xx[name.title()] + queue
+        sql = (f"UPDATE pl SET pl = ? WHERE user_id = ?")
+        val = (f"{xx}", ctx.author.id)
+        cursor.execute(sql, val)
+        db.commit()
+        cursor.close()
+        db.close()
+        await ctx.reply(embed=discord.Embed(description=f"{ctx.author.mention} Added {len(queue)} songs to your playlist with name `{name.title()}`", color=0x7aaaff))
+
+    @_add.autocomplete("name")
+    async def command_autocomplete(self, interaction: discord.Interaction, needle: str):
+        ctx = await self.bot.get_context(interaction, cls=commands.Context)
+        query1 = "SELECT * FROM  pl WHERE user_id = ?"
+        val1 = (ctx.author.id,)
+        with sqlite3.connect('./database.sqlite3') as db1:
+            db1.row_factory = sqlite3.Row
+            cursor1 = db1.cursor()
+            cursor1.execute(query1, val1)
+            p_db = cursor1.fetchone()
+        if p_db is None:
+            return []  
+        else:
+            x = literal_eval(p_db['pl'])
+        if x == "{}":
+            return []
+        ls = []
+        for i in x:
+            ls.append(i)
+        if needle:
+            xd = []
+            for i in ls:
+                if i.lower().startswith(needle.lower()):
+                    xd.append(i)
+            lss = []
+            for i in xd:
+                lss.append(app_commands.Choice(name=f"{i} Playlist", value=i))
+            return lss[:25]
+        else:
+            lss = [
+                app_commands.Choice(name=f"{cog_name} Playlist", value=cog_name)
+                for cog_name in sorted(ls)
+            ]
+            return lss[:25]
+                
+    @playlist.command(name="remove", description="Removes song(s) from your playlist")
+    async def _remove(self, ctx: commands.Context, name, index, endindex=None):
+        name = name.title()
+        query1 = "SELECT * FROM  pl WHERE user_id = ?"
+        val1 = (ctx.author.id,)
+        with sqlite3.connect('./database.sqlite3') as db:
+            db.row_factory = sqlite3.Row
+            cursor = db.cursor()
+            cursor.execute(query1, val1)
+            p_db = cursor.fetchone()
+        if p_db is not None:
+            xxx = literal_eval(p_db['pl'])
+            if name.title() not in xxx:
+                return await ctx.reply(f"{ctx.author.mention} You don't have any playlist named {name.title()}")
+        else:
+            return await ctx.reply(f"{ctx.author.mention} You don't have any playlist named {name.title()}")
+        xd = xxx[name.title()]
+        if endindex is not None:
+            if ((not index.isdigit()) or (int(index)) < 1 or (int(index) > len(xd)) or (not endindex.isdigit()) or (int(endindex)) < 1 or (int(endindex) > len(xd))):
+                return await ctx.reply(f"{ctx.author.mention} Both the numbers should be between 1 and {len(xd)}")
+            elif (int(endindex)<int(index)):
+                return await ctx.reply(f"{ctx.author.mention} End index should be greater than start index")
+            else:
+                for i in reversed(range(int(index)-1, int(endindex)-1)):
+                    xd.pop(i)
+                await ctx.reply(f"{ctx.author.mention} Successfully removed {int(endindex)-int(index)} songs from your playlist `{name.title()}`")
+        else:
+            if ((not index.isdigit()) or (int(index)) < 1 or (int(index) > len(xd))):
+                return await ctx.reply(f"{ctx.author.mention} The number should be between 1 and {len(xd)}")
+            else:
+                xd.pop(int(index)-1)
+                await ctx.reply(f"{ctx.author.mention} Successfully removed 1 song from your playlist `{name.title()}`")
+        xxx[name.title()] = xd
+        sql = (f"UPDATE pl SET pl = ? WHERE user_id = ?")
+        val = (f"{xxx}", ctx.author.id)
+        cursor.execute(sql, val)
+        db.commit()
+        cursor.close()
+        db.close()
+
+    @_remove.autocomplete("name")
+    async def command_autocomplete(self, interaction: discord.Interaction, needle: str):
+        ctx = await self.bot.get_context(interaction, cls=commands.Context)
+        query1 = "SELECT * FROM  pl WHERE user_id = ?"
+        val1 = (ctx.author.id,)
+        with sqlite3.connect('./database.sqlite3') as db1:
+            db1.row_factory = sqlite3.Row
+            cursor1 = db1.cursor()
+            cursor1.execute(query1, val1)
+            p_db = cursor1.fetchone()
+        if p_db is None:
+            return []  
+        else:
+            x = literal_eval(p_db['pl'])
+        if x == "{}":
+            return []
+        ls = []
+        for i in x:
+            ls.append(i)
+        if needle:
+            xd = []
+            for i in ls:
+                if i.lower().startswith(needle.lower()):
+                    xd.append(i)
+            lss = []
+            for i in xd:
+                lss.append(app_commands.Choice(name=f"{i} Playlist", value=i))
+            return lss[:25]
+        else:
+            lss = [
+                app_commands.Choice(name=f"{cog_name} Playlist", value=cog_name)
+                for cog_name in sorted(ls)
+            ]
+            return lss[:25]
+
 async def setup(bot):
 	await bot.add_cog(music(bot))

@@ -93,7 +93,7 @@ class raidmode(commands.Cog):
             if raid_db['lockdown'] == 1:
                 database.update("raidmode", "lock", 1, "guild_id", user.guild.id)
         
-    @commands.group(
+    @commands.hybrid_group(
         invoke_without_command=True,
         description="Shows the raidmode's help menu"
     )

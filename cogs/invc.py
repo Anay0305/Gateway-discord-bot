@@ -215,7 +215,7 @@ class invc(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.group(
+    @commands.hybrid_group(
         name="invc",
         invoke_without_command=True, description="Shows the invc's help menu"
     )

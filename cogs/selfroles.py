@@ -521,7 +521,7 @@ class selfroles(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         
-    @commands.group(invoke_without_command=True, name="selfrole", aliases=['selfroles', 'reactionrole', 'sr', 'rr'], description="Show's the help menu for selfroles")
+    @commands.hybrid_group(invoke_without_command=True, name="selfrole", aliases=['selfroles', 'reactionrole', 'sr', 'rr'], description="Show's the help menu for selfroles")
     async def selfrole(self, ctx: commands.Context):
         prefix = ctx.prefix
         if prefix == f"<@{self.bot.user.id}> ":

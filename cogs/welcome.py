@@ -218,7 +218,7 @@ class welcome(commands.Cog):
         else:
             await channel.send(msg, delete_after=auto)
 
-    @commands.group(invoke_without_command=True, description="Shows the help menu for welcome")
+    @commands.hybrid_group(invoke_without_command=True, description="Shows the help menu for welcome")
     async def welcome(self, ctx):
         prefix = ctx.prefix
         if prefix == f"<@{self.bot.user.id}> ":
@@ -485,7 +485,7 @@ class welcome(commands.Cog):
         database.delete("welcome", "guild_id", ctx.guild.id)
         await ctx.send(f"{ctx.author.mention} I Reset The Welcome settings for : {ctx.guild.name}")
     
-    @commands.group(aliases=["autoroles"], invoke_without_command=True)
+    @commands.hybrid_group(aliases=["autoroles"], invoke_without_command=True)
     async def autorole(self, ctx):
         prefix = ctx.prefix
         if prefix == f"<@{self.bot.user.id}> ":

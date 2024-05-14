@@ -4,12 +4,13 @@ from typing import Union
 import datetime
 import emojis
 import botinfo
+import typing
 
 class voice(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.group(
+    @commands.hybrid_group(
         invoke_without_command=True, aliases=["vc"], description="Shows the help menu for voice commands"
     )
     async def voice(self, ctx):
@@ -46,6 +47,37 @@ class voice(commands.Cog):
         vc.set_author(name=f"{str(ctx.author)}", icon_url=ctx.author.display_avatar.url)
         vc.set_footer(text=f"Made by {anay}" ,  icon_url=pfp)
         await ctx.send(embed=vc)
+
+    @voice.command(aliases=["vm"], description="Drags a user into your current voice channel")
+    @commands.guild_only()
+    @commands.has_permissions(moderate_members = True)
+    async def drag(self , ctx ,  user : typing.Optional[discord.Member] = None ,  channel : typing.Optional[discord.VoiceChannel] = None, to_user : typing.Optional[discord.Member] = None):
+        await ctx.defer()
+        Rauthor = None
+        if ctx.message.reference is not None:
+            msg = ctx.message.reference.cached_message
+            Rauthor = msg.author
+        user = user or Rauthor 
+        if channel is None :
+            channel2 = None
+            if to_user is not None:
+                if to_user.voice is None:
+                    await ctx.send(f"{to_user} is not in vc.")
+                    return
+                channel2 = to_user.voice.channel
+            channel = channel2 or ctx.author.voice.channel 
+            if channel == None:
+                await ctx.send("You didn't provide a vc or else you are not in vc")
+                return
+        data = user.voice
+        if data is None :
+            await ctx.send(f"{user} is Not in a VC")
+        else:
+            if not channel.permissions_for(ctx.author).connect:
+                await ctx.send(f"You are not allowed to drag user in {channel.mention}")
+                return
+            await user.move_to(channel)
+            await ctx.reply(f"{user.mention} dragged to {channel.mention}")
     
     @voice.command(name="kick", aliases=["dc"], description="Disconnects the member from vc")
     @commands.has_guild_permissions(move_members=True)
