@@ -2078,6 +2078,105 @@ class music(commands.Cog):
         except:
             await ctx.send("Error occured")
             
+    @commands.hybrid_command(name="msetup", description="Setups the song request channel")
+    @commands.has_guild_permissions(administrator=True)
+    async def setup(self, ctx: commands.Context, *, channel: Union[discord.VoiceChannel, discord.TextChannel]=None):
+        c = check_upgraded(ctx.guild.id)
+        if not c:
+            em = discord.Embed(description=f"You just tried to execute a premium command but this guild is not upgarded\nYou can buy bot's premium by creating a ticket in the [Support Server](https://discord.gg/snaps)", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Premium feature", icon_url=self.bot.user.avatar.url)
+            v = discord.ui.View()
+            v.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/snaps"))
+            return await ctx.reply(embed=em, view=v)
+        query = "SELECT * FROM setup WHERE guild_id = ?"
+        val = (ctx.guild.id,)
+        with sqlite3.connect('./database.sqlite3') as db:
+            db.row_factory = sqlite3.Row
+            cursor = db.cursor()
+            cursor.execute(query, val)
+            s_db = cursor.fetchone()
+        if s_db is None:
+            em = discord.Embed(title="No Song Currently Playing", description="To play your favourite songs playlist press <:fav_star:1238605811224416326> button.", color=8039167)
+            em.set_image(url="https://media.discordapp.net/attachments/1091162329720295557/1093663343279099904/wp6400060.png?width=1066&height=533")
+            em.set_footer(text=f"{self.bot.user.name} Song requester panel", icon_url=self.bot.user.avatar.url)
+            if channel is None:
+                view = voiceortext(ctx, ctx.author)
+                init = await ctx.reply(embed=discord.Embed(description=f"You didn't mention any channel so do you want me to create a music channel for this server?", color=root_color), view=view)
+                await view.wait()
+                await init.delete()
+                if view.value == "voice":
+                    c = await ctx.guild.create_voice_channel(name=f"snaps song request")
+                elif view.value == "text":
+                    c = await ctx.guild.create_text_channel(name=f"snaps song request")
+                else:
+                    return
+            else:
+                c = channel
+            v = interface(self.bot, ctx, True, True)
+            init = await c.send("**__Join the voice channel and send songs name or spotify link for song or playlist to play in this channel__**", embed=em, view=v)
+            sql = (f"INSERT INTO setup(guild_id, channel_id, msg_id) VALUES(?, ?, ?)")
+            val = (ctx.guild.id, c.id, init.id,)
+            cursor.execute(sql, val)
+            await ctx.reply(embed=discord.Embed(description=f"Song request channel set to {c.mention} for the server\nNow you can use my music commands there without any prefix", color=0x7aaaff))
+        else:
+            try:
+                c = self.bot.get_channel(s_db['channel_id'])
+                if c is None:
+                    pass
+                else:
+                    msg: discord.Message = await c.fetch_message(s_db['msg_id'])
+                    if msg is None:
+                        try:
+                            await msg.delete()
+                        except:
+                            await msg.edit(view=None)
+                    else:
+                        pass
+            except:
+                pass
+            sql = (f"DELETE FROM 'setup' WHERE guild_id = ?")
+            val = (ctx.guild.id,)
+            cursor.execute(sql, val)
+            await ctx.reply(embed=discord.Embed(description=f"Song request channel removed from this server", color=0x7aaaff))
+        db.commit()
+        cursor.close()
+        db.close()
+
+    @commands.hybrid_command(name="247", description="Keeps the bot 24/7 in vc")
+    @commands.has_permissions(manage_channels=True)
+    async def _sss(self, ctx):
+        c = check_upgraded(ctx.guild.id)
+        if not c:
+            em = discord.Embed(description=f"You just tried to execute a premium command but this guild is not upgarded\nYou can buy bot's premium by creating a ticket in the [Support Server](https://discord.gg/snaps)", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Premium feature", icon_url=self.bot.user.avatar.url)
+            v = discord.ui.View()
+            v.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/snaps"))
+            return await ctx.reply(embed=em, view=v)
+        if not getattr(ctx.author.voice, "channel", None):
+            embed = discord.Embed(
+                description=f"{ctx.author.mention} You are not connected to any of the voice channel.", color=0x7aaaff)
+            return await ctx.reply(embed=embed)
+        query = "SELECT * FROM  '247' WHERE guild_id = ?"
+        val = (ctx.guild.id,)
+        with sqlite3.connect('./database.sqlite3') as db:
+            db.row_factory = sqlite3.Row
+            cursor = db.cursor()
+            cursor.execute(query, val)
+            m_db = cursor.fetchone()
+        if m_db is None:
+            if not getattr(ctx.guild.me.voice, "channel", None):
+                vc: wavelink.Player = await ctx.author.voice.channel.connect(cls=wavelink.Player, self_deaf=True)
+            sql = (f"INSERT INTO '247'(guild_id, channel_id) VALUES(?, ?)")
+            val = (ctx.guild.id, ctx.author.voice.channel.id)
+            cursor.execute(sql, val)
+            await ctx.reply(f"Now i will stay connected 24/7 in {ctx.author.voice.channel.mention}")
+        else:
+            sql = (f"DELETE FROM '247' WHERE guild_id = ?")
+            val = (ctx.guild.id,)
+            cursor.execute(sql, val)
+            await ctx.reply(f"Now i will not stay connected 24/7 in {ctx.author.voice.channel.mention}")
+        db.commit()
+        cursor.close()
+        db.close()
+            
     @commands.Cog.listener()
     async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
         await self.bot.wait_until_ready()
