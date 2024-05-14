@@ -9,7 +9,7 @@ import emojis
 import botinfo
 import re
 import difflib
-from scogs.antinuke import check_lockrole_bypass
+from cogs.antinuke import check_lockrole_bypass
 
 class BasicView(discord.ui.View):
     def __init__(self, ctx: commands.Context, timeout = 60):
