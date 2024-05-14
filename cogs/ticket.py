@@ -6,6 +6,8 @@ import sqlite3
 import io
 from paginators import PaginationView
 import asyncio
+import botinfo
+import emojis
 
 async def getopenuser(guild, channel):
     query = "SELECT * FROM  ticket WHERE guild_id = ?"
@@ -346,7 +348,7 @@ async def configdata(guild: discord.Guild):
         m_db = cursor.fetchone()
     if m_db is None:
         return None
-    embed = discord.Embed(title=f"{m_db['name']} Ticket panel setup", color=0x7aaaff).set_footer(text=guild.me.name, icon_url=guild.me.avatar.url)
+    embed = discord.Embed(title=f"{m_db['name']} Ticket panel setup", color=botinfo.root_color).set_footer(text=guild.me.name, icon_url=guild.me.avatar.url)
     opencat = discord.utils.get(guild.categories, id=m_db['opencategory'])
     closedcat = discord.utils.get(guild.categories, id=m_db['closedcategory'])
     channel = discord.utils.get(guild.channels, id=m_db['channel_id'])
@@ -420,7 +422,7 @@ class tickredel(discord.ui.View):
             message = f"{user.mention} Welcome Back! The ticket is reopened\n{p.mention}"
         else:
             message = f"{user.mention} Welcome Back! The ticket is reopened"
-        embed = discord.Embed(description="You will be provided with support shortly\nTo close this ticket click the <:ticket_close:1041629937951588352> button.", color=0x7aaaff).set_footer(text=f"{guild.me.name} Ticket System", icon_url=guild.me.avatar.url)
+        embed = discord.Embed(description="You will be provided with support shortly\nTo close this ticket click the <:ticket_close:1041629937951588352> button.", color=botinfo.root_color).set_footer(text=f"{guild.me.name} Ticket System", icon_url=guild.me.avatar.url)
         v = ticketchannelpanel(self.bot)
         await interaction.channel.send(message, embed=embed, view=v)
         self.bot.add_view(v)
@@ -469,7 +471,7 @@ class ticketchannelpanel(discord.ui.View):
         await updateopendata(guild, int(count), data)
         await updatecloseddata(guild, int(count), data)
         v = tickredel(self.bot)
-        em = discord.Embed(title="<:ticket_close:1041629937951588352> Ticket Closed", description=f"{interaction.channel.mention} is closed by {str(interaction.user)}", color=0x7aaaff).set_footer(text=f"{guild.me.name} Ticket System", icon_url=guild.me.avatar.url)
+        em = discord.Embed(title="<:ticket_close:1041629937951588352> Ticket Closed", description=f"{interaction.channel.mention} is closed by {str(interaction.user)}", color=botinfo.root_color).set_footer(text=f"{guild.me.name} Ticket System", icon_url=guild.me.avatar.url)
         await interaction.message.channel.send(embed=em, view=v)
         self.bot.add_view(v)
         await interaction.message.edit(view=None)
@@ -518,7 +520,7 @@ class ticketpanel(discord.ui.View):
             message = f"{interaction.user.mention} Welcome\n{p.mention}"
         else:
             message = f"{interaction.user.mention} Welcome"
-        embed = discord.Embed(description="You will be provided with support shortly\nTo close this ticket click the <:ticket_close:1041629937951588352> button.", color=0x7aaaff).set_footer(text=f"{guild.me.name} Ticket System", icon_url=guild.me.avatar.url)
+        embed = discord.Embed(description="You will be provided with support shortly\nTo close this ticket click the <:ticket_close:1041629937951588352> button.", color=botinfo.root_color).set_footer(text=f"{guild.me.name} Ticket System", icon_url=guild.me.avatar.url)
         v = ticketchannelpanel(self.bot)
         await channel.send(message, embed=embed, view=v)
         self.bot.add_view(v)
@@ -688,11 +690,11 @@ class editpanelview(discord.ui.View):
             if not i.is_bot_managed() and not i.is_premium_subscriber():
                 xd[i.name] = i.id
         if len(xd) == 0:
-            await interaction.message.edit(embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="There are no Roles in the Server", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url))
+            await interaction.message.edit(embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="There are no Roles in the Server", color=botinfo.root_color).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url))
             await asyncio.sleep(10)
         else:
             x = rolemenuview(self.ctx, "supportrole", "Select the Support Role")
-            embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="Select a role which should be allowed to view the ticket channels\nIf a role is not listed below just start typing it's name in select menu box it will be shown as a option", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url)
+            embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="Select a role which should be allowed to view the ticket channels\nIf a role is not listed below just start typing it's name in select menu box it will be shown as a option", color=botinfo.root_color).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url)
             await interaction.edit_original_response(embed=embed, view=x)
             await x.wait()
         emb = await configdata(interaction.guild)
@@ -706,11 +708,11 @@ class editpanelview(discord.ui.View):
             if not i.is_bot_managed() and not i.is_premium_subscriber():
                 xd[i.name] = i.id
         if len(xd) == 0:
-            await interaction.edit_original_response(embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="There are no Roles in the Server", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url))
+            await interaction.edit_original_response(embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="There are no Roles in the Server", color=botinfo.root_color).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url))
             await asyncio.sleep(10)
         else:
             x = rolemenuview(self.ctx, "pingrole", "Select the Ping Role")
-            embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="Select a role which should be pinged as a ticket is created\nIf a role is not listed below just start typing it's name in select menu box it will be shown as a option", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url)
+            embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="Select a role which should be pinged as a ticket is created\nIf a role is not listed below just start typing it's name in select menu box it will be shown as a option", color=botinfo.root_color).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url)
             await interaction.message.edit(embed=embed, view=x)
             await x.wait()
         emb = await configdata(interaction.guild)
@@ -723,11 +725,11 @@ class editpanelview(discord.ui.View):
         for i in interaction.guild.categories:
                 xd[i.name] = i.id
         if len(xd) == 0:
-            await interaction.edit_original_response(embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="There are no category in the Server", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url))
+            await interaction.edit_original_response(embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="There are no category in the Server", color=botinfo.root_color).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url))
             await asyncio.sleep(10)
         else:
             x = catmenuview(self.ctx, "opencategory", "Select the Open ticket's category")
-            embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="Select a category for open tickets\nIf a category is not listed below just start typing it's name in select menu box it will be shown as a option", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url)
+            embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="Select a category for open tickets\nIf a category is not listed below just start typing it's name in select menu box it will be shown as a option", color=botinfo.root_color).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url)
             await interaction.edit_original_response(embed=embed, view=x)
             await x.wait()
         emb = await configdata(interaction.guild)
@@ -740,11 +742,11 @@ class editpanelview(discord.ui.View):
         for i in interaction.guild.categories:
                 xd[i.name] = i.id
         if len(xd) == 0:
-            await interaction.edit_original_response(embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="There are no category in the Server", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url))
+            await interaction.edit_original_response(embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="There are no category in the Server", color=botinfo.root_color).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url))
             await asyncio.sleep(10)
         else:
             x = catmenuview(self.ctx, "closedcategory", "Select the Closed ticket's category")
-            embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="Select a category for open tickets\nIf a category is not listed below just start typing it's name in select menu box it will be shown as a option", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url)
+            embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="Select a category for open tickets\nIf a category is not listed below just start typing it's name in select menu box it will be shown as a option", color=botinfo.root_color).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url)
             await interaction.edit_original_response(embed=embed, view=x)
             await x.wait()
         emb = await configdata(interaction.guild)
@@ -752,7 +754,7 @@ class editpanelview(discord.ui.View):
 
     @discord.ui.button(label="Embed Message", custom_id='emb', style=discord.ButtonStyle.blurple)
     async def embmsg(self, interaction, button):
-        embed = discord.Embed(title=f"{self.name} Ticket panel setup", description=f"What should be the Embed message for {self.name}'s Panel", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url)
+        embed = discord.Embed(title=f"{self.name} Ticket panel setup", description=f"What should be the Embed message for {self.name}'s Panel", color=botinfo.root_color).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url)
         def check(message):
             return message.author == self.ctx.author and message.channel == self.ctx.channel
         m = embmsg()
@@ -770,7 +772,7 @@ class editpanelview(discord.ui.View):
             cursor = db.cursor()
             cursor.execute(query, val)
             m_db = cursor.fetchone()
-        emb = discord.Embed(title=f"{m_db['name']} Panel", description=m_db['msg'], color=0x7aaaff).set_footer(text=f"{str(self.bot.user.name)} Ticket System", icon_url=self.bot.user.avatar.url)
+        emb = discord.Embed(title=f"{m_db['name']} Panel", description=m_db['msg'], color=botinfo.root_color).set_footer(text=f"{str(self.bot.user.name)} Ticket System", icon_url=self.bot.user.avatar.url)
         emb.timestamp = datetime.datetime.now()
         view = ticketpanel(self.bot)
         try:
@@ -801,7 +803,7 @@ class panelview(discord.ui.View):
             if isinstance(i, discord.TextChannel):
                 xd[i.name] = i.id
         x = channelmenuview(self.ctx, "channel_id", "Select the channel")
-        embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="Where should I setup the ticket panel?\nIf a channel is not listed below just start typing it's name in select menu box it will be shown as a option", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url)
+        embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="Where should I setup the ticket panel?\nIf a channel is not listed below just start typing it's name in select menu box it will be shown as a option", color=botinfo.root_color).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url)
         await interaction.edit_original_response(embed=embed, view=x)
         await x.wait()
         for i in self.children:
@@ -818,11 +820,11 @@ class panelview(discord.ui.View):
             if not i.is_bot_managed() and not i.is_premium_subscriber():
                 xd[i.name] = i.id
         if len(xd) == 0:
-            await interaction.edit_original_response(embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="There are no Roles in the Server", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url))
+            await interaction.edit_original_response(embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="There are no Roles in the Server", color=botinfo.root_color).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url))
             await asyncio.sleep(10)
         else:
             x = rolemenuview(self.ctx, "supportrole", "Select the Support Role")
-            embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="Select a role which should be allowed to view the ticket channels\nIf a role is not listed below just start typing it's name in select menu box it will be shown as a option", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url)
+            embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="Select a role which should be allowed to view the ticket channels\nIf a role is not listed below just start typing it's name in select menu box it will be shown as a option", color=botinfo.root_color).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url)
             await interaction.edit_original_response(embed=embed, view=x)
             await x.wait()
         emb = await configdata(interaction.guild)
@@ -837,11 +839,11 @@ class panelview(discord.ui.View):
             if not i.is_bot_managed() and not i.is_premium_subscriber():
                 xd[i.name] = i.id
         if len(xd) == 0:
-            await interaction.edit_original_response(embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="There are no Roles in the Server", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url))
+            await interaction.edit_original_response(embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="There are no Roles in the Server", color=botinfo.root_color).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url))
             await asyncio.sleep(10)
         else:
             x = rolemenuview(self.ctx, "pingrole", "Select the Ping Role")
-            embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="Select a role which should be pinged as a ticket is created\nIf a role is not listed below just start typing it's name in select menu box it will be shown as a option", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url)
+            embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="Select a role which should be pinged as a ticket is created\nIf a role is not listed below just start typing it's name in select menu box it will be shown as a option", color=botinfo.root_color).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url)
             await interaction.edit_original_response(embed=embed, view=x)
             await x.wait()
         emb = await configdata(interaction.guild)
@@ -854,11 +856,11 @@ class panelview(discord.ui.View):
         for i in interaction.guild.categories:
                 xd[i.name] = i.id
         if len(xd) == 0:
-            await interaction.edit_original_response(embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="There are no category in the Server", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url))
+            await interaction.edit_original_response(embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="There are no category in the Server", color=botinfo.root_color).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url))
             await asyncio.sleep(10)
         else:
             x = catmenuview(self.ctx, "opencategory", "Select the Open ticket's category")
-            embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="Select a category for open tickets\nIf a category is not listed below just start typing it in select menu box it's name will be shown as a option", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url)
+            embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="Select a category for open tickets\nIf a category is not listed below just start typing it in select menu box it's name will be shown as a option", color=botinfo.root_color).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url)
             await interaction.edit_original_response(embed=embed, view=x)
             await x.wait()
         emb = await configdata(interaction.guild)
@@ -871,11 +873,11 @@ class panelview(discord.ui.View):
         for i in interaction.guild.categories:
                 xd[i.name] = i.id
         if len(xd) == 0:
-            await interaction.edit_original_response(embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="There are no category in the Server", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url))
+            await interaction.edit_original_response(embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="There are no category in the Server", color=botinfo.root_color).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url))
             await asyncio.sleep(10)
         else:
             x = catmenuview(self.ctx, "closedcategory", "Select the Closed ticket's category")
-            embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="Select a category for open tickets\nIf a category is not listed below just start typing it's name in select menu box it will be shown as a option", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url)
+            embed = discord.Embed(title=f"{self.name} Ticket panel setup", description="Select a category for open tickets\nIf a category is not listed below just start typing it's name in select menu box it will be shown as a option", color=botinfo.root_color).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url)
             await interaction.edit_original_response(embed=embed, view=x)
             await x.wait()
         emb = await configdata(interaction.guild)
@@ -883,7 +885,7 @@ class panelview(discord.ui.View):
 
     @discord.ui.button(label="Embed Message", custom_id='emb', disabled=True, style=discord.ButtonStyle.blurple)
     async def embmsg(self, interaction: discord.Interaction, button):
-        embed = discord.Embed(title=f"{self.name} Ticket panel setup", description=f"What should be the Embed message for {self.name}'s Panel", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url)
+        embed = discord.Embed(title=f"{self.name} Ticket panel setup", description=f"What should be the Embed message for {self.name}'s Panel", color=botinfo.root_color).set_footer(text=f"{self.bot.user.name} Ticket", icon_url=self.bot.user.avatar.url)
         def check(message):
             return message.author == self.ctx.author and message.channel == self.ctx.channel
         m = embmsg()
@@ -907,7 +909,7 @@ class panelview(discord.ui.View):
             cursor = db.cursor()
             cursor.execute(query, val)
             m_db = cursor.fetchone()
-        emb = discord.Embed(title=f"{m_db['name']} Panel", description=m_db['msg'], color=0x7aaaff).set_footer(text=f"{str(self.bot.user.name)} Ticket System", icon_url=self.bot.user.avatar.url)
+        emb = discord.Embed(title=f"{m_db['name']} Panel", description=m_db['msg'], color=botinfo.root_color).set_footer(text=f"{str(self.bot.user.name)} Ticket System", icon_url=self.bot.user.avatar.url)
         emb.timestamp = datetime.datetime.now()
         chan = discord.utils.get(interaction.guild.channels, id=m_db['channel_id'])
         view = ticketpanel(self.bot)
@@ -926,7 +928,7 @@ class ticket(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
-    @commands.group(
+    @commands.hybrid_group(
         invoke_without_command=True, description="Shows the help menu for ticket commands"
     )
     async def ticket(self, ctx):
@@ -939,7 +941,7 @@ class ticket(commands.Cog):
         for i in sorted(ls):
             cmd = self.bot.get_command(i)
             des += f"`{prefix}{i}`\n{cmd.description}\n\n"
-        listem = discord.Embed(title=f"<:gateway_ticket:1041628723851579485> Ticket Commands", colour=0x7aaaff,
+        listem = discord.Embed(title=f"<:ticket:1215454856832098395> Ticket Commands", colour=botinfo.root_color,
                                      description=f"<...> Duty | [...] Optional\n\n{des}")
         listem.set_author(name=f"{str(ctx.author)}", icon_url=ctx.author.display_avatar.url)
         listem.set_footer(text=f"Made by {str(anay)}" ,  icon_url=anay.avatar.url)
@@ -977,7 +979,7 @@ class ticket(commands.Cog):
             message = f"{user.mention} Welcome Back! The ticket is reopened\n{p.mention}"
         else:
             message = f"{user.mention} Welcome Back! The ticket is reopened"
-        embed = discord.Embed(description="You will be provided with support shortly\nTo close this ticket click the <:ticket_close:1041629937951588352> button.", color=0x7aaaff).set_footer(text=f"{guild.me.name} Ticket System", icon_url=guild.me.avatar.url)
+        embed = discord.Embed(description="You will be provided with support shortly\nTo close this ticket click the <:ticket_close:1041629937951588352> button.", color=botinfo.root_color).set_footer(text=f"{guild.me.name} Ticket System", icon_url=guild.me.avatar.url)
         v = ticketchannelpanel(self.bot)
         await channel.send(message, embed=embed, view=v)
         self.bot.add_view(v)
@@ -989,7 +991,7 @@ class ticket(commands.Cog):
             pass
         else:
             if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in  [994130204949745705, 979353019235840000]:
-                em = discord.Embed(description=f"<:Wrong:1098134211275276300>You must Have Higher Role than Bot To run This Command", color=0xff0000)
+                em = discord.Embed(description=f"{emojis.wrong} You must Have Higher Role than Bot To run This Command", color=botinfo.wrong_color)
                 return await ctx.send(embed=em)
         name = "Ticket"
         guild = ctx.guild
@@ -1008,7 +1010,7 @@ class ticket(commands.Cog):
             val = (ctx.guild.id, f"{name.title()}")
             cursor.execute(sql, val)
         else:
-            return await ctx.send(embed=discord.Embed(description=f"You can create only one panel at the moment. ", color=0x7aaaff).set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar.url))
+            return await ctx.send(embed=discord.Embed(description=f"You can create only one panel at the moment. ", color=botinfo.root_color).set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar.url))
         db.commit()
         cursor.close()
         db.close()
@@ -1024,7 +1026,7 @@ class ticket(commands.Cog):
             pass
         else:
             if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in  [994130204949745705, 979353019235840000]:
-                em = discord.Embed(description=f"<:Wrong:1098134211275276300>You must Have Higher Role than Bot To run This Command", color=0xff0000)
+                em = discord.Embed(description=f"{emojis.wrong} You must Have Higher Role than Bot To run This Command", color=botinfo.wrong_color)
                 return await ctx.send(embed=em)
         guild = ctx.guild
         name = "Ticket"
@@ -1036,7 +1038,7 @@ class ticket(commands.Cog):
             cursor.execute(query, val)
             m_db = cursor.fetchone()
         if m_db is None:
-            return await ctx.send(embed=discord.Embed(description=f"No ticket panel found with the name `{name}`", color=0x7aaaff).set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar.url))
+            return await ctx.send(embed=discord.Embed(description=f"No ticket panel found with the name `{name}`", color=botinfo.root_color).set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar.url))
         try:
             c = self.bot.get_channel(m_db["channel_id"])
             m = await c.fetch_message(m_db['msg_id'])
@@ -1044,7 +1046,7 @@ class ticket(commands.Cog):
         except:
             pass
         await deletedata(ctx.guild)
-        return await ctx.send(embed=discord.Embed(description=f"Successfully deleted ticket panel with name `{name}`", color=0x7aaaff).set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar.url))
+        return await ctx.send(embed=discord.Embed(description=f"Successfully deleted ticket panel with name `{name}`", color=botinfo.root_color).set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar.url))
     
     @ticket.command(description="Gets the information of the ticket")
     @commands.has_guild_permissions(administrator=True)
@@ -1059,9 +1061,9 @@ class ticket(commands.Cog):
             cursor.execute(query, val)
             m_db = cursor.fetchone()
         if m_db is None:
-            return await ctx.send(embed=discord.Embed(description=f"No ticket panel found with the name `{name}`", color=0x7aaaff).set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar.url))
+            return await ctx.send(embed=discord.Embed(description=f"No ticket panel found with the name `{name}`", color=botinfo.root_color).set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar.url))
         if m_db['name'] != name.title():
-            return await ctx.send(embed=discord.Embed(description=f"No ticket panel found with the name `{name}`", color=0x7aaaff).set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar.url))
+            return await ctx.send(embed=discord.Embed(description=f"No ticket panel found with the name `{name}`", color=botinfo.root_color).set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar.url))
         em = await configdata(ctx.guild)
         await ctx.reply(embed=em)
 
@@ -1072,7 +1074,7 @@ class ticket(commands.Cog):
             pass
         else:
             if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in  [994130204949745705, 979353019235840000]:
-                em = discord.Embed(description=f"<:Wrong:1098134211275276300>You must Have Higher Role than Bot To run This Command", color=0xff0000)
+                em = discord.Embed(description=f"{emojis.wrong} You must Have Higher Role than Bot To run This Command", color=botinfo.wrong_color)
                 return await ctx.send(embed=em)
         name = "Ticket"
         guild = ctx.guild
@@ -1084,9 +1086,9 @@ class ticket(commands.Cog):
             cursor.execute(query, val)
             m_db = cursor.fetchone()
         if m_db is None:
-            return await ctx.send(embed=discord.Embed(description=f"No ticket panel found with the name `{name}`", color=0x7aaaff).set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar.url))
+            return await ctx.send(embed=discord.Embed(description=f"No ticket panel found with the name `{name}`", color=botinfo.root_color).set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar.url))
         if m_db['name'] != name.title():
-            return await ctx.send(embed=discord.Embed(description=f"No ticket panel found with the name `{name}`", color=0x7aaaff).set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar.url))
+            return await ctx.send(embed=discord.Embed(description=f"No ticket panel found with the name `{name}`", color=botinfo.root_color).set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar.url))
         v = editpanelview(self.bot, ctx, name)
         emb = await configdata(ctx.guild)
         await ctx.reply(embed=emb, view=v)
