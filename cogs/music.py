@@ -907,7 +907,7 @@ class music(commands.Cog):
     async def on_wavelink_track_end(self, payload: wavelink.TrackEndEventPayload) -> None:
         player: wavelink.Player | None = payload.player
         c = None
-        if player and player.queue:
+        if player and player.queue and player.autoplay.value == 2:
             c = await player.play(player.queue.get())
         if payload.player:
             try:
