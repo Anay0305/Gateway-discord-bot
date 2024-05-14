@@ -210,7 +210,7 @@ async def on_message(message: discord.Message) -> None:
     ctx = await bot.get_context(message)
     if re.fullmatch(rf"<@!?{bot.user.id}>", message.content) and not ctx.author.bot:
         prefix = database.get_guild_prefix(message.guild.id)
-        emb = discord.Embed(description=f"Hey {message.author.mention} My Prefix is `{prefix}`\nTo view all my modules do `{prefix}help` or </help:1215080883745194025>.\nFor module related help use `{prefix}help <module name>` or </help:1063005466914979900> `<module name>`", color=botinfo.root_color)
+        emb = discord.Embed(description=f"Hey {message.author.mention} My Prefix is `{prefix}`\nTo view all my modules do `{prefix}help` or </help:1240018917204955198>.\nFor module related help use `{prefix}help <module name>` or </help:1063005466914979900> `<module name>`", color=botinfo.root_color)
         page = discord.ui.View()
         #page.add_item(discord.ui.Button(label="Invite me", url=discord.utils.oauth_url(bot.user.id)))
         #page.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/gZ2yzbqhyX"))
