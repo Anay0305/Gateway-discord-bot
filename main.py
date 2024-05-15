@@ -212,7 +212,7 @@ async def on_message(message: discord.Message) -> None:
         prefix = database.get_guild_prefix(message.guild.id)
         emb = discord.Embed(description=f"Hey {message.author.mention} My Prefix is `{prefix}`\nTo view all my modules do `{prefix}help` or </help:1240018917204955198>.\nFor module related help use `{prefix}help <module name>` or </help:1063005466914979900> `<module name>`", color=botinfo.root_color)
         page = discord.ui.View()
-        page.add_item(discord.ui.Button(label="Invite me", url=discord.utils.oauth_url(bot.user.id, permissions=8)))
+        page.add_item(discord.ui.Button(label="Invite me", url="https://discord.com/api/oauth2/authorize?client_id=1240005601220755557&&permissions=8&scope=bot"))
         page.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/xvqjY22pbY"))
         #page.add_item(discord.ui.Button(label="Vote", url="https://top.gg/bot/880765863953858601/vote"))
         await ctx.reply(embed=emb, mention_author=False, view=page)
