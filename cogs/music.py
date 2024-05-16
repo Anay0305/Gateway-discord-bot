@@ -2081,9 +2081,9 @@ class music(commands.Cog):
     async def setup(self, ctx: commands.Context, *, channel: Union[discord.VoiceChannel, discord.TextChannel]=None):
         c = check_upgraded(ctx.guild.id)
         if not c:
-            em = discord.Embed(description=f"You just tried to execute a premium command but this guild is not upgarded\nYou can buy bot's premium by creating a ticket in the [Support Server](https://discord.gg/xvqjY22pbY)", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Premium feature", icon_url=self.bot.user.avatar.url)
+            em = discord.Embed(description=f"You just tried to execute a premium command but this guild is not upgarded\nYou can buy bot's premium by creating a ticket in the [Support Server](https://discord.gg/K4v4aEuwp6)", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Premium feature", icon_url=self.bot.user.avatar.url)
             v = discord.ui.View()
-            v.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/xvqjY22pbY"))
+            v.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/K4v4aEuwp6"))
             return await ctx.reply(embed=em, view=v)
         query = "SELECT * FROM setup WHERE guild_id = ?"
         val = (ctx.guild.id,)
@@ -2147,9 +2147,9 @@ class music(commands.Cog):
     async def _sss(self, ctx):
         c = check_upgraded(ctx.guild.id)
         if not c:
-            em = discord.Embed(description=f"You just tried to execute a premium command but this guild is not upgarded\nYou can buy bot's premium by creating a ticket in the [Support Server](https://discord.gg/xvqjY22pbY)", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Premium feature", icon_url=self.bot.user.avatar.url)
+            em = discord.Embed(description=f"You just tried to execute a premium command but this guild is not upgarded\nYou can buy bot's premium by creating a ticket in the [Support Server](https://discord.gg/K4v4aEuwp6)", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Premium feature", icon_url=self.bot.user.avatar.url)
             v = discord.ui.View()
-            v.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/xvqjY22pbY"))
+            v.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/K4v4aEuwp6"))
             return await ctx.reply(embed=em, view=v)
         if not getattr(ctx.author.voice, "channel", None):
             embed = discord.Embed(
@@ -2260,7 +2260,7 @@ class music(commands.Cog):
                     except:
                         tm = tm
                     count += 1
-                    q.append(f"`[{'0' + str(count) if count < 10 else count}]` | [{i}](https://discord.gg/xvqjY22pbY) - [{tm}]")
+                    q.append(f"`[{'0' + str(count) if count < 10 else count}]` | [{i}](https://discord.gg/K4v4aEuwp6) - [{tm}]")
                 for i in range(0, len(q), 10):
                     ls.append(q[i: i + 10])
                 em_list = []

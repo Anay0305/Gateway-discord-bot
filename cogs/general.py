@@ -440,13 +440,13 @@ class general(commands.Cog):
                              f"**• Python Version:** {platform.python_version()}\n"
                              f"**• Discord.py Version:** **{discord.__version__}**\n"
                              f"**• __Code Information__:**\n"
-                             f"**\u2192** **Total no. of Files:** **[{files} Files](https://discord.gg/xvqjY22pbY)**\n"
-                             f"**\u2192** **Total no. of Lines:** **[{lines} Lines](https://discord.gg/xvqjY22pbY)**")
+                             f"**\u2192** **Total no. of Files:** **[{files} Files](https://discord.gg/K4v4aEuwp6)**\n"
+                             f"**\u2192** **Total no. of Lines:** **[{lines} Lines](https://discord.gg/K4v4aEuwp6)**")
         embed.set_thumbnail(url=self.bot.user.avatar.url)
         embed.set_footer(text=f"Requested By {str(ctx.author)}", icon_url=ctx.author.display_avatar.url)
         page = discord.ui.View()
         page.add_item(discord.ui.Button(label="Invite me", url=discord.utils.oauth_url(self.bot.user.id)))
-        page.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/xvqjY22pbY"))
+        page.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/K4v4aEuwp6"))
         await ctx.reply(embed = embed, mention_author=False, view=page)
 
     @commands.hybrid_command(name="afk", description="Changes the afk status of user")
