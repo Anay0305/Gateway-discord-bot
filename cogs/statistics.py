@@ -232,18 +232,21 @@ class Statistics(commands.Cog):
     @leaderboard.command(aliases=['m', 'msg', 'msgs'])
     async def messages(self, ctx: commands.Context, mode=None, start_date: str=None, *, end_date: str=None):
         res = database.fetchone("*", "messages_db", "guild_id", ctx.guild.id)
+        if res is None:
+            return await ctx.reply(embed=discord.Embed(color=botinfo.wrong_color).set_footer(text="There have been no interaction in the Text channels."))
         channel_db = literal_eval(res['channel_messages'])
         user_db = literal_eval(res['user_messages'])
         day_db = literal_eval(res['specific_day_messages'])
-        if "u" not in mode or "c" not in mode:
-            if start_date is not None and end_date is not None:
-                end_date = start_date+" "+end_date
-            elif start_date is not None:
-                end_date = start_date
-            else:
-                end_date = None
-            start_date = mode
-            mode = None
+        if mode is not None:
+            if "u" not in mode or "c" not in mode:
+                if start_date is not None and end_date is not None:
+                    end_date = start_date+" "+end_date
+                elif start_date is not None:
+                    end_date = start_date
+                else:
+                    end_date = None
+                start_date = mode
+                mode = None
         if mode is None or "u" in mode:
             count = 1
             ls = {}
@@ -367,15 +370,16 @@ class Statistics(commands.Cog):
         channel_db = literal_eval(res['channel_time'])
         user_db = literal_eval(res['user_time'])
         day_db = literal_eval(res['specific_day_time'])
-        if "u" not in mode or "c" not in mode:
-            if start_date is not None and end_date is not None:
-                end_date = start_date+" "+end_date
-            elif start_date is not None:
-                end_date = start_date
-            else:
-                end_date = None
-            start_date = mode
-            mode = None
+        if mode is not None:
+            if "u" not in mode or "c" not in mode:
+                if start_date is not None and end_date is not None:
+                    end_date = start_date+" "+end_date
+                elif start_date is not None:
+                    end_date = start_date
+                else:
+                    end_date = None
+                start_date = mode
+                mode = None
         if mode is None or "u" in mode:
             count = 1
             ls = {}
