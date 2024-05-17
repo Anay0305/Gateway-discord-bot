@@ -229,7 +229,7 @@ class Statistics(commands.Cog):
     async def leaderboard(self, ctx: commands.Context):
         pass
     
-    @leaderboard.command(aliases=['m', 'msg', 'msgs'])
+    @leaderboard.command(aliases=['m', 'msg', 'msgs'], description="Shows the messages leaderboard of the server")
     async def messages(self, ctx: commands.Context, mode=None, start_date: str=None, *, end_date: str=None):
         res = database.fetchone("*", "messages_db", "guild_id", ctx.guild.id)
         if res is None:
@@ -362,7 +362,7 @@ class Statistics(commands.Cog):
             page = PaginationView(embed_list=em_list, ctx=ctx)
             await page.start(ctx)
 
-    @leaderboard.command(aliases=['v', 'vc', 'vcs'])
+    @leaderboard.command(aliases=['v', 'vc', 'vcs'], description="Shows the voice leaderboard of the server")
     async def voice(self, ctx: commands.Context, mode=None, start_date: str=None, *, end_date: str=None):
         res = database.fetchone("*", "voice_db", "guild_id", ctx.guild.id)
         if res is None:
