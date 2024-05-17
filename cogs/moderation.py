@@ -2546,7 +2546,7 @@ class moderation(commands.Cog):
             emb.add_field(name="Error:", value=f"Missing role", inline=False)
             webhook.send(embed=emb, username=f"{str(self.bot.user)} | Error Command Logs", avatar_url=self.bot.user.avatar.url)
             return
-        if isinstance(error, commands.commandOnCooldown):
+        if isinstance(error, commands.CommandOnCooldown):
             em = discord.Embed(description=f"{emojis.wrong} This command is on cooldown. Please retry after `{round(error.retry_after, 1)} Seconds` .", color=botinfo.wrong_color)
             await ctx.send(embed=em, delete_after=7)
             emb.add_field(name="Error:", value=f"Command On Cooldown", inline=False)
