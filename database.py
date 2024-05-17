@@ -277,8 +277,19 @@ async def create_tables():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS "messages_db" (
                 "guild_id"  INTEGER,
-                "messages" TEXT DEFAULT "{}",
-                "daily_messages" TEXT DEFAULT "{}",
+                "user_messages" TEXT DEFAULT "{}",
+                "channel_messages" TEXT DEFAULT "{}",
+                "specific_day_messages" TEXT DEFAULT "{}",
+                "bl_channels" TEXT DEFAULT "[]",
+                PRIMARY KEY("guild_id")
+        )
+        ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS "voice_db" (
+                "guild_id"  INTEGER,
+                "user_time" TEXT DEFAULT "{}",
+                "channel_time" TEXT DEFAULT "{}",
+                "specific_day_time" TEXT DEFAULT "{}",
                 "bl_channels" TEXT DEFAULT "[]",
                 PRIMARY KEY("guild_id")
         )
@@ -484,6 +495,26 @@ def update(table_name, q, value, u_key, u_val):
     with sqlite3.connect('database.sqlite3') as db:
         db.row_factory = sqlite3.Row
         cursor = db.cursor()
+        query = f"UPDATE {table_name} SET '{q}' = ? WHERE {u_key} = ?"
+        val = (value, u_val,)
+        cursor.execute(query, val)
+    db.commit()
+    cursor.close()
+    db.close()
+    return True
+
+def updateforce(table_name, q, value, u_key, u_val):
+    with sqlite3.connect('database.sqlite3') as db:
+        db.row_factory = sqlite3.Row
+        cursor = db.cursor()
+        query = f"SELECT * FROM {table_name} WHERE {u_key} = ?"
+        val = (u_val,)
+        cursor.execute(query, val)
+        res = cursor.fetchone()
+        if res is None:
+            query = f"INSERT INTO {table_name}({u_key}) VALUES({u_val})"
+            cursor.execute(query)
+            db.commit()
         query = f"UPDATE {table_name} SET '{q}' = ? WHERE {u_key} = ?"
         val = (value, u_val,)
         cursor.execute(query, val)
