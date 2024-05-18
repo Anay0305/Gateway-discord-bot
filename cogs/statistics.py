@@ -377,13 +377,9 @@ class Statistics(commands.Cog):
                 icon = ctx.guild.icon.url
             else:
                 icon = ctx.guild.me.display_avatar.url
-            for k in lss:
-                file = lb_(icon, ctx.guild.name, "messages", "users", k, no, len(lss), start_, end_)
-                file_list.append(file)
-                no+=1
-            if no == 1:   
+            if len(lss)==0:
                 return await ctx.reply(embed=discord.Embed(color=botinfo.wrong_color).set_footer(text="There have been no interaction in the Text channels."))
-            page = StatPaginationView(file_list=file_list, ctx=ctx)
+            page = StatPaginationView(file_list=lss, ctx=ctx, icon=icon, mode="messages", typee="users", start_=start_, end_=end_)
             await page.start(ctx)
         else:
             count = 1
@@ -437,13 +433,9 @@ class Statistics(commands.Cog):
                 icon = ctx.guild.icon.url
             else:
                 icon = ctx.guild.me.display_avatar.url
-            for k in lss:
-                file = lb_(icon, ctx.guild.name, "messages", "channels", k, no, len(lss), start_, end_)
-                file_list.append(file)
-                no+=1
-            if no == 1:   
+            if len(lss) == 0:
                 return await ctx.reply(embed=discord.Embed(color=botinfo.wrong_color).set_footer(text="There have been no interaction in the Text channels."))
-            page = StatPaginationView(file_list=file_list, ctx=ctx)
+            page = StatPaginationView(file_list=lss, ctx=ctx, icon=icon, mode="messages", typee="channels", start_=start_, end_=end_)
             await page.start(ctx)
 
     @leaderboard.command(aliases=['v', 'vc', 'vcs'], description="Shows the voice leaderboard of the server")

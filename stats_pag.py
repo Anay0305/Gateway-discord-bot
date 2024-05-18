@@ -3,7 +3,7 @@ from itertools import islice
 import botinfo
 from discord.ext import commands
 import discord
-
+from cogs.statistics import lb_
 
 def get_chunks(iterable, size):
     it = iter(iterable)
@@ -57,11 +57,15 @@ class Pages:
 class StatPaginationView(discord.ui.View):
     current = 0
 
-    def __init__(self, file_list: list, ctx, links: list=None):
+    def __init__(self, file_list: list, ctx, icon, mode, typee, start_, end_):
         super().__init__(timeout=90)
         self.file_list = file_list
+        self.icon = icon
+        self.start_ = start_
+        self.end_ = end_
+        self.mode = mode
+        self.typee = typee
         self.ctx = ctx
-        self.links = links
         self.view = None
         self.message = None
         
@@ -94,9 +98,9 @@ class StatPaginationView(discord.ui.View):
         else:
             self.next.disabled = True
             self._last.disabled = True
-
+        file = lb_(self.icon, self.ctx.guild.name, self.mode, self.typee, self.file_list[self.current], self.current, len(self.file_list), self.start_, self.end_)
         await interaction.response.edit_message(
-            attachments=[self.file_list[self.current]], view=self
+            attachments=[file], view=self
         )
         self.view = self.current
 
@@ -124,8 +128,9 @@ class StatPaginationView(discord.ui.View):
             button.disabled = False
 
 
+        file = lb_(self.icon, self.ctx.guild.name, self.mode, self.typee, self.file_list[self.current], self.current, len(self.file_list), self.start_, self.end_)
         await interaction.response.edit_message(
-            attachments=[self.file_list[self.current]], view=self
+            attachments=[file], view=self
         )
         self.view = self.current
       
@@ -151,8 +156,9 @@ class StatPaginationView(discord.ui.View):
             self.previous.disabled = True
             self.first.disabled = True
 
+        file = lb_(self.icon, self.ctx.guild.name, self.mode, self.typee, self.file_list[self.current], self.current, len(self.file_list), self.start_, self.end_)
         await interaction.response.edit_message(
-            attachments=[self.file_list[self.current]], view=self
+            attachments=[file], view=self
         )
         self.view = self.current
 
@@ -170,24 +176,26 @@ class StatPaginationView(discord.ui.View):
             self.first.disabled = True
             self.previous.disabled = True
 
+        file = lb_(self.icon, self.ctx.guild.name, self.mode, self.typee, self.file_list[self.current], self.current, len(self.file_list), self.start_, self.end_)
         await interaction.response.edit_message(
-            attachments=[self.file_list[self.current]], view=self
+            attachments=[file], view=self
         )
         self.view = self.current
     
     async def start(self, ctx: commands.Context, interaction: discord.Interaction=None):
+        file = lb_(self.icon, self.ctx.guild.name, self.mode, self.typee, self.file_list[0], self.current, len(self.file_list), self.start_, self.end_)
         if len(self.file_list) != 1:
             if interaction is not None:
-                self.message = await interaction.response.send_message(file=self.file_list[0], view=self, ephemeral=True)
+                self.message = await interaction.response.send_message(file=file, view=self, ephemeral=True)
             else:
-                self.message = await ctx.send(file=self.file_list[0], view=self)
+                self.message = await ctx.send(file=file, view=self)
             self.user = ctx.author
             await self.wait()
             return self.message
         else:
             if interaction is not None:
-                self.message = await interaction.response.send_message(file=self.file_list[0], ephemeral=True)
+                self.message = await interaction.response.send_message(file=file, ephemeral=True)
             else:
-                self.message = await ctx.send(file=self.file_list[0])
+                self.message = await ctx.send(file=file)
             self.user = ctx.author
             return self.message
