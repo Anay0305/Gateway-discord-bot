@@ -369,14 +369,14 @@ class Statistics(commands.Cog):
                     des[u.name] = [dic[i], count, u.display_name]
                     count+=1
             lss = []
-            xd = []
+            xd = {}
             coun = 0
             for i in des:
                 coun += 1
-                xd.append(des[i])
+                xd[i]=des[i]
                 if coun % 10 == 0 or coun == len(des):
                     lss.append(xd)
-                    xd = []
+                    xd = {}
             file_list = []
             no = 1
             for k in lss:
@@ -425,14 +425,14 @@ class Statistics(commands.Cog):
                     des[u.name] = [dic[i], count]
                     count+=1
             lss = []
-            xd = []
+            xd = {}
             coun = 0
             for i in des:
                 coun += 1
-                xd.append(des[i])
+                xd[i]=des[i]
                 if coun % 10 == 0 or coun == len(des):
                     lss.append(xd)
-                    xd = []
+                    xd = {}
             file_list = []
             no = 1
             for k in lss:
