@@ -419,6 +419,7 @@ class Statistics(commands.Cog):
                 for i in day_db:
                     start_ = i
                     break
+                dic = channel_db
             des = {}
             for i in dic:
                 u = discord.utils.get(ctx.guild.channels, id=i)
