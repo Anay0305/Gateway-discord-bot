@@ -365,7 +365,7 @@ class Statistics(commands.Cog):
                             start_ = i
                             break
                 dic = user_db
-            des = []
+            des = {}
             for i in dic:
                 u = discord.utils.get(ctx.guild.members, id=i)
                 if u is not None:
@@ -417,7 +417,7 @@ class Statistics(commands.Cog):
                         if ctx.guild.id == k:
                             start_ = i
                             break
-            des = []
+            des = {}
             for i in dic:
                 u = discord.utils.get(ctx.guild.channels, id=i)
                 if u is not None:

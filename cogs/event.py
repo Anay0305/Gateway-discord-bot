@@ -14,6 +14,7 @@ from premium import check_upgraded
 import wavelink
 import asyncio
 import voice_db
+import datetime
 
 async def loadmsetup(bot: commands.AutoShardedBot):
     msetup_db = database.fetchall1("*", "setup")
