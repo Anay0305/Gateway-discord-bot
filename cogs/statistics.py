@@ -277,7 +277,10 @@ class Statistics(commands.Cog):
                     except:
                         date_list = date_range(start_date+end_date)
                 except:
-                    return await ctx.reply(embed=discord.Embed(color=botinfo.wrong_color).set_footer(text="Please enter the dates correctly."))
+                    try:
+                        date_list = date_range(start_date+" "+end_date)
+                    except:
+                        return await ctx.reply(embed=discord.Embed(color=botinfo.wrong_color).set_footer(text="Please enter the dates correctly."))
                 dic = {}
                 for i in date_list:
                     if i in day_db:
