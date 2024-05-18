@@ -9,32 +9,108 @@ from voice_db import *
 from discord.ext import commands
 from ast import literal_eval
 from paginators import PaginationView
+from stats_pag import StatPaginationView
 from PIL import Image, ImageDraw, ImageFont
 from datetime import datetime, timedelta
+from io import BytesIO
 
 def converttime(seconds):
     time = int(seconds)
-    month = time // (30 * 24 * 3600)
-    time = time % (24 * 3600)
-    day = time // (24 * 3600)
-    time = time % (24 * 3600)
     hour = time // 3600
     time %= 3600
     minutes = time // 60
     time %= 60
     seconds = time
     ls = []
-    if month != 0:
-        ls.append(f"{month}mo")
-    if day != 0:
-        ls.append(f"{day}d")
     if hour != 0:
-        ls.append(f"{hour}h")
+        ls.append(f"{hour}hrs")
     if minutes != 0:
-        ls.append(f"{minutes}m")
+        ls.append(f"{minutes}mins")
     if seconds != 0:
-        ls.append(f"{seconds}s")
+        ls.append(f"{seconds}secs")
     return ' '.join(ls)
+
+def lb_(mode:str, typee:str, data, current, total, start_date, end_date=str(datetime.now().date())):
+    width = 960
+    height = 500
+
+    with open("lb_bg.jpg", 'rb') as file:
+        image = Image.open(BytesIO(file.read())).convert("RGBA")
+        file.close()
+    image = image.resize((width,height))
+    draw = ImageDraw.Draw(image)
+    pfp = "https://cdn.discordapp.com/icons/1183413203376554054/a_848ecf62181c3aa03650559ccbd8207d.gif?size=1024"
+    pfp = pfp.replace("gif", "png").replace("webp", "png").replace("jpeg", "png")
+    logo_res = requests.get(pfp)
+    AVATAR_SIZE = 78
+    avatar_image = Image.open(BytesIO(logo_res.content)).convert("RGB")
+    avatar_image = avatar_image.resize((AVATAR_SIZE, AVATAR_SIZE)) #
+    circle_image = Image.new('L', (AVATAR_SIZE, AVATAR_SIZE))
+    circle_draw = ImageDraw.Draw(circle_image)
+    circle_draw.ellipse((0, 0, AVATAR_SIZE, AVATAR_SIZE), fill=255)
+    image.paste(avatar_image, (45, 20), circle_image)
+    pfp = "https://cdn.discordapp.com/avatars/1240005601220755557/2264a78516904e4e0ba9681cc136aa83.png?size=1024"
+    pfp = pfp.replace("gif", "png").replace("webp", "png").replace("jpeg", "png")
+    logo_res = requests.get(pfp)
+    AVATAR_SIZE = 30
+    avatar_image = Image.open(BytesIO(logo_res.content)).convert("RGB")
+    avatar_image = avatar_image.resize((AVATAR_SIZE, AVATAR_SIZE)) #
+    circle_draw.ellipse((0, 0, AVATAR_SIZE, AVATAR_SIZE), fill=255)
+    font = ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 28)
+    draw.text( (140, 36), f"Snaps Social • Active • Community !", fill="black", font=font)
+    font = ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 24)
+    if start_date == end_date:
+        hm = f"Today: {start_date}"
+    else:
+        hm = f"{start_date} to {end_date}"
+    if mode.lower() == "messages":
+        if typee.lower() == "users":
+            xd = "User Messages"
+        else:
+            xd = "Text Channels"
+    else:
+        if typee.lower() == "users":
+            xd = "Voice Users"
+        else:
+            xd = "Voice Channels"
+    draw.text( (760, 60), f"{xd} LeaderBoard\n{hm}", fill="black", font=font, anchor="mm")
+    font = ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 20)
+    draw.text( (45, 476), f"Requested By anayyy.dev", fill="white", font=font, anchor="lm")
+    font = ImageFont.truetype('Fonts/Alkatra-Bold.ttf', 20)
+    draw.text( (480, 476), f"Powered By Sputnik", fill="white", font=font, anchor="mm")
+    font = ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 20)
+    draw.text( (915, 476), f"Page {current}/{total}", fill="white", font=font, anchor="rm")
+    c = 0
+    for i in data:
+        c+=1
+        num_font = ImageFont.truetype('Fonts/Alkatra-Regular.ttf', 26-len(str(data[i][1])))
+        user_font = ImageFont.truetype('Fonts/Alkatra-Regular.ttf', 24)
+        data_font = ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 26)
+        if c % 2 != 0:
+            draw.text( (76, 148 + int((c-1)/2)*71), f"{data[i][1]}.", fill="white", font=num_font, anchor="mm")
+            draw.text( (115, 126 + int((c-1)/2)*71), f"{i}", fill=(0, 135, 232), font=user_font, anchor="lt")
+            if len(data[i]) > 1:
+                draw.text( (115+ user_font.getlength(f"{i}"), 126 + int((c-1)/2)*71), f" • {data[i][2]}", fill=(46, 111, 158), font=user_font, anchor="lt")
+            if mode.lower == "messages":
+                x = f"{data[i][0]} Messages"
+            else:
+                x = converttime(data[i][0])
+            draw.text( (115, 150+ int((c-1)/2)*71), f"{x}", fill="black", font=data_font, anchor="lt")
+        else:
+            draw.text( (76+462, 148 + int((c-1)/2)*71), f"{data[i][1]}.", fill="white", font=num_font, anchor="mm")
+            draw.text( (115+462, 126 + int((c-1)/2)*71), f"{i} ", fill=(0, 135, 232), font=user_font, anchor="lt")
+            if len(data[i]) > 1:
+                draw.text( (115+462+user_font.getlength(f"{i}"), 126 + int((c-1)/2)*71), f" • {data[i][2]}", fill=(46, 111, 158), font=user_font, anchor="lt")
+            if mode.lower == "messages":
+                x = f"{data[i][0]} Messages"
+            else:
+                x = converttime(data[i][0])
+            draw.text( (115+462, 150+ int((c-1)/2)*71), f"{x}", fill="black", font=data_font, anchor="lt")
+
+    with BytesIO() as image_binary:
+        image.save(image_binary, 'PNG')
+        image_binary.seek(0)
+        return discord.File(fp=image_binary, filename='profile.png')
 
 def convert_date(date_str):
     if date_str.lower() == 'today' or date_str.lower() == "daily":
@@ -279,37 +355,34 @@ class Statistics(commands.Cog):
                                 dic[j]+=day_db[i]['users'][j]
                             else:
                                 dic[j] =day_db[i]['users'][j]
+                start_ = date_list[0]
+                end_ = date_list[-1]
             else:
+                end_ = None
+                for i in day_db:
+                    for k in day_db[i]['users']:
+                        if ctx.guild.id == k:
+                            start_ = i
+                            break
                 dic = user_db
-            for i in dic:
-                if dic[i] in ls:
-                    ls[dic[i]].append(i)
-                else:
-                    ls[dic[i]] = [i]
             des = []
             for i in dic:
                 u = discord.utils.get(ctx.guild.members, id=i)
                 if u is not None:
-                    des.append(f"{count}. {u.mention} - **{dic[i]} Messages**")
+                    des[u.name] = [dic[i], count, u.display_name]
                     count+=1
             lss = []
             for i in range(0, len(des), 10):
                 lss.append(des[i: i + 10])
-            em_list = []
+            file_list = []
             no = 1
             for k in lss:
-                embed =discord.Embed(color=botinfo.root_color)
-                if ctx.guild.icon:
-                    embed.set_author(name=f"| User Messages LeaderBoard for the server", icon_url=ctx.guild.icon.url)
-                else:
-                    embed.set_author(name=f"| User Messages LeaderBoard for the server", icon_url=ctx.guild.me.display_avatar)
-                embed.description = "\n".join(k)
-                embed.set_footer(text=f"{self.bot.user.name} • Page {no}/{len(lss)}", icon_url=self.bot.user.display_avatar.url)
-                em_list.append(embed)
+                file = lb_("messages", "users", k, no, len(lss), start_, end_)
+                file_list.append(file)
                 no+=1
             if no == 1:   
                 return await ctx.reply(embed=discord.Embed(color=botinfo.wrong_color).set_footer(text="There have been no interaction in the Text channels."))
-            page = PaginationView(embed_list=em_list, ctx=ctx)
+            page = StatPaginationView(file_list=file_list, ctx=ctx)
             await page.start(ctx)
         else:
             count = 1
@@ -335,13 +408,20 @@ class Statistics(commands.Cog):
                                 dic[j]+=day_db[i]['channels'][j]
                             else:
                                 dic[j] =day_db[i]['channels'][j]
+                start_ = date_list[0]
+                end_ = date_list[-1]
             else:
-                dic = channel_db
+                end_ = None
+                for i in day_db:
+                    for k in day_db[i]['users']:
+                        if ctx.guild.id == k:
+                            start_ = i
+                            break
             des = []
             for i in dic:
                 u = discord.utils.get(ctx.guild.channels, id=i)
                 if u is not None:
-                    des.append(f"{count}. {u.mention} - **{dic[i]} Messages**")
+                    des[u.name] = [dic[i], count]
                     count+=1
             lss = []
             for i in range(0, len(des), 10):
@@ -349,18 +429,12 @@ class Statistics(commands.Cog):
             em_list = []
             no = 1
             for k in lss:
-                embed =discord.Embed(color=botinfo.root_color)
-                if ctx.guild.icon:
-                    embed.set_author(name=f"| Channel Messages LeaderBoard for the server", icon_url=ctx.guild.icon.url)
-                else:
-                    embed.set_author(name=f"| Channel Messages LeaderBoard for the server", icon_url=ctx.guild.me.display_avatar)
-                embed.description = "\n".join(k)
-                embed.set_footer(text=f"{self.bot.user.name} • Page {no}/{len(lss)}", icon_url=self.bot.user.display_avatar.url)
-                em_list.append(embed)
+                file = lb_("messages", "channels", k, no, len(lss), start_, end_)
+                file_list.append(file)
                 no+=1
             if no == 1:   
                 return await ctx.reply(embed=discord.Embed(color=botinfo.wrong_color).set_footer(text="There have been no interaction in the Text channels."))
-            page = PaginationView(embed_list=em_list, ctx=ctx)
+            page = StatPaginationView(file_list=file_list, ctx=ctx)
             await page.start(ctx)
 
     @leaderboard.command(aliases=['v', 'vc', 'vcs'], description="Shows the voice leaderboard of the server")

@@ -2,7 +2,6 @@ import psutil
 import discord
 import platform
 from discord.ext import commands
-from discord import *
 import os
 import sqlite3
 import emojis
