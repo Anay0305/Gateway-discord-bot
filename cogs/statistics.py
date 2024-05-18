@@ -10,9 +10,7 @@ from discord.ext import commands
 from ast import literal_eval
 from paginators import PaginationView
 from stats_pag import StatPaginationView
-from PIL import Image, ImageDraw, ImageFont
 from datetime import datetime, timedelta
-from io import BytesIO
 
 def converttime(seconds):
     time = int(seconds)
@@ -229,7 +227,22 @@ class Statistics(commands.Cog):
 
     @commands.hybrid_group(aliases=["lb"], invoke_without_command=True)
     async def leaderboard(self, ctx: commands.Context):
-        pass
+        prefix = ctx.prefix
+        if prefix == f"<@{self.bot.user.id}> ":
+            prefix = f"@{str(self.bot.user)} "
+        anay = self.bot.main_owner
+        ls = ["lb", "lb m", "lb v"]
+        des = ""
+        for i in sorted(ls):
+            cmd = self.bot.get_command(i)
+            if cmd.description is None:
+                cmd.description = "No Description"
+            des += f"`{prefix}{i}`\n{cmd.description}\n\n"
+        listem = discord.Embed(title=f"LeaderBoard Commands", colour=botinfo.root_color,
+                                     description=f"<...> Duty | [...] Optional\n\n{des}")
+        listem.set_author(name=f"{str(ctx.author)}", icon_url=ctx.author.display_avatar.url)
+        listem.set_footer(text=f"Made by {str(anay)}" ,  icon_url=anay.avatar.url)
+        await ctx.send(embed=listem)
     
     @leaderboard.command(aliases=['m', 'msg', 'msgs'], description="Shows the messages leaderboard of the server")
     async def messages(self, ctx: commands.Context, mode=None, start_date: str=None, *, end_date: str=None):
