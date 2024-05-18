@@ -145,7 +145,7 @@ class StatPaginationView(discord.ui.View):
     @discord.ui.button(label="≪", style=discord.ButtonStyle.blurple, disabled=True)
     async def first(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.current = 0
-        await interaction.message.edit(content="<a:loading:1215453200463958086>", attachments=[])
+        await self.message.edit(content="<a:loading:1215453200463958086>", attachments=[])
 
         self.previous.disabled = True
         button.disabled = True
@@ -168,7 +168,7 @@ class StatPaginationView(discord.ui.View):
         self, interaction: discord.Interaction, button: discord.ui.Button
     ):
         self.current = self.current - 1
-        await interaction.message.edit(content="<a:loading:1215453200463958086>", attachments=[])
+        await self.message.edit(content="<a:loading:1215453200463958086>", attachments=[])
 
         if len(self.file_list) >= 1:  # if list consists of 2 pages, if,
             self._last.disabled = (
@@ -204,7 +204,7 @@ class StatPaginationView(discord.ui.View):
     @discord.ui.button(label="Next", style=discord.ButtonStyle.green, disabled=False)
     async def next(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.current += 1
-        await interaction.message.edit(content="<a:loading:1215453200463958086>", attachments=[])
+        await self.message.edit(content="<a:loading:1215453200463958086>", attachments=[])
 
         if self.current >= len(self.file_list) - 1:
             self.current = len(self.file_list) - 1
@@ -228,7 +228,7 @@ class StatPaginationView(discord.ui.View):
     @discord.ui.button(label="≫", style=discord.ButtonStyle.blurple, disabled=False)
     async def _last(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.current = len(self.file_list) - 1
-        await interaction.message.edit(content="<a:loading:1215453200463958086>", attachments=[])
+        await self.message.edit(content="<a:loading:1215453200463958086>", attachments=[])
 
         button.disabled = True
         self.next.disabled = True
