@@ -115,7 +115,7 @@ class StatPaginationView(discord.ui.View):
     current = 0
 
     def __init__(self, file_list: list, ctx, icon, mode, typee, start_, end_):
-        super().__init__(timeout=300)
+        super().__init__(timeout=90)
         self.file_list = file_list
         self.icon = icon
         self.start_ = start_
@@ -145,7 +145,7 @@ class StatPaginationView(discord.ui.View):
     @discord.ui.button(label="≪", style=discord.ButtonStyle.blurple, disabled=True)
     async def first(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.current = 0
-        await self.message.edit(content="<a:loading:1215453200463958086>", attachments=[])
+        await interaction.message.edit(content="<a:loading:1215453200463958086>", attachments=[])
 
         self.previous.disabled = True
         button.disabled = True
@@ -168,7 +168,7 @@ class StatPaginationView(discord.ui.View):
         self, interaction: discord.Interaction, button: discord.ui.Button
     ):
         self.current = self.current - 1
-        await self.message.edit(content="<a:loading:1215453200463958086>", attachments=[])
+        await interaction.message.edit(content="<a:loading:1215453200463958086>", attachments=[])
 
         if len(self.file_list) >= 1:  # if list consists of 2 pages, if,
             self._last.disabled = (
@@ -204,7 +204,7 @@ class StatPaginationView(discord.ui.View):
     @discord.ui.button(label="Next", style=discord.ButtonStyle.green, disabled=False)
     async def next(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.current += 1
-        await self.message.edit(content="<a:loading:1215453200463958086>", attachments=[])
+        await interaction.message.edit(content="<a:loading:1215453200463958086>", attachments=[])
 
         if self.current >= len(self.file_list) - 1:
             self.current = len(self.file_list) - 1
@@ -228,7 +228,7 @@ class StatPaginationView(discord.ui.View):
     @discord.ui.button(label="≫", style=discord.ButtonStyle.blurple, disabled=False)
     async def _last(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.current = len(self.file_list) - 1
-        await self.message.edit(content="<a:loading:1215453200463958086>", attachments=[])
+        await interaction.message.edit(content="<a:loading:1215453200463958086>", attachments=[])
 
         button.disabled = True
         self.next.disabled = True
@@ -247,19 +247,19 @@ class StatPaginationView(discord.ui.View):
         )
         self.view = self.current
     
-    async def start(self, ctx: commands.Context):
+    async def start(self, ctx: commands.Context, interaction: discord.Interaction=None):
         file = lb_(self.icon, self.ctx.guild.name, self.mode, self.typee, self.file_list[0], self.current+1, len(self.file_list), self.start_, self.end_)
         if len(self.file_list) != 1:
-            if ctx.interaction is not None:
-                self.message = await ctx.interaction.response.send_message(file=file, view=self, ephemeral=True)
+            if interaction is not None:
+                self.message = await interaction.response.send_message(file=file, view=self, ephemeral=True)
             else:
                 self.message = await ctx.send(file=file, view=self)
             self.user = ctx.author
             await self.wait()
             return self.message
         else:
-            if ctx.interaction is not None:
-                self.message = await ctx.interaction.response.send_message(file=file, ephemeral=True)
+            if interaction is not None:
+                self.message = await interaction.response.send_message(file=file, ephemeral=True)
             else:
                 self.message = await ctx.send(file=file)
             self.user = ctx.author
