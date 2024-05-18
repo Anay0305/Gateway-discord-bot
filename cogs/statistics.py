@@ -36,7 +36,7 @@ def convert_date(date_str):
         return yesterday.strftime('%Y-%m-%d')
     date_str = date_str.replace('st', '').replace('nd', '').replace('rd', '').replace('th', '')
     
-    formats = ['%d %b %Y', '%d %B %Y', '%d %b', '%d %B', '%d/%m/%y', '%d.%m.%y']
+    formats = ['%d %b %Y', '%d %B %Y', '%d %b', '%d %B', '%d/%m/%y', '%d.%m.%y', '%d-%m-%y', '%m-%d-%y']
     for fmt in formats:
         try:
             dt = datetime.strptime(date_str, fmt)
