@@ -144,8 +144,7 @@ class Statistics(commands.Cog):
                     else:
                         day_db[today]['channels'][before.channel.id] = channel_time
             if check_bl_channel(after.channel):
-                await self.bot.main_owner(user_start)
-                if member.id in user_start:
+                if guild.id in user_start:
                     user_time = round(datetime.now().timestamp() - user_start[guild.id][member.id])
                     del user_start[guild.id][member.id]
                     if member.id in user_db:
