@@ -238,7 +238,7 @@ class Statistics(commands.Cog):
         user_db = literal_eval(res['user_messages'])
         day_db = literal_eval(res['specific_day_messages'])
         if mode is not None:
-            if "u" not in mode or "c" not in mode:
+            if "u" not in mode and "c" not in mode:
                 if start_date is not None and end_date is not None:
                     end_date = start_date+" "+end_date
                 elif start_date is not None:
@@ -371,7 +371,7 @@ class Statistics(commands.Cog):
         user_db = literal_eval(res['user_time'])
         day_db = literal_eval(res['specific_day_time'])
         if mode is not None:
-            if "u" not in mode or "c" not in mode:
+            if "u" not in mode and "c" not in mode:
                 if start_date is not None and end_date is not None:
                     end_date = start_date+" "+end_date
                 elif start_date is not None:
