@@ -177,10 +177,10 @@ class Statistics(commands.Cog):
                 channel_start[guild.id] = {
                     after.channel.id: round(datetime.now().timestamp())
                 }
-        day_db[today]['users'] = dict(sorted(day_db[today]['users'].items(), key=lambda item: item[1]))
-        day_db[today]['channels'] = dict(sorted(day_db[today]['channels'].items(), key=lambda item: item[1]))
-        user_db = dict(sorted(user_db.items(), key=lambda item: item[1]))
-        channel_db = dict(channel_db.items(), key=lambda item: item[1])
+        day_db[today]['users'] = dict(sorted(day_db[today]['users'].items(), key=lambda item: item[1], reverse=True))
+        day_db[today]['channels'] = dict(sorted(day_db[today]['channels'].items(), key=lambda item: item[1], reverse=True))
+        user_db = dict(sorted(user_db.items(), key=lambda item: item[1], reverse=True))
+        channel_db = dict(sorted(channel_db.items(), key=lambda item: item[1] ,reverse=True))
         dic = {
             'user_time': f"{user_db}",
             'channel_time': f"{channel_db}",
@@ -222,10 +222,10 @@ class Statistics(commands.Cog):
             day_db[today]['channels'][message.channel.id] += 1
         else:
             day_db[today]['channels'][message.channel.id] = 1
-        day_db[today]['users'] = dict(sorted(day_db[today]['users'].items(), key=lambda item: item[1]))
-        day_db[today]['channels'] = dict(sorted(day_db[today]['channels'].items(), key=lambda item: item[1]))
-        user_db = dict(sorted(user_db.items(), key=lambda item: item[1]))
-        channel_db = dict(channel_db.items(), key=lambda item: item[1])
+        day_db[today]['users'] = dict(sorted(day_db[today]['users'].items(), key=lambda item: item[1], reverse=True))
+        day_db[today]['channels'] = dict(sorted(day_db[today]['channels'].items(), key=lambda item: item[1], reverse=True))
+        user_db = dict(sorted(user_db.items(), key=lambda item: item[1], reverse=True))
+        channel_db = dict(sorted(channel_db.items(), key=lambda item: item[1], reverse=True))
         dic = {
             'user_messages': f"{user_db}",
             'channel_messages': f"{channel_db}",
