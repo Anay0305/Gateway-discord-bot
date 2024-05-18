@@ -177,6 +177,10 @@ class Statistics(commands.Cog):
                 channel_start[guild.id] = {
                     after.channel.id: round(datetime.now().timestamp())
                 }
+        day_db[today]['users'] = dict(sorted(day_db[today]['users'].items(), key=lambda item: item[1]))
+        day_db[today]['channels'] = dict(sorted(day_db[today]['channels'].items(), key=lambda item: item[1]))
+        user_db = dict(sorted(user_db.items(), key=lambda item: item[1]))
+        channel_db = dict(channel_db.items(), key=lambda item: item[1])
         dic = {
             'user_time': f"{user_db}",
             'channel_time': f"{channel_db}",
@@ -218,6 +222,10 @@ class Statistics(commands.Cog):
             day_db[today]['channels'][message.channel.id] += 1
         else:
             day_db[today]['channels'][message.channel.id] = 1
+        day_db[today]['users'] = dict(sorted(day_db[today]['users'].items(), key=lambda item: item[1]))
+        day_db[today]['channels'] = dict(sorted(day_db[today]['channels'].items(), key=lambda item: item[1]))
+        user_db = dict(sorted(user_db.items(), key=lambda item: item[1]))
+        channel_db = dict(channel_db.items(), key=lambda item: item[1])
         dic = {
             'user_messages': f"{user_db}",
             'channel_messages': f"{channel_db}",
@@ -279,12 +287,11 @@ class Statistics(commands.Cog):
                 else:
                     ls[dic[i]] = [i]
             des = []
-            for i in reversed(sorted(ls)):
-                for j in ls[i]:
-                    u = await ctx.guild.fetch_member(j)
-                    if u is not None:
-                        des.append(f"{count}. {u.mention} - **{i} Messages**")
-                        count+=1
+            for i in dic:
+                u = discord.utils.get(ctx.guild.members, id=i)
+                if u is not None:
+                    des.append(f"{count}. {u.mention} - **{dic[i]} Messages**")
+                    count+=1
             lss = []
             for i in range(0, len(des), 10):
                 lss.append(des[i: i + 10])
@@ -330,18 +337,12 @@ class Statistics(commands.Cog):
                                 dic[j] =day_db[i]['channels'][j]
             else:
                 dic = channel_db
-            for i in dic:
-                if dic[i] in ls:
-                    ls[dic[i]].append(i)
-                else:
-                    ls[dic[i]] = [i]
             des = []
-            for i in reversed(sorted(ls)):
-                for j in ls[i]:
-                    u = await ctx.guild.fetch_channel(j)
-                    if u is not None:
-                        des.append(f"{count}. {u.mention} - **{i} Messages**")
-                        count+=1
+            for i in dic:
+                u = discord.utils.get(ctx.guild.channels, id=i)
+                if u is not None:
+                    des.append(f"{count}. {u.mention} - **{dic[i]} Messages**")
+                    count+=1
             lss = []
             for i in range(0, len(des), 10):
                 lss.append(des[i: i + 10])
@@ -406,18 +407,12 @@ class Statistics(commands.Cog):
                                 dic[j] =day_db[i]['users'][j]
             else:
                 dic = user_db
-            for i in dic:
-                if dic[i] in ls:
-                    ls[dic[i]].append(i)
-                else:
-                    ls[dic[i]] = [i]
             des = []
-            for i in reversed(sorted(ls)):
-                for j in ls[i]:
-                    u = await ctx.guild.fetch_member(j)
-                    if u is not None:
-                        des.append(f"{count}. {u.mention} - **{converttime(i)}**")
-                        count+=1
+            for i in dic:
+                u = discord.utils.get(ctx.guild.members, id=i)
+                if u is not None:
+                    des.append(f"{count}. {u.mention} - **{converttime(dic[i])}**")
+                    count+=1
             lss = []
             for i in range(0, len(des), 10):
                 lss.append(des[i: i + 10])
@@ -463,18 +458,12 @@ class Statistics(commands.Cog):
                                 dic[j] =day_db[i]['channels'][j]
             else:
                 dic = channel_db
-            for i in dic:
-                if dic[i] in ls:
-                    ls[dic[i]].append(i)
-                else:
-                    ls[dic[i]] = [i]
             des = []
-            for i in reversed(sorted(ls)):
-                for j in ls[i]:
-                    u = await ctx.guild.fetch_channel(j)
-                    if u is not None:
-                        des.append(f"{count}. {u.mention} - **{converttime(i)}**")
-                        count+=1
+            for i in dic:
+                u = discord.utils.get(ctx.guild.channels, id=i)
+                if u is not None:
+                    des.append(f"{count}. {u.mention} - **{converttime(dic[i])}**")
+                    count+=1
             lss = []
             for i in range(0, len(des), 10):
                 lss.append(des[i: i + 10])
