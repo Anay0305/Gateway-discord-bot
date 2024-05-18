@@ -333,7 +333,6 @@ class Statistics(commands.Cog):
                 mode = None
         if mode is None or "u" in mode:
             count = 1
-            ls = {}
             if start_date is not None:
                 if end_date is not None:
                     if "to" in str(start_date+end_date):
@@ -372,8 +371,14 @@ class Statistics(commands.Cog):
                     des[u.name] = [dic[i], count, u.display_name]
                     count+=1
             lss = []
-            for i in range(0, len(des), 10):
-                lss.append(des[i: i + 10])
+            xd = []
+            coun = 0
+            for i in des:
+                coun += 1
+                xd.append(des[i])
+                if coun % 10 == 0 or coun == len(des):
+                    lss.append(xd)
+                    xd = []
             file_list = []
             no = 1
             for k in lss:
@@ -386,7 +391,6 @@ class Statistics(commands.Cog):
             await page.start(ctx)
         else:
             count = 1
-            ls = {}
             if start_date is not None:
                 if end_date is not None:
                     if "to" in start_date+end_date:
@@ -424,9 +428,15 @@ class Statistics(commands.Cog):
                     des[u.name] = [dic[i], count]
                     count+=1
             lss = []
-            for i in range(0, len(des), 10):
-                lss.append(des[i: i + 10])
-            em_list = []
+            xd = []
+            coun = 0
+            for i in des:
+                coun += 1
+                xd.append(des[i])
+                if coun % 10 == 0 or coun == len(des):
+                    lss.append(xd)
+                    xd = []
+            file_list = []
             no = 1
             for k in lss:
                 file = lb_("messages", "channels", k, no, len(lss), start_, end_)
