@@ -225,7 +225,7 @@ class Statistics(commands.Cog):
         }
         database.update_bulk("messages_db", dic, "guild_id", message.guild.id)
 
-    @commands.hybrid_group(aliases=["lb"], invoke_without_command=True)
+    @commands.hybrid_group(aliases=["lb"], invoke_without_command=True, description="Shows The help page for LeaderBoard")
     async def leaderboard(self, ctx: commands.Context):
         prefix = ctx.prefix
         if prefix == f"<@{self.bot.user.id}> ":
