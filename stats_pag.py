@@ -115,7 +115,7 @@ class StatPaginationView(discord.ui.View):
     current = 0
 
     def __init__(self, file_list: list, ctx, icon, mode, typee, start_, end_):
-        super().__init__(timeout=90)
+        super().__init__(timeout=300)
         self.file_list = file_list
         self.icon = icon
         self.start_ = start_
