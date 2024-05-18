@@ -378,7 +378,6 @@ class Statistics(commands.Cog):
             else:
                 icon = ctx.guild.me.display_avatar.url
             for k in lss:
-                await ctx.send(k)
                 file = lb_(icon, ctx.guild.name, "messages", "users", k, no, len(lss), start_, end_)
                 file_list.append(file)
                 no+=1
