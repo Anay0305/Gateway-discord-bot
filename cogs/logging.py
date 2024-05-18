@@ -240,7 +240,7 @@ class logging(commands.Cog):
             cmd = self.bot.get_command(i)
             if cmd.description is None:
                 cmd.description = "No Description"
-            des += f"`{prefix}{i}`\n{cmd.description}\n\n"
+            des += f"`{prefix}{cmd.qualified_name}`\n{cmd.description}\n\n"
         listem = discord.Embed(title=f"{emojis.cogs['Logging']} Logging Commands", colour=botinfo.root_color,
                                      description=f"<...> Duty | [...] Optional\n\n{des}")
         listem.set_author(name=f"{str(ctx.author)}", icon_url=ctx.author.display_avatar.url)

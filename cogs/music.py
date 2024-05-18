@@ -2221,7 +2221,7 @@ class music(commands.Cog):
         des = ""
         for i in sorted(ls):
             cmd = self.bot.get_command(i)
-            des += f"`{prefix}{i}`\n{cmd.description}\n\n"
+            des += f"`{prefix}{cmd.qualified_name}`\n{cmd.description}\n\n"
         listem = discord.Embed(title=f"<:gateway_music:1040855483029913660> Playlist Commands", colour=0x7aaaff,
                                      description=f"<...> Duty | [...] Optional\n\n{des}")
         listem.set_author(name=f"{str(ctx.author)}", icon_url=ctx.author.display_avatar.url)

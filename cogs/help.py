@@ -42,7 +42,7 @@ class help(commands.Cog):
                         if cmd is not None:
                             if cmd.description is None:
                                 cmd.description = "No Description"
-                        hey.append(f"`{prefix}{i}`\n{cmd.description}\n\n")
+                        hey.append(f"`{prefix}{cmd.qualified_name}`\n{cmd.description}\n\n")
                     for i in range(0, len(hey), 10):
                         ls1.append(hey[i: i + 10])
                     em_list = []
@@ -73,7 +73,7 @@ class help(commands.Cog):
                     if cmd is not None:
                         if cmd.description is None:
                             cmd.description = "No Description"
-                    hey.append(f"`{prefix}{i}`\n{cmd.description}\n\n")
+                    hey.append(f"`{prefix}{cmd.qualified_name}`\n{cmd.description}\n\n")
                 for i in range(0, len(hey), 10):
                     ls1.append(hey[i: i + 10])
                 em_list = []
@@ -203,7 +203,7 @@ class help(commands.Cog):
         des = ""
         for i in sorted(ls):
             cmd = self.bot.get_command(i)
-            des += f"`{prefix}{i}`\n{cmd.description}\n\n"
+            des += f"`{prefix}{cmd.qualified_name}`\n{cmd.description}\n\n"
         listem2 = discord.Embed(colour=botinfo.root_color,
                                      description=f"<...> Duty | [...] Optional\n\n{des}")
         listem2.set_author(name=f"{str(ctx.author)}", icon_url=ctx.author.display_avatar.url)
@@ -216,7 +216,7 @@ class help(commands.Cog):
         des = ""
         for i in sorted(ls):
             cmd = self.bot.get_command(i)
-            des += f"`{prefix}{i}`\n{cmd.description}\n\n"
+            des += f"`{prefix}{cmd.qualified_name}`\n{cmd.description}\n\n"
         listem3 = discord.Embed(colour=botinfo.root_color,
                                      description=f"<...> Duty | [...] Optional\n\n{des}")
         listem3.set_author(name=f"{str(ctx.author)}", icon_url=ctx.author.display_avatar.url)
