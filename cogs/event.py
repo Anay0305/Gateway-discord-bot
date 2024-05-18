@@ -13,6 +13,7 @@ from cogs.music import interface
 from premium import check_upgraded
 import wavelink
 import asyncio
+import voice_db
 
 async def loadmsetup(bot: commands.AutoShardedBot):
     msetup_db = database.fetchall1("*", "setup")
@@ -139,6 +140,25 @@ class event(commands.Cog):
         db.close()
         await database.create_tables()
         print(f'Logged in as {bot.user.name}({bot.user.id})')
+        t = round(datetime.datetime.now().timestamp())
+        for i in bot.guilds:
+            for j in i.channels:
+                if str(j.type) == "voice":
+                    check = True
+                    for k in j.members:
+                        if not k.bot:
+                            check= False
+                            if i.id in voice_db.user_start:
+                                if k.id not in voice_db.user_start[i.id]:
+                                    voice_db.user_start[i.id][k.id] = t
+                            else:
+                                voice_db.user_start[i.id] ={k.id: t}
+                    if not check:
+                        if i.id in voice_db.channel_start:
+                            if j.id not in voice_db.channel_start[i.id]:
+                                voice_db.channel_start[i.id][j.id] = t
+                        else:
+                            voice_db.channel_start[i.id] ={j.id: t}
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
