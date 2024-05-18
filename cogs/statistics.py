@@ -262,7 +262,6 @@ class Statistics(commands.Cog):
                     end_date = None
                 start_date = mode
                 mode = None
-        await ctx.send(f"{mode}, {start_date}, {end_date}")
         if mode is None or "u" in mode:
             count = 1
             if start_date is not None:
