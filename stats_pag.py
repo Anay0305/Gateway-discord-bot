@@ -3,7 +3,102 @@ from itertools import islice
 import botinfo
 from discord.ext import commands
 import discord
-from cogs.statistics import lb_
+from PIL import Image, ImageDraw, ImageFont
+from datetime import datetime, timedelta
+from io import BytesIO
+import requests
+
+def converttime(seconds):
+    time = int(seconds)
+    hour = time // 3600
+    time %= 3600
+    minutes = time // 60
+    time %= 60
+    seconds = time
+    ls = []
+    if hour != 0:
+        ls.append(f"{hour}hrs")
+    if minutes != 0:
+        ls.append(f"{minutes}mins")
+    if seconds != 0:
+        ls.append(f"{seconds}secs")
+    return ' '.join(ls)
+
+def lb_(icon, name, mode:str, typee:str, data, current, total, start_date, end_date=None):
+    width = 960
+    height = 500
+    if end_date is None:
+        end_date = str(datetime.now().date())
+    with open("lb_bg.jpg", 'rb') as file:
+        image = Image.open(BytesIO(file.read())).convert("RGBA")
+        file.close()
+    image = image.resize((width,height))
+    draw = ImageDraw.Draw(image)
+    pfp = icon
+    pfp = pfp.replace("gif", "png").replace("webp", "png").replace("jpeg", "png")
+    logo_res = requests.get(pfp)
+    AVATAR_SIZE = 78
+    avatar_image = Image.open(BytesIO(logo_res.content)).convert("RGB")
+    avatar_image = avatar_image.resize((AVATAR_SIZE, AVATAR_SIZE)) #
+    circle_image = Image.new('L', (AVATAR_SIZE, AVATAR_SIZE))
+    circle_draw = ImageDraw.Draw(circle_image)
+    circle_draw.ellipse((0, 0, AVATAR_SIZE, AVATAR_SIZE), fill=255)
+    image.paste(avatar_image, (45, 20), circle_image)
+    font = ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 28)
+    draw.text( (140, 36), f"{name}", fill="black", font=font)
+    font = ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 24)
+    if start_date == end_date:
+        hm = f"Today: {start_date}"
+    else:
+        hm = f"{start_date} to {end_date}"
+    if mode.lower() == "messages":
+        if typee.lower() == "users":
+            xd = "User Messages"
+        else:
+            xd = "Text Channels"
+    else:
+        if typee.lower() == "users":
+            xd = "Voice Users"
+        else:
+            xd = "Voice Channels"
+    draw.text( (760, 60), f"{xd} LeaderBoard\n{hm}", fill="black", font=font, anchor="mm")
+    font = ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 20)
+    draw.text( (45, 476), f"Requested By anayyy.dev", fill="white", font=font, anchor="lm")
+    font = ImageFont.truetype('Fonts/Alkatra-Bold.ttf', 20)
+    draw.text( (480, 476), f"Powered By Sputnik", fill="white", font=font, anchor="mm")
+    font = ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 20)
+    draw.text( (915, 476), f"Page {current}/{total}", fill="white", font=font, anchor="rm")
+    c = 0
+    for i in data:
+        c+=1
+        num_font = ImageFont.truetype('Fonts/Alkatra-Regular.ttf', 26-len(str(data[i][1])))
+        user_font = ImageFont.truetype('Fonts/Alkatra-Regular.ttf', 24)
+        data_font = ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 26)
+        if c % 2 != 0:
+            draw.text( (76, 148 + int((c-1)/2)*71), f"{data[i][1]}.", fill="white", font=num_font, anchor="mm")
+            draw.text( (115, 126 + int((c-1)/2)*71), f"{i}", fill=(0, 135, 232), font=user_font, anchor="lt")
+            if len(data[i]) > 2:
+                draw.text( (115+ user_font.getlength(f"{i}"), 126 + int((c-1)/2)*71), f" • {data[i][2]}", fill=(46, 111, 158), font=user_font, anchor="lt")
+            if mode.lower() == "messages":
+                x = f"{data[i][0]} Messages"
+            else:
+                x = converttime(data[i][0])
+            draw.text( (115, 150+ int((c-1)/2)*71), f"{x}", fill="black", font=data_font, anchor="lt")
+        else:
+            draw.text( (76+462, 148 + int((c-1)/2)*71), f"{data[i][1]}.", fill="white", font=num_font, anchor="mm")
+            draw.text( (115+462, 126 + int((c-1)/2)*71), f"{i} ", fill=(0, 135, 232), font=user_font, anchor="lt")
+            if len(data[i]) > 2:
+                draw.text( (115+462+user_font.getlength(f"{i}"), 126 + int((c-1)/2)*71), f" • {data[i][2]}", fill=(46, 111, 158), font=user_font, anchor="lt")
+            if mode.lower() == "messages":
+                x = f"{data[i][0]} Messages"
+            else:
+                x = converttime(data[i][0])
+            draw.text( (115+462, 150+ int((c-1)/2)*71), f"{x}", fill="black", font=data_font, anchor="lt")
+
+    with BytesIO() as image_binary:
+        image.save(image_binary, 'PNG')
+        image_binary.seek(0)
+        return discord.File(fp=image_binary, filename='profile.png')
 
 def get_chunks(iterable, size):
     it = iter(iterable)
