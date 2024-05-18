@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import sqlite3
 import datetime
-from paginators import PaginationView, PaginatorView
+from paginators import PaginationView
 from botinfo import *
 import os
 from io import BytesIO

@@ -8,7 +8,7 @@ import botinfo
 import database
 import emojis
 import asyncio
-from paginators import PaginationView, PaginatorView
+from paginators import PaginationView
 
 def check_lockrole_bypass(role: discord.Role, guild: discord.Guild, user: discord.Member):
     with sqlite3.connect('./database.sqlite3') as db:

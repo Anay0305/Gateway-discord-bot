@@ -15,7 +15,7 @@ import requests
 import random
 from io import BytesIO
 from botinfo import *
-from paginators import PaginationView, PaginatorView
+from paginators import PaginationView
 import matplotlib
 from converter import *
 import botinfo

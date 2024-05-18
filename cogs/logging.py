@@ -7,7 +7,7 @@ import botinfo
 import database
 import emojis
 import sqlite3
-from paginators import PaginationView, PaginatorView
+from paginators import PaginationView
 
 class enablemenu(discord.ui.Select):
     def __init__(self, ctx: commands.Context, channel: discord.TextChannel):

@@ -5,7 +5,7 @@ from typing import Union, Optional
 import re
 import sqlite3
 from botinfo import *
-from paginators import PaginationView, PaginatorView
+from paginators import PaginationView
 import emojis
 import botinfo
 

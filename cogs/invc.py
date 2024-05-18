@@ -5,7 +5,7 @@ from ast import literal_eval
 import database
 import io
 import emojis
-from paginators import PaginationView, PaginatorView
+from paginators import PaginationView
 import botinfo
 import asyncio
 

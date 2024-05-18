@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands, tasks
 from discord import *
 import random
-from paginators import PaginationView, PaginatorView
+from paginators import PaginationView
 from ast import literal_eval
 import database
 import emojis

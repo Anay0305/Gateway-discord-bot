@@ -6,7 +6,7 @@ import sqlite3
 from ast import literal_eval
 from botinfo import *
 import database
-from paginators import PaginationView, PaginatorView
+from paginators import PaginationView
 import emojis
 import botinfo
 
