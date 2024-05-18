@@ -295,8 +295,6 @@ class Statistics(commands.Cog):
                 if coun % 10 == 0 or coun == len(des):
                     lss.append(xd)
                     xd = {}
-            file_list = []
-            no = 1
             if ctx.guild.icon:
                 icon = ctx.guild.icon.url
             else:
@@ -351,8 +349,6 @@ class Statistics(commands.Cog):
                 if coun % 10 == 0 or coun == len(des):
                     lss.append(xd)
                     xd = {}
-            file_list = []
-            no = 1
             if ctx.guild.icon:
                 icon = ctx.guild.icon.url
             else:
@@ -382,7 +378,6 @@ class Statistics(commands.Cog):
                 mode = None
         if mode is None or "u" in mode:
             count = 1
-            ls = {}
             if start_date is not None:
                 if end_date is not None:
                     if "to" in str(start_date+end_date):
@@ -404,36 +399,39 @@ class Statistics(commands.Cog):
                                 dic[j]+=day_db[i]['users'][j]
                             else:
                                 dic[j] =day_db[i]['users'][j]
+                start_ = date_list[0]
+                end_ = date_list[-1]
             else:
+                end_ = None
+                for i in day_db:
+                    start_ = i
+                    break
                 dic = user_db
-            des = []
+            des = {}
             for i in dic:
                 u = discord.utils.get(ctx.guild.members, id=i)
                 if u is not None:
-                    des.append(f"{count}. {u.mention} - **{converttime(dic[i])}**")
+                    des[u.name] = [dic[i], count, u.display_name]
                     count+=1
             lss = []
-            for i in range(0, len(des), 10):
-                lss.append(des[i: i + 10])
-            em_list = []
-            no = 1
-            for k in lss:
-                embed =discord.Embed(color=botinfo.root_color)
-                if ctx.guild.icon:
-                    embed.set_author(name=f"| User Voice Time LeaderBoard for the server", icon_url=ctx.guild.icon.url)
-                else:
-                    embed.set_author(name=f"| User Voice Time LeaderBoard for the server", icon_url=ctx.guild.me.display_avatar)
-                embed.description = "\n".join(k)
-                embed.set_footer(text=f"{self.bot.user.name} • Page {no}/{len(lss)}", icon_url=self.bot.user.display_avatar.url)
-                em_list.append(embed)
-                no+=1
-            if no == 1:   
+            xd = {}
+            coun = 0
+            for i in des:
+                coun += 1
+                xd[i]=des[i]
+                if coun % 10 == 0 or coun == len(des):
+                    lss.append(xd)
+                    xd = {}
+            if ctx.guild.icon:
+                icon = ctx.guild.icon.url
+            else:
+                icon = ctx.guild.me.display_avatar.url
+            if len(lss)==0:
                 return await ctx.reply(embed=discord.Embed(color=botinfo.wrong_color).set_footer(text="There have been no interaction in the Voice channels."))
-            page = PaginationView(embed_list=em_list, ctx=ctx)
+            page = StatPaginationView(file_list=lss, ctx=ctx, icon=icon, mode="voice", typee="users", start_=start_, end_=end_)
             await page.start(ctx)
         else:
             count = 1
-            ls = {}
             if start_date is not None:
                 if end_date is not None:
                     if "to" in start_date+end_date:
@@ -455,32 +453,36 @@ class Statistics(commands.Cog):
                                 dic[j]+=day_db[i]['channels'][j]
                             else:
                                 dic[j] =day_db[i]['channels'][j]
+                start_ = date_list[0]
+                end_ = date_list[-1]
             else:
+                end_ = None
+                for i in day_db:
+                    start_ = i
+                    break
                 dic = channel_db
-            des = []
+            des = {}
             for i in dic:
                 u = discord.utils.get(ctx.guild.channels, id=i)
                 if u is not None:
-                    des.append(f"{count}. {u.mention} - **{converttime(dic[i])}**")
+                    des[u.name] = [dic[i], count]
                     count+=1
             lss = []
-            for i in range(0, len(des), 10):
-                lss.append(des[i: i + 10])
-            em_list = []
-            no = 1
-            for k in lss:
-                embed =discord.Embed(color=botinfo.root_color)
-                if ctx.guild.icon:
-                    embed.set_author(name=f"| Channel Voice Time LeaderBoard for the server", icon_url=ctx.guild.icon.url)
-                else:
-                    embed.set_author(name=f"| Channel Voice Time LeaderBoard for the server", icon_url=ctx.guild.me.display_avatar)
-                embed.description = "\n".join(k)
-                embed.set_footer(text=f"{self.bot.user.name} • Page {no}/{len(lss)}", icon_url=self.bot.user.display_avatar.url)
-                em_list.append(embed)
-                no+=1
-            if no == 1:   
+            xd = {}
+            coun = 0
+            for i in des:
+                coun += 1
+                xd[i]=des[i]
+                if coun % 10 == 0 or coun == len(des):
+                    lss.append(xd)
+                    xd = {}
+            if ctx.guild.icon:
+                icon = ctx.guild.icon.url
+            else:
+                icon = ctx.guild.me.display_avatar.url
+            if len(lss) == 0:
                 return await ctx.reply(embed=discord.Embed(color=botinfo.wrong_color).set_footer(text="There have been no interaction in the voice channels."))
-            page = PaginationView(embed_list=em_list, ctx=ctx)
+            page = StatPaginationView(file_list=lss, ctx=ctx, icon=icon, mode="voice", typee="channels", start_=start_, end_=end_)
             await page.start(ctx)
 
 async def setup(bot):

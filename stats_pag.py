@@ -77,7 +77,10 @@ def lb_(icon, name, mode:str, typee:str, data, current, total, start_date, end_d
         data_font = ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 26)
         if c % 2 != 0:
             draw.text( (76, 148 + int((c-1)/2)*71), f"{data[i][1]}.", fill="white", font=num_font, anchor="mm")
-            draw.text( (115, 126 + int((c-1)/2)*71), f"{i}", fill=(0, 135, 232), font=user_font, anchor="lt")
+            if typee == "channels":
+                draw.text( (115, 126 + int((c-1)/2)*71), f"#{i}", fill=(0, 135, 232), font=user_font, anchor="lt")
+            else:
+                draw.text( (115, 126 + int((c-1)/2)*71), f"{i}", fill=(0, 135, 232), font=user_font, anchor="lt")
             if len(data[i]) > 2:
                 draw.text( (115+ user_font.getlength(f"{i}"), 126 + int((c-1)/2)*71), f" • {data[i][2]}", fill=(46, 111, 158), font=user_font, anchor="lt")
             if mode.lower() == "messages":
@@ -87,7 +90,10 @@ def lb_(icon, name, mode:str, typee:str, data, current, total, start_date, end_d
             draw.text( (115, 150+ int((c-1)/2)*71), f"{x}", fill="black", font=data_font, anchor="lt")
         else:
             draw.text( (76+462, 148 + int((c-1)/2)*71), f"{data[i][1]}.", fill="white", font=num_font, anchor="mm")
-            draw.text( (115+462, 126 + int((c-1)/2)*71), f"{i} ", fill=(0, 135, 232), font=user_font, anchor="lt")
+            if typee == "channels":
+                draw.text( (115+462, 126 + int((c-1)/2)*71), f"#{i}", fill=(0, 135, 232), font=user_font, anchor="lt")
+            else:
+                draw.text( (115+462, 126 + int((c-1)/2)*71), f"{i}", fill=(0, 135, 232), font=user_font, anchor="lt")
             if len(data[i]) > 2:
                 draw.text( (115+462+user_font.getlength(f"{i}"), 126 + int((c-1)/2)*71), f" • {data[i][2]}", fill=(46, 111, 158), font=user_font, anchor="lt")
             if mode.lower() == "messages":
@@ -104,51 +110,6 @@ def lb_(icon, name, mode:str, typee:str, data, current, total, start_date, end_d
 def get_chunks(iterable, size):
     it = iter(iterable)
     return iter(lambda: tuple(islice(it, size)), ())
-
-
-class Page(NamedTuple):
-    index: int
-    content: str
-
-
-class Pages:
-    def __init__(self, pages: list):
-        self.pages = pages
-        self.cur_page = 1
-
-    @property
-    def current_page(self) -> Page:
-        return Page(self.cur_page, self.pages[self.cur_page - 1])
-
-    @property
-    def next_page(self) -> Optional[Page]:
-        if self.cur_page == self.total:
-            return None
-
-        self.cur_page += 1
-        return self.current_page
-
-    @property
-    def previous_page(self) -> Optional[Page]:
-        if self.cur_page == 1:
-            return None
-
-        self.cur_page -= 1
-        return self.current_page
-
-    @property
-    def first_page(self) -> Page:
-        self.cur_page = 1
-        return self.current_page
-
-    @property
-    def last_page(self) -> Page:
-        self.cur_page = self.total
-        return self.current_page
-
-    @property
-    def total(self):
-        return len(self.pages)
 
 class StatPaginationView(discord.ui.View):
     current = 0
