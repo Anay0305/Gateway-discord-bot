@@ -115,7 +115,7 @@ class StatPaginationView(discord.ui.View):
     current = 0
 
     def __init__(self, file_list: list, ctx, icon, mode, typee, start_, end_):
-        super().__init__(timeout=90)
+        super().__init__(timeout=300)
         self.file_list = file_list
         self.icon = icon
         self.start_ = start_
@@ -247,19 +247,19 @@ class StatPaginationView(discord.ui.View):
         )
         self.view = self.current
     
-    async def start(self, ctx: commands.Context, interaction: discord.Interaction=None):
+    async def start(self, ctx: commands.Context):
         file = lb_(self.icon, self.ctx.guild.name, self.mode, self.typee, self.file_list[0], self.current+1, len(self.file_list), self.start_, self.end_)
         if len(self.file_list) != 1:
-            if interaction is not None:
-                self.message = await interaction.response.send_message(file=file, view=self, ephemeral=True)
+            if ctx.interaction is not None:
+                self.message = await ctx.interaction.response.send_message(file=file, view=self, ephemeral=True)
             else:
                 self.message = await ctx.send(file=file, view=self)
             self.user = ctx.author
             await self.wait()
             return self.message
         else:
-            if interaction is not None:
-                self.message = await interaction.response.send_message(file=file, ephemeral=True)
+            if ctx.interaction is not None:
+                self.message = await ctx.interaction.response.send_message(file=file, ephemeral=True)
             else:
                 self.message = await ctx.send(file=file)
             self.user = ctx.author
