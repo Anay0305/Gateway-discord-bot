@@ -89,7 +89,7 @@ def date_range(start_date_str: str, end_date_str=None):
         dates.append((start_date + timedelta(days=i)).strftime('%Y-%m-%d'))
     return dates
 
-def check_bl_channel(channel: typing.Union[discord.TextChannel, discord.VoiceChannel]):
+def check_bl_channel(channel: typing.Union[discord.TextChannel, discord.VoiceChannel, None]):
     if isinstance(channel, discord.TextChannel):
         msg_db = database.fetchone("*", "messages_db", "guild_id", channel.guild.id)
         if msg_db is None:
