@@ -90,7 +90,7 @@ def lb_(mode:str, typee:str, data, current, total, start_date, end_date=None):
         if c % 2 != 0:
             draw.text( (76, 148 + int((c-1)/2)*71), f"{data[i][1]}.", fill="white", font=num_font, anchor="mm")
             draw.text( (115, 126 + int((c-1)/2)*71), f"{i}", fill=(0, 135, 232), font=user_font, anchor="lt")
-            if len(data[i]) > 1:
+            if len(data[i]) > 2:
                 draw.text( (115+ user_font.getlength(f"{i}"), 126 + int((c-1)/2)*71), f" • {data[i][2]}", fill=(46, 111, 158), font=user_font, anchor="lt")
             if mode.lower() == "messages":
                 x = f"{data[i][0]} Messages"
@@ -100,7 +100,7 @@ def lb_(mode:str, typee:str, data, current, total, start_date, end_date=None):
         else:
             draw.text( (76+462, 148 + int((c-1)/2)*71), f"{data[i][1]}.", fill="white", font=num_font, anchor="mm")
             draw.text( (115+462, 126 + int((c-1)/2)*71), f"{i} ", fill=(0, 135, 232), font=user_font, anchor="lt")
-            if len(data[i]) > 1:
+            if len(data[i]) > 2:
                 draw.text( (115+462+user_font.getlength(f"{i}"), 126 + int((c-1)/2)*71), f" • {data[i][2]}", fill=(46, 111, 158), font=user_font, anchor="lt")
             if mode.lower() == "messages":
                 x = f"{data[i][0]} Messages"
