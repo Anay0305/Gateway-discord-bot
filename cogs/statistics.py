@@ -30,7 +30,7 @@ def converttime(seconds):
         ls.append(f"{seconds}secs")
     return ' '.join(ls)
 
-def lb_(mode:str, typee:str, data, current, total, start_date, end_date=None):
+def lb_(icon, name, mode:str, typee:str, data, current, total, start_date, end_date=None):
     width = 960
     height = 500
     if end_date is None:
@@ -40,7 +40,7 @@ def lb_(mode:str, typee:str, data, current, total, start_date, end_date=None):
         file.close()
     image = image.resize((width,height))
     draw = ImageDraw.Draw(image)
-    pfp = "https://cdn.discordapp.com/icons/1183413203376554054/a_848ecf62181c3aa03650559ccbd8207d.gif?size=1024"
+    pfp = icon
     pfp = pfp.replace("gif", "png").replace("webp", "png").replace("jpeg", "png")
     logo_res = requests.get(pfp)
     AVATAR_SIZE = 78
@@ -50,15 +50,8 @@ def lb_(mode:str, typee:str, data, current, total, start_date, end_date=None):
     circle_draw = ImageDraw.Draw(circle_image)
     circle_draw.ellipse((0, 0, AVATAR_SIZE, AVATAR_SIZE), fill=255)
     image.paste(avatar_image, (45, 20), circle_image)
-    pfp = "https://cdn.discordapp.com/avatars/1240005601220755557/2264a78516904e4e0ba9681cc136aa83.png?size=1024"
-    pfp = pfp.replace("gif", "png").replace("webp", "png").replace("jpeg", "png")
-    logo_res = requests.get(pfp)
-    AVATAR_SIZE = 30
-    avatar_image = Image.open(BytesIO(logo_res.content)).convert("RGB")
-    avatar_image = avatar_image.resize((AVATAR_SIZE, AVATAR_SIZE)) #
-    circle_draw.ellipse((0, 0, AVATAR_SIZE, AVATAR_SIZE), fill=255)
     font = ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 28)
-    draw.text( (140, 36), f"Snaps Social • Active • Community !", fill="black", font=font)
+    draw.text( (140, 36), f"{name}", fill="black", font=font)
     font = ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 24)
     if start_date == end_date:
         hm = f"Today: {start_date}"
@@ -380,9 +373,13 @@ class Statistics(commands.Cog):
                     xd = {}
             file_list = []
             no = 1
+            if ctx.guild.icon:
+                icon = ctx.guild.icon.url
+            else:
+                icon = ctx.guild.me.display_avatar.url
             for k in lss:
                 await ctx.send(k)
-                file = lb_("messages", "users", k, no, len(lss), start_, end_)
+                file = lb_(icon, ctx.guild.name, "messages", "users", k, no, len(lss), start_, end_)
                 file_list.append(file)
                 no+=1
             if no == 1:   
@@ -437,8 +434,12 @@ class Statistics(commands.Cog):
                     xd = {}
             file_list = []
             no = 1
+            if ctx.guild.icon:
+                icon = ctx.guild.icon.url
+            else:
+                icon = ctx.guild.me.display_avatar.url
             for k in lss:
-                file = lb_("messages", "channels", k, no, len(lss), start_, end_)
+                file = lb_(icon, ctx.guild.name, "messages", "channels", k, no, len(lss), start_, end_)
                 file_list.append(file)
                 no+=1
             if no == 1:   
