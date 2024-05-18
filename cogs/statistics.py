@@ -284,7 +284,7 @@ class Statistics(commands.Cog):
                     u = await ctx.guild.fetch_member(j)
                     if u is not None:
                         des.append(f"{count}. {u.mention} - **{i} Messages**")
-                count+=1
+                        count+=1
             lss = []
             for i in range(0, len(des), 10):
                 lss.append(des[i: i + 10])
@@ -341,7 +341,7 @@ class Statistics(commands.Cog):
                     u = await ctx.guild.fetch_channel(j)
                     if u is not None:
                         des.append(f"{count}. {u.mention} - **{i} Messages**")
-                count+=1
+                        count+=1
             lss = []
             for i in range(0, len(des), 10):
                 lss.append(des[i: i + 10])
@@ -417,7 +417,7 @@ class Statistics(commands.Cog):
                     u = await ctx.guild.fetch_member(j)
                     if u is not None:
                         des.append(f"{count}. {u.mention} - **{converttime(i)}**")
-                count+=1
+                        count+=1
             lss = []
             for i in range(0, len(des), 10):
                 lss.append(des[i: i + 10])
@@ -474,7 +474,7 @@ class Statistics(commands.Cog):
                     u = await ctx.guild.fetch_channel(j)
                     if u is not None:
                         des.append(f"{count}. {u.mention} - **{converttime(i)}**")
-                count+=1
+                        count+=1
             lss = []
             for i in range(0, len(des), 10):
                 lss.append(des[i: i + 10])
