@@ -380,6 +380,7 @@ class Statistics(commands.Cog):
             file_list = []
             no = 1
             for k in lss:
+                await ctx.send(k)
                 file = lb_("messages", "users", k, no, len(lss), start_, end_)
                 file_list.append(file)
                 no+=1
