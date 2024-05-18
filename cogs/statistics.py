@@ -30,10 +30,11 @@ def converttime(seconds):
         ls.append(f"{seconds}secs")
     return ' '.join(ls)
 
-def lb_(mode:str, typee:str, data, current, total, start_date, end_date=str(datetime.now().date())):
+def lb_(mode:str, typee:str, data, current, total, start_date, end_date=None):
     width = 960
     height = 500
-
+    if end_date is None:
+        end_date = str(datetime.now().date())
     with open("lb_bg.jpg", 'rb') as file:
         image = Image.open(BytesIO(file.read())).convert("RGBA")
         file.close()
@@ -91,7 +92,7 @@ def lb_(mode:str, typee:str, data, current, total, start_date, end_date=str(date
             draw.text( (115, 126 + int((c-1)/2)*71), f"{i}", fill=(0, 135, 232), font=user_font, anchor="lt")
             if len(data[i]) > 1:
                 draw.text( (115+ user_font.getlength(f"{i}"), 126 + int((c-1)/2)*71), f" • {data[i][2]}", fill=(46, 111, 158), font=user_font, anchor="lt")
-            if mode.lower == "messages":
+            if mode.lower() == "messages":
                 x = f"{data[i][0]} Messages"
             else:
                 x = converttime(data[i][0])
@@ -101,7 +102,7 @@ def lb_(mode:str, typee:str, data, current, total, start_date, end_date=str(date
             draw.text( (115+462, 126 + int((c-1)/2)*71), f"{i} ", fill=(0, 135, 232), font=user_font, anchor="lt")
             if len(data[i]) > 1:
                 draw.text( (115+462+user_font.getlength(f"{i}"), 126 + int((c-1)/2)*71), f" • {data[i][2]}", fill=(46, 111, 158), font=user_font, anchor="lt")
-            if mode.lower == "messages":
+            if mode.lower() == "messages":
                 x = f"{data[i][0]} Messages"
             else:
                 x = converttime(data[i][0])
