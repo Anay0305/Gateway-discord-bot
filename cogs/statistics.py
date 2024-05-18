@@ -417,7 +417,7 @@ class Statistics(commands.Cog):
             else:
                 end_ = None
                 for i in day_db:
-                    for k in day_db[i]['users']:
+                    for k in day_db[i]['channels']:
                         if ctx.guild.id == k:
                             start_ = i
                             break
