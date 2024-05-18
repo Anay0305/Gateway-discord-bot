@@ -359,10 +359,8 @@ class Statistics(commands.Cog):
             else:
                 end_ = None
                 for i in day_db:
-                    for k in day_db[i]['users']:
-                        if ctx.guild.id == k:
-                            start_ = i
-                            break
+                    start_ = i
+                    break
                 dic = user_db
             des = {}
             for i in dic:
@@ -417,10 +415,8 @@ class Statistics(commands.Cog):
             else:
                 end_ = None
                 for i in day_db:
-                    for k in day_db[i]['channels']:
-                        if ctx.guild.id == k:
-                            start_ = i
-                            break
+                    start_ = i
+                    break
             des = {}
             for i in dic:
                 u = discord.utils.get(ctx.guild.channels, id=i)
