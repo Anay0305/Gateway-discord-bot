@@ -931,9 +931,8 @@ class music(commands.Cog):
             em = discord.Embed(title="Queue concluded", color=0x070606)
             em.set_footer(text="| No more songs left to play in queue.", icon_url=ctx.guild.me.display_avatar.url)
             v = discord.ui.View()
-            await ctx.send(embed=em, view=v, mention_author=False, delete_after=15)
-		await self.bot.main_owner.send(payload.reason)
-            await stoppanel(self.bot, player)
+            await ctx.send(payload.reason, embed=em, view=v, mention_author=False, delete_after=15)
+	    await stoppanel(self.bot, player)
         if payload.reason == "finished":
             pass
         else:
