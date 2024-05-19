@@ -97,7 +97,7 @@ class Bot(commands.AutoShardedBot):
         super().__init__(command_prefix = get_pre, http_trace=trace, case_insensitive=True, intents=intents)
 
     async def setup_hook(self) -> None:
-        nodes: list[wavelink.Node] = [wavelink.Node(uri="http://159.65.169.80:2333/", password="anaygupta")]
+        nodes: list[wavelink.Node] = [wavelink.Node(uri="http://159.203.133.30:2333/", password="anaygupta")]
         self.wavelink = nodes[0]
         await wavelink.Pool.connect(nodes=nodes, client=self)
         initial_extensions = ['jishaku']
