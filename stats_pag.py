@@ -46,6 +46,11 @@ def lb_(icon, name, mode:str, typee:str, data, current, total, start_date, end_d
     circle_draw.ellipse((0, 0, AVATAR_SIZE, AVATAR_SIZE), fill=255)
     image.paste(avatar_image, (45, 20), circle_image)
     font = ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 28)
+    n = name
+    while font.getlength(name) >= 450:
+      name = name[0:-1]
+    if n != name:
+      name = name[0:-2] + "..."
     draw.text( (140, 36), f"{name}", fill="black", font=font)
     font = ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 24)
     if start_date == end_date:
