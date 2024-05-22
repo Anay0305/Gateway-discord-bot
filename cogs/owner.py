@@ -350,7 +350,7 @@ class owner(commands.Cog):
                 return await ctx.send(f"{str(guild)} is already a blacklisted guild.")
             else:
                 bl_db.append(guild.id)
-                database.update("bl", "guild_ids", f"{bl_db}", "main", 1)
+                database.update("bl_guilds", "guild_ids", f"{bl_db}", "main", 1)
                 return await ctx.send(f"{str(guild)} is added to blacklisted guild.")
         else:
             _db = database.fetchone("*", "bl_guilds", "main", 1)
@@ -359,7 +359,7 @@ class owner(commands.Cog):
                 return await ctx.send(f"'{str(guild)}' is already a blacklisted guild.")
             else:
                 bl_db.append(guild.lower())
-                database.update("bl", "guild_names", f"{bl_db}", "main", 1)
+                database.update("bl_guilds", "guild_names", f"{bl_db}", "main", 1)
                 return await ctx.send(f"'{str(guild)}' is added to blacklisted guild.")
 
     @server.command(name="remove")
@@ -372,7 +372,7 @@ class owner(commands.Cog):
                 return await ctx.send(f"{str(guild)} is not a blacklisted guild.")
             else:
                 bl_db.remove(guild.id)
-                database.update("bl", "guild_ids", f"{bl_db}", "main", 1)
+                database.update("bl_guilds", "guild_ids", f"{bl_db}", "main", 1)
                 return await ctx.send(f"{str(guild)} is removed from blacklisted guild.")
         else:
             _db = database.fetchone("*", "bl_guilds", "main", 1)
@@ -381,7 +381,7 @@ class owner(commands.Cog):
                 return await ctx.send(f"'{str(guild)}' is not a blacklisted guild.")
             else:
                 bl_db.append(guild.lower())
-                database.update("bl", "guild_names", f"{bl_db}", "main", 1)
+                database.update("bl_guilds", "guild_names", f"{bl_db}", "main", 1)
                 return await ctx.send(f"'{str(guild)}' is removed from blacklisted guild.")
     
     @server.command(name="show")
