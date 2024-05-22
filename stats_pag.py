@@ -105,8 +105,9 @@ def lb_(icon, name, guild_id, banner, requester, mode:str, typee:str, data, curr
         circle_draw = ImageDraw.Draw(mask)
         circle_draw.ellipse((0, 0, AVATAR_SIZE, AVATAR_SIZE), fill=255)
         num_font = ImageFont.truetype('Fonts/Montserrat-Bold.ttf', 20)
+        font = ImageFont.truetype('Fonts/Montserrat-Medium.ttf', 18)
         n = i
-        while font.getlength(n) >= 350:
+        while font.getlength(n) >= 350 - num_font.getlength(f"{data[i][1]}. "):
             n = n[0:-1]
         if n != i:
             n = n[0:-2] + "..."
