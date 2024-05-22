@@ -57,6 +57,11 @@ def lb_(icon, name, guild_id, banner, requester, mode:str, typee:str, data, curr
     draw_mask.rounded_rectangle((0, 0, AVATAR_SIZE, AVATAR_SIZE), radius=border_radius, fill=255)
     image.paste(avatar_image, (53, 31), mask)
     font = ImageFont.truetype('Fonts/Montserrat-Bold.ttf', 24)
+    n = name
+    while font.getlength(name) >= 420:
+      name = name[0:-1]
+    if n != name:
+      name = name[0:-2] + "..."
     draw.text( (150, 42), f"{name}", fill="white", font=font)
     draw.text( (150, 74), f"ID: {guild_id}", fill="white", font=font)
     if start_date == end_date:
