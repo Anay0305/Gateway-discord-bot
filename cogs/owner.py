@@ -393,7 +393,7 @@ class owner(commands.Cog):
         count = 0
         bl_db = literal_eval(_db["guild_ids"])
         bl_db1 = literal_eval(_db["guild_names"])
-        if len(bl_db) == 0:
+        if len(bl_db) == 0 and len(bl_db1) == 0:
             embed =discord.Embed(color=botinfo.root_color)
             embed.title = f"List of Blacklisted Guilds - 0"
             embed.description = "No Blacklisted Guilds"
