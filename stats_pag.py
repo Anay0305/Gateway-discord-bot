@@ -159,7 +159,7 @@ class StatPaginationView(discord.ui.View):
         else:
             self.next.disabled = True
             self._last.disabled = True
-        file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
+        file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.id, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
         await asyncio.sleep(1)
         await interaction.response.edit_message(content=None,
             attachments=[file], view=self
@@ -191,7 +191,7 @@ class StatPaginationView(discord.ui.View):
             button.disabled = False
 
 
-        file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
+        file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.id, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
         await asyncio.sleep(1)
         await interaction.response.edit_message(content=None,
             attachments=[file], view=self
@@ -221,7 +221,7 @@ class StatPaginationView(discord.ui.View):
             self.previous.disabled = True
             self.first.disabled = True
 
-        file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
+        file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.id, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
         await asyncio.sleep(1)
         await interaction.response.edit_message(content=None,
             attachments=[file], view=self
@@ -243,7 +243,7 @@ class StatPaginationView(discord.ui.View):
             self.first.disabled = True
             self.previous.disabled = True
 
-        file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
+        file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.id, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
         await asyncio.sleep(1)
         await interaction.response.edit_message(content=None,
             attachments=[file], view=self
@@ -251,7 +251,7 @@ class StatPaginationView(discord.ui.View):
         self.view = self.current
     
     async def start(self, ctx: commands.Context, interaction: discord.Interaction=None):
-        file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[0], self.current+1, len(self.file_list), self.start_, self.end_)
+        file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.id, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[0], self.current+1, len(self.file_list), self.start_, self.end_)
         if len(self.file_list) != 1:
             if interaction is not None:
                 self.message = await interaction.response.send_message(file=file, view=self, ephemeral=True)
