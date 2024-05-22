@@ -174,9 +174,14 @@ class event(commands.Cog):
             pass
         em.set_footer(text=f"{str(bot.user)}", icon_url=bot.user.avatar.url)
         webhook = discord.SyncWebhook.from_url(webhook_join_leave_logs)
+        bl_db = database.fetchone("*", "bl_guilds", "main", 1)
+        if bl_db is not None:
+            bl_db = literal_eval(bl_db["guild_names"])
+            for i in bl_db:
+                if i in guild.name:
+                    await guild.leave()
+                    return webhook.send(content=f"Blacklist guild with name {i} was added.", username=f"{str(self.bot.user)} | Blacklisted guild Join Logs", avatar_url=self.bot.user.avatar.url)
         webhook.send(embed=em, username=f"{str(self.bot.user)} | Join Logs", avatar_url=self.bot.user.avatar.url)
-        if "free slots" in guild.name:
-          return await guild.leave()
         with sqlite3.connect('./database.sqlite3') as db:
             db.row_factory = sqlite3.Row
             cursor = db.cursor()

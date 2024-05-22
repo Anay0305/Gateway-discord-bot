@@ -54,6 +54,14 @@ async def create_tables():
         )
         ''')
     cursor.execute('''
+        CREATE TABLE IF NOT EXISTS "bl_guilds" (
+                "main"  INTEGER DEFAULT 1,
+                "guild_ids"	TEXT DEFAULT '[]',
+                "guild_names"	TEXT DEFAULT '[]',
+                PRIMARY KEY("main")
+        )
+        ''')
+    cursor.execute('''
         CREATE TABLE IF NOT EXISTS prefixes(
                 "guild_id" INTEGER,
                 "prefix" TEXT DEFAULT "-",

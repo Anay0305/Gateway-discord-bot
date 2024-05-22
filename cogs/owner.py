@@ -7,6 +7,7 @@ from botinfo import *
 import os
 from io import BytesIO
 from ast import literal_eval
+from typing import Union
 import database
 import emojis
 import botinfo
@@ -243,42 +244,47 @@ class owner(commands.Cog):
         page = PaginationView(embed_list=ls, ctx=ctx)
         await page.start(ctx)
         
-    @commands.group(invoke_without_command=True)
+    @commands.group(invoke_without_command=True, aliases=["bl"])
     @commands.is_owner()
     async def blacklist(self, ctx):
         pass
 
-    @blacklist.command()
+    @blacklist.group(invoke_without_command=True)
+    @commands.is_owner()
+    async def user(self, ctx:commands.Context):
+        pass
+
+    @user.command()
     @commands.is_owner()
     async def add(self, ctx, user:discord.User,*, reason=None):
-            ls = self.bot.owner_ids
-            if user.id in ls:
-                if ctx.author.id == self.bot.main_owner.id:
-                    pass
-                else:
-                    await ctx.send(f"{str(user)} is Your Daddy")
-                    return
-            _db = database.fetchone("*", "bl", "main", 1)
-            bl_db = literal_eval(_db["user_ids"])
-            if user.id in bl_db:
-                return await ctx.send(f"{str(user)} is already blacklisted")
+        ls = self.bot.owner_ids
+        if user.id in ls:
+            if ctx.author.id == self.bot.main_owner.id:
+                pass
             else:
-                bl_db.append(user.id)
-                database.update("bl", "user_ids", f"{bl_db}", "main", 1)
-                if reason:
-                    try:
-                        await user.send(f"You are blacklisted from using {self.bot.user.name} for {reason}")
-                    except:
-                        pass
-                    return await ctx.send(f"{str(user)} is added to blacklisted users for {reason}")
-                else:
-                    try:
-                        await user.send(f"You are blacklisted from using {self.bot.user.name}")
-                    except:
-                        pass
-                    return await ctx.send(f"{str(user)} is added to blacklisted users")
+                await ctx.send(f"{str(user)} is Your Daddy")
+                return
+        _db = database.fetchone("*", "bl", "main", 1)
+        bl_db = literal_eval(_db["user_ids"])
+        if user.id in bl_db:
+            return await ctx.send(f"{str(user)} is already blacklisted")
+        else:
+            bl_db.append(user.id)
+            database.update("bl", "user_ids", f"{bl_db}", "main", 1)
+            if reason:
+                try:
+                    await user.send(f"You are blacklisted from using {self.bot.user.name} for {reason}")
+                except:
+                    pass
+                return await ctx.send(f"{str(user)} is added to blacklisted users for {reason}")
+            else:
+                try:
+                    await user.send(f"You are blacklisted from using {self.bot.user.name}")
+                except:
+                    pass
+                return await ctx.send(f"{str(user)} is added to blacklisted users")
 
-    @blacklist.command()
+    @user.command()
     @commands.is_owner()
     async def remove(self, ctx,*, user:discord.User):
             _db = database.fetchone("*", "bl", "main", 1)
@@ -294,7 +300,7 @@ class owner(commands.Cog):
                     pass
                 return await ctx.send(f"{str(user)} is removed from blacklisted users")
     
-    #@blacklist.command()
+    @blacklist.command()
     async def show(self, ctx: commands.Context):
         if ctx.author.id not in workowner:
             return await ctx.send("Only Bot Dev Can Run This Command")
@@ -329,6 +335,94 @@ class owner(commands.Cog):
         page = PaginationView(embed_list=em_list, ctx=ctx)
         await page.start(ctx)
     
+    @blacklist.group(invoke_without_command=True, aliases=["guild"])
+    @commands.is_owner()
+    async def server(self, ctx:commands.Context):
+        pass
+
+    @server.command(name="add")
+    @commands.is_owner()
+    async def addd(self, ctx:commands.Context, *, guild: Union[discord.Guild, str]):
+        if isinstance(guild, discord.Guild):
+            _db = database.fetchone("*", "bl_guilds", "main", 1)
+            bl_db = literal_eval(_db["guild_ids"])
+            if guild.id in bl_db:
+                return await ctx.send(f"{str(guild)} is already a blacklisted guild.")
+            else:
+                bl_db.append(guild.id)
+                database.update("bl", "guild_ids", f"{bl_db}", "main", 1)
+                return await ctx.send(f"{str(guild)} is added to blacklisted guild.")
+        else:
+            _db = database.fetchone("*", "bl_guilds", "main", 1)
+            bl_db = literal_eval(_db["guild_names"])
+            if guild.lower() in bl_db:
+                return await ctx.send(f"'{str(guild)}' is already a blacklisted guild.")
+            else:
+                bl_db.append(guild.lower())
+                database.update("bl", "guild_names", f"{bl_db}", "main", 1)
+                return await ctx.send(f"'{str(guild)}' is added to blacklisted guild.")
+
+    @server.command(name="remove")
+    @commands.is_owner()
+    async def removee(self, ctx:commands.Context, *, guild: Union[discord.Guild, str]):
+        if isinstance(guild, discord.Guild):
+            _db = database.fetchone("*", "bl_guilds", "main", 1)
+            bl_db = literal_eval(_db["guild_ids"])
+            if guild.id not in bl_db:
+                return await ctx.send(f"{str(guild)} is not a blacklisted guild.")
+            else:
+                bl_db.remove(guild.id)
+                database.update("bl", "guild_ids", f"{bl_db}", "main", 1)
+                return await ctx.send(f"{str(guild)} is removed from blacklisted guild.")
+        else:
+            _db = database.fetchone("*", "bl_guilds", "main", 1)
+            bl_db = literal_eval(_db["guild_names"])
+            if guild.lower() in bl_db:
+                return await ctx.send(f"'{str(guild)}' is not a blacklisted guild.")
+            else:
+                bl_db.append(guild.lower())
+                database.update("bl", "guild_names", f"{bl_db}", "main", 1)
+                return await ctx.send(f"'{str(guild)}' is removed from blacklisted guild.")
+    
+    @server.command(name="show")
+    async def shows(self, ctx: commands.Context):
+        if ctx.author.id not in workowner:
+            return await ctx.send("Only Bot Dev Can Run This Command")
+        _db = database.fetchone("*", "bl_guilds", "main", 1)
+        mem, ls = [], []
+        count = 0
+        bl_db = literal_eval(_db["guild_ids"])
+        bl_db1 = literal_eval(_db["guild_names"])
+        if len(bl_db) == 0:
+            embed =discord.Embed(color=botinfo.root_color)
+            embed.title = f"List of Blacklisted Guilds - 0"
+            embed.description = "No Blacklisted Guilds"
+            embed.set_footer(text=f"{self.bot.user.name}", icon_url=self.bot.user.display_avatar.url)
+            await ctx.send(embed=embed)
+            return
+        for i in bl_db:
+            u = discord.utils.get(self.bot.guilds, id=i)
+            if u is None:
+                continue
+            count+=1
+            mem.append(f"`[{'0' + str(count) if count < 10 else count}]` | {u.name} `[{u.id}]`")
+        for i in bl_db1:
+            count+=1
+            mem.append(f"`[{'0' + str(count) if count < 10 else count}]` | {i}")
+        for i in range(0, len(mem), 10):
+           ls.append(mem[i: i + 10])
+        em_list = []
+        no = 1
+        for k in ls:
+            embed =discord.Embed(color=botinfo.root_color)
+            embed.title = f"List of Blacklisted users - {count}"
+            embed.description = "\n".join(k)
+            embed.set_footer(text=f"{self.bot.user.name} • Page {no}/{len(ls)}", icon_url=self.bot.user.display_avatar.url)
+            em_list.append(embed)
+            no+=1
+        page = PaginationView(embed_list=em_list, ctx=ctx)
+        await page.start(ctx)
+
     @commands.command(description="To get the list of all running giveaways in all the server")
     @commands.is_owner()
     @commands.has_permissions(manage_guild=True)

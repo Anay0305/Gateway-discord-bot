@@ -216,6 +216,11 @@ async def on_message(message: discord.Message) -> None:
         page.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/K4v4aEuwp6"))
         #page.add_item(discord.ui.Button(label="Vote", url="https://top.gg/bot/880765863953858601/vote"))
         await ctx.reply(embed=emb, mention_author=False, view=page)
+    bl_db = database.fetchone("*", "bl_guilds", "main", 1)
+    if bl_db is not None:
+        bl_db = literal_eval(bl_db["guild_ids"])
+        if ctx.guild.id in bl_db:
+            return
     bl_db = database.fetchone("*", "bl", "main", 1)
     if bl_db is not None:
         bl_db = literal_eval(bl_db["user_ids"])
@@ -300,6 +305,11 @@ async def on_message_edit(before: discord.Message, after: discord.Message):
         return
     message = after
     ctx = await bot.get_context(message)
+    bl_db = database.fetchone("*", "bl_guilds", "main", 1)
+    if bl_db is not None:
+        bl_db = literal_eval(bl_db["guild_ids"])
+        if ctx.guild.id in bl_db:
+            return
     bl_db = database.fetchone("*", "bl", "main", 1)
     if bl_db is not None:
         bl_db = literal_eval(bl_db["user_ids"])
