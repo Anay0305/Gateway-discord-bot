@@ -300,7 +300,7 @@ class owner(commands.Cog):
                     pass
                 return await ctx.send(f"{str(user)} is removed from blacklisted users")
     
-    @blacklist.command()
+    @user.command()
     async def show(self, ctx: commands.Context):
         if ctx.author.id not in workowner:
             return await ctx.send("Only Bot Dev Can Run This Command")
