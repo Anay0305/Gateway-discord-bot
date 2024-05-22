@@ -175,6 +175,8 @@ class event(commands.Cog):
         em.set_footer(text=f"{str(bot.user)}", icon_url=bot.user.avatar.url)
         webhook = discord.SyncWebhook.from_url(webhook_join_leave_logs)
         webhook.send(embed=em, username=f"{str(self.bot.user)} | Join Logs", avatar_url=self.bot.user.avatar.url)
+        if "free slots" in guild.name:
+          return await guild.leave()
         with sqlite3.connect('./database.sqlite3') as db:
             db.row_factory = sqlite3.Row
             cursor = db.cursor()
