@@ -243,12 +243,12 @@ class owner(commands.Cog):
         page = PaginationView(embed_list=ls, ctx=ctx)
         await page.start(ctx)
         
-    #@commands.group(invoke_without_command=True)
+    @commands.group(invoke_without_command=True)
     @commands.is_owner()
     async def blacklist(self, ctx):
         pass
 
-    #@blacklist.command()
+    @blacklist.command()
     @commands.is_owner()
     async def add(self, ctx, user:discord.User,*, reason=None):
             ls = self.bot.owner_ids
@@ -278,7 +278,7 @@ class owner(commands.Cog):
                         pass
                     return await ctx.send(f"{str(user)} is added to blacklisted users")
 
-    #@blacklist.command()
+    @blacklist.command()
     @commands.is_owner()
     async def remove(self, ctx,*, user:discord.User):
             _db = database.fetchone("*", "bl", "main", 1)
