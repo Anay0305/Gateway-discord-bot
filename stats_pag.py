@@ -58,7 +58,7 @@ def lb_(icon, name, guild_id, banner, requester, mode:str, typee:str, data, curr
     image.paste(avatar_image, (53, 31), mask)
     font = ImageFont.truetype('Fonts/Montserrat-Bold.ttf', 24)
     n = name
-    while font.getlength(name) >= 420:
+    while font.getlength(name) >= 415:
       name = name[0:-1]
     if n != name:
       name = name[0:-2] + "..."
@@ -105,14 +105,19 @@ def lb_(icon, name, guild_id, banner, requester, mode:str, typee:str, data, curr
         circle_draw = ImageDraw.Draw(mask)
         circle_draw.ellipse((0, 0, AVATAR_SIZE, AVATAR_SIZE), fill=255)
         num_font = ImageFont.truetype('Fonts/Montserrat-Bold.ttf', 20)
+        n = i
+        while font.getlength(n) >= 350:
+            n = n[0:-1]
+        if n != i:
+            n = n[0:-2] + "..."
         if c % 2 != 0:
             image.paste(avatar_image, (53, ls[int((c-1)/2)]), mask)
             draw.text( (130, ls1[int((c-1)/2)]), f"{data[i][1]}. ", fill=(255,255,255), font=num_font, anchor="lm")
-            draw.text( (135 + num_font.getlength(f"{data[i][1]}. "), ls1[int((c-1)/2)]), f"{i}\n{data[i][0]}", fill=(255,255,255), font=font, anchor="lm")
+            draw.text( (135 + num_font.getlength(f"{data[i][1]}. "), ls1[int((c-1)/2)]), f"{n}\n{data[i][0]}", fill=(255,255,255), font=font, anchor="lm")
         else:
             image.paste(avatar_image, (500, ls[int((c-1)/2)]), mask)
             draw.text( (130+447, ls1[int((c-1)/2)]), f"{data[i][1]}. ", fill=(255,255,255), font=num_font, anchor="lm")
-            draw.text( (135+447 + num_font.getlength(f"{data[i][1]}. "), ls1[int((c-1)/2)]), f"{i}\n{data[i][0]}", fill=(255,255,255), font=font, anchor="lm")
+            draw.text( (135+447 + num_font.getlength(f"{data[i][1]}. "), ls1[int((c-1)/2)]), f"{n}\n{data[i][0]}", fill=(255,255,255), font=font, anchor="lm")
 
     with BytesIO() as image_binary:
         image.save(image_binary, 'PNG')
