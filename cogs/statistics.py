@@ -300,7 +300,7 @@ class Statistics(commands.Cog):
             for i in dic:
                 u = discord.utils.get(ctx.guild.members, id=i)
                 if u is not None:
-                    des[u.name] = [dic[i], count, u.display_name]
+                    des[u.name + " | " + u.display_name] = [f"{dic[i]} Messages", count, u.display_avatar.url]
                     count+=1
             lss = []
             xd = {}
@@ -354,7 +354,7 @@ class Statistics(commands.Cog):
             for i in dic:
                 u = discord.utils.get(ctx.guild.channels, id=i)
                 if u is not None:
-                    des[u.name] = [dic[i], count]
+                    des["#" + u.name] = [f"{dic[i]} Messages", count, ctx.guild.me.display_avatar.url]
                     count+=1
             lss = []
             xd = {}
@@ -427,7 +427,7 @@ class Statistics(commands.Cog):
             for i in dic:
                 u = discord.utils.get(ctx.guild.members, id=i)
                 if u is not None:
-                    des[u.name] = [dic[i], count, u.display_name]
+                    des[u.name + " | " + u.display_name] = [converttime(dic[i]), count, u.display_avatar.url]
                     count+=1
             lss = []
             xd = {}
@@ -481,7 +481,7 @@ class Statistics(commands.Cog):
             for i in dic:
                 u = discord.utils.get(ctx.guild.channels, id=i)
                 if u is not None:
-                    des[u.name] = [dic[i], count]
+                    des["#" + u.name] = [converttime(dic[i]), count, ctx.guild.me.display_avatar.url]
                     count+=1
             lss = []
             xd = {}

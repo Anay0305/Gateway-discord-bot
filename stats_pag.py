@@ -1,10 +1,8 @@
-from typing import Optional, NamedTuple
-from itertools import islice
 import botinfo
 from discord.ext import commands
 import discord
-from PIL import Image, ImageDraw, ImageFont
-from datetime import datetime, timedelta
+from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
+from datetime import datetime
 from io import BytesIO
 import requests
 import asyncio
@@ -25,34 +23,42 @@ def converttime(seconds):
         ls.append(f"{seconds}secs")
     return ' '.join(ls)
 
-def lb_(icon, name, mode:str, typee:str, data, current, total, start_date, end_date=None):
+def lb_(icon, name, guild_id, banner, requester, mode:str, typee:str, data, current, total, start_date, end_date=None):
     width = 960
     height = 500
     if end_date is None:
         end_date = str(datetime.now().date())
-    with open("lb_bg.jpg", 'rb') as file:
-        image = Image.open(BytesIO(file.read())).convert("RGBA")
-        file.close()
-    image = image.resize((width,height))
+
+    if not banner:
+        with open("bg.jpg", 'rb') as file:
+            image = Image.open(BytesIO(file.read())).convert("RGBA")
+            file.close()
+    else:
+        _res = requests.get(banner.url)
+        image = Image.open(BytesIO(_res.content)).convert("RGBA")
+        image = image.resize((width,height))
+        image = image.filter(ImageFilter.GaussianBlur(radius=2))
+        brightness_factor = 0.5
+        enhancer = ImageEnhance.Brightness(image)
+        image = enhancer.enhance(brightness_factor)
     draw = ImageDraw.Draw(image)
-    pfp = icon
-    pfp = pfp.replace("gif", "png").replace("webp", "png").replace("jpeg", "png")
-    logo_res = requests.get(pfp)
-    AVATAR_SIZE = 78
+    with open("mask.jpg", 'rb') as file:
+        imagee = Image.open(BytesIO(file.read())).convert("RGBA")
+        file.close()
+    imagee = imagee.resize((width,height))
+    image.paste(imagee, (0, 0), mask=imagee)
+    logo_res = requests.get(icon)
+    AVATAR_SIZE = 83
     avatar_image = Image.open(BytesIO(logo_res.content)).convert("RGB")
     avatar_image = avatar_image.resize((AVATAR_SIZE, AVATAR_SIZE)) #
-    circle_image = Image.new('L', (AVATAR_SIZE, AVATAR_SIZE))
-    circle_draw = ImageDraw.Draw(circle_image)
-    circle_draw.ellipse((0, 0, AVATAR_SIZE, AVATAR_SIZE), fill=255)
-    image.paste(avatar_image, (45, 20), circle_image)
-    font = ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 28)
-    n = name
-    while font.getlength(name) >= 450:
-      name = name[0:-1]
-    if n != name:
-      name = name[0:-2] + "..."
-    draw.text( (140, 36), f"{name}", fill="black", font=font)
-    font = ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 24)
+    border_radius = 23
+    mask = Image.new("L", (AVATAR_SIZE, AVATAR_SIZE), 0)
+    draw_mask = ImageDraw.Draw(mask)
+    draw_mask.rounded_rectangle((0, 0, AVATAR_SIZE, AVATAR_SIZE), radius=border_radius, fill=255)
+    image.paste(avatar_image, (53, 31), mask)
+    font = ImageFont.truetype('Fonts/Montserrat-Bold.ttf', 24)
+    draw.text( (150, 42), f"{name}", fill="white", font=font)
+    draw.text( (150, 74), f"ID: {guild_id}", fill="white", font=font)
     if start_date == end_date:
         hm = f"Today: {start_date}"
     else:
@@ -67,55 +73,47 @@ def lb_(icon, name, mode:str, typee:str, data, current, total, start_date, end_d
             xd = "Voice Users"
         else:
             xd = "Voice Channels"
-    draw.text( (760, 60), f"{xd} LeaderBoard\n{hm}", fill="black", font=font, anchor="mm")
-    font = ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 20)
-    draw.text( (45, 476), f"Requested By anayyy.dev", fill="white", font=font, anchor="lm")
-    font = ImageFont.truetype('Fonts/Alkatra-Bold.ttf', 20)
-    draw.text( (480, 476), f"Powered By Sputnik", fill="white", font=font, anchor="mm")
-    font = ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 20)
-    draw.text( (915, 476), f"Page {current}/{total}", fill="white", font=font, anchor="rm")
+    font = ImageFont.truetype('Fonts/Montserrat-Bold.ttf', 21)
+    draw.text( (580, 42), f"{xd} LeaderBoard", fill="white", font=font)
+    font = ImageFont.truetype('Fonts/Montserrat-SemiBold.ttf', 21)
+    draw.text( (580, 74), hm, fill="white", font=font)
+    font = ImageFont.truetype('Fonts/Montserrat-SemiBold.ttf', 20)
+    draw.text( (45, 476), f"Requested By {str(requester)}", fill="white", font=font, anchor="lm")
+    font = ImageFont.truetype('Fonts/Montserrat-Bold.ttf', 20)
+    draw.text( (915, 476), f"Powered By Sputnik", fill="white", font=font, anchor="rm")
+    font = ImageFont.truetype('Fonts/Montserrat-Medium.ttf', 18)
+    draw.text( (955, 14), f"Page {current}/{total}", fill="white", font=font, anchor="rm")
+    ls = [
+        139, 205, 271, 338, 404
+    ]
+    ls1 = [
+        139+26, 205+26, 271+26, 338+26, 404+26
+    ]
     c = 0
     for i in data:
         c+=1
-        num_font = ImageFont.truetype('Fonts/Alkatra-Regular.ttf', 26-len(str(data[i][1])))
-        user_font = ImageFont.truetype('Fonts/Alkatra-Regular.ttf', 24)
-        data_font = ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 26)
+        logo_res = requests.get(data[i][2])
+        AVATAR_SIZE = 51
+        avatar_image = Image.open(BytesIO(logo_res.content)).convert("RGB")
+        avatar_image = avatar_image.resize((int(AVATAR_SIZE), int(AVATAR_SIZE)))
+        mask = Image.new('L', (int(AVATAR_SIZE), int(AVATAR_SIZE)), 0)
+        circle_draw = ImageDraw.Draw(mask)
+        circle_draw.ellipse((0, 0, AVATAR_SIZE, AVATAR_SIZE), fill=255)
+        num_font = ImageFont.truetype('Fonts/Montserrat-Bold.ttf', 20)
         if c % 2 != 0:
-            draw.text( (76, 148 + int((c-1)/2)*71), f"{data[i][1]}.", fill="white", font=num_font, anchor="mm")
-            if typee == "channels":
-                draw.text( (115, 126 + int((c-1)/2)*71), f"#{i}", fill=(0, 135, 232), font=user_font, anchor="lt")
-            else:
-                draw.text( (115, 126 + int((c-1)/2)*71), f"{i}", fill=(0, 135, 232), font=user_font, anchor="lt")
-            if len(data[i]) > 2:
-                draw.text( (115+ user_font.getlength(f"{i}"), 126 + int((c-1)/2)*71), f" • {data[i][2]}", fill=(46, 111, 158), font=user_font, anchor="lt")
-            if mode.lower() == "messages":
-                x = f"{data[i][0]} Messages"
-            else:
-                x = converttime(data[i][0])
-            draw.text( (115, 150+ int((c-1)/2)*71), f"{x}", fill="black", font=data_font, anchor="lt")
+            image.paste(avatar_image, (53, ls[int(c-1/2)]), mask)
+            draw.text( (130, ls1[int(c-1/2)]), f"{data[i][1]}. ", fill=(255,255,255), font=num_font, anchor="lm")
+            draw.text( (135 + num_font.getlength(f"{data[i][1]}. "), ls1[int(c-1/2)]), f"{i}\n{data[i][0]}", fill=(255,255,255), font=font, anchor="lm")
         else:
-            draw.text( (76+462, 148 + int((c-1)/2)*71), f"{data[i][1]}.", fill="white", font=num_font, anchor="mm")
-            if typee == "channels":
-                draw.text( (115+462, 126 + int((c-1)/2)*71), f"#{i}", fill=(0, 135, 232), font=user_font, anchor="lt")
-            else:
-                draw.text( (115+462, 126 + int((c-1)/2)*71), f"{i}", fill=(0, 135, 232), font=user_font, anchor="lt")
-            if len(data[i]) > 2:
-                draw.text( (115+462+user_font.getlength(f"{i}"), 126 + int((c-1)/2)*71), f" • {data[i][2]}", fill=(46, 111, 158), font=user_font, anchor="lt")
-            if mode.lower() == "messages":
-                x = f"{data[i][0]} Messages"
-            else:
-                x = converttime(data[i][0])
-            draw.text( (115+462, 150+ int((c-1)/2)*71), f"{x}", fill="black", font=data_font, anchor="lt")
+            image.paste(avatar_image, (500, ls[int(c-1/2)]), mask)
+            draw.text( (130+447, ls1[int(c-1/2)]), f"{data[i][1]}. ", fill=(255,255,255), font=num_font, anchor="lm")
+            draw.text( (135+447 + num_font.getlength(f"{data[i][1]}. "), ls1[int(c-1/2)]), f"{i}\n{data[i][0]}", fill=(255,255,255), font=font, anchor="lm")
 
     with BytesIO() as image_binary:
         image.save(image_binary, 'PNG')
         image_binary.seek(0)
         return discord.File(fp=image_binary, filename='profile.png')
-
-def get_chunks(iterable, size):
-    it = iter(iterable)
-    return iter(lambda: tuple(islice(it, size)), ())
-
+    
 class StatPaginationView(discord.ui.View):
     current = 0
 
@@ -161,7 +159,7 @@ class StatPaginationView(discord.ui.View):
         else:
             self.next.disabled = True
             self._last.disabled = True
-        file = lb_(self.icon, self.ctx.guild.name, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
+        file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
         await asyncio.sleep(1)
         await interaction.response.edit_message(content=None,
             attachments=[file], view=self
@@ -193,7 +191,7 @@ class StatPaginationView(discord.ui.View):
             button.disabled = False
 
 
-        file = lb_(self.icon, self.ctx.guild.name, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
+        file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
         await asyncio.sleep(1)
         await interaction.response.edit_message(content=None,
             attachments=[file], view=self
@@ -223,7 +221,7 @@ class StatPaginationView(discord.ui.View):
             self.previous.disabled = True
             self.first.disabled = True
 
-        file = lb_(self.icon, self.ctx.guild.name, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
+        file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
         await asyncio.sleep(1)
         await interaction.response.edit_message(content=None,
             attachments=[file], view=self
@@ -245,7 +243,7 @@ class StatPaginationView(discord.ui.View):
             self.first.disabled = True
             self.previous.disabled = True
 
-        file = lb_(self.icon, self.ctx.guild.name, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
+        file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
         await asyncio.sleep(1)
         await interaction.response.edit_message(content=None,
             attachments=[file], view=self
@@ -253,7 +251,7 @@ class StatPaginationView(discord.ui.View):
         self.view = self.current
     
     async def start(self, ctx: commands.Context, interaction: discord.Interaction=None):
-        file = lb_(self.icon, self.ctx.guild.name, self.mode, self.typee, self.file_list[0], self.current+1, len(self.file_list), self.start_, self.end_)
+        file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[0], self.current+1, len(self.file_list), self.start_, self.end_)
         if len(self.file_list) != 1:
             if interaction is not None:
                 self.message = await interaction.response.send_message(file=file, view=self, ephemeral=True)
