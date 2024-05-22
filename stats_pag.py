@@ -87,7 +87,7 @@ def lb_(icon, name, guild_id, banner, requester, mode:str, typee:str, data, curr
     font = ImageFont.truetype('Fonts/Montserrat-Bold.ttf', 20)
     draw.text( (915, 476), f"Powered By Sputnik", fill="white", font=font, anchor="rm")
     font = ImageFont.truetype('Fonts/Montserrat-Medium.ttf', 18)
-    draw.text( (915, 16), f"Page {current}/{total}", fill="white", font=font, anchor="rm")
+    draw.text( (915, 14), f"Page {current}/{total}", fill="white", font=font, anchor="rm")
     ls = [
         139, 205, 271, 338, 404
     ]
