@@ -714,7 +714,7 @@ class moderation(commands.Cog):
         
     @commands.command(description="Shows the current prefix")
     async def prefix(self, ctx):
-        prefix = database.get_guild_prefix()
+        prefix = database.get_guild_prefix(ctx.guild.id)
         if ctx.author.guild_permissions.administrator == True:
             em = discord.Embed(title=f"Current Prefix for {ctx.guild.name}", description=f"{prefix}\nYou can change it by typing {prefix}setprefix <prefix>", color=botinfo.root_color)
             await ctx.send(embed=em, mention_author=False)
