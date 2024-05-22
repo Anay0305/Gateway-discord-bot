@@ -14,4 +14,8 @@ webhook_rate_limit_logs = "https://discord.com/api/webhooks/1241607839886344192/
 webhook_dm_logs = "https://discord.com/api/webhooks/1215241922508095499/8i79m0Y2KMvlvzo-T-xCvt0np7q8IXtwnhW3GH7Mj5daIjk_vq5CZOG47YljZY6KdfoC"
 webhook_badge_logs = "https://discord.com/api/webhooks/1241608493337935982/IrzvOjWzOhjjJJyQulGIhmwMKiuOBWHZQkCSyi9NvwcOrgsozWfV0L4_GBlPbA7QA1gi"
 webhook_np_logs = "https://discord.com/api/webhooks/1241608928081481728/wup7f3aQglbrRXyPubgGufSr2KyxM_cg9rYEUkLYdN-5o6UZYsbGOGbNItyeeDTMOaPT"
+webhook_blacklist_logs = "https://discord.com/api/webhooks/1242872845277855784/27mBUroHlZcY-m9Vc5wTX6W34s9vRBGxEzkgUFJJ3ucrR2BBTyKZ1qf2D8Di8ixvfSXi"
+
 starttime = 0
+rate_limit = {}
+warning_count = {}

@@ -142,24 +142,52 @@ class event(commands.Cog):
         await database.create_tables()
         print(f'Logged in as {bot.user.name}({bot.user.id})')
         t = round(datetime.datetime.now().timestamp())
-        for i in bot.guilds:
-            for j in i.channels:
-                if str(j.type) == "voice":
-                    check = True
-                    for k in j.members:
-                        if not k.bot:
-                            check= False
-                            if i.id in voice_db.user_start:
-                                if k.id not in voice_db.user_start[i.id]:
-                                    voice_db.user_start[i.id][k.id] = t
+        with sqlite3.connect('./database.sqlite3') as db:
+            db.row_factory = sqlite3.Row
+            cursor = db.cursor()
+            for i in bot.guilds:
+                cursor.execute(f"INSERT OR IGNORE INTO roles(guild_id) VALUES({i.id})")
+                cursor.execute(f"INSERT OR IGNORE INTO imp(guild_id) VALUES({i.id})")
+                cursor.execute(f"INSERT OR IGNORE INTO prefixes(guild_id) VALUES({i.id})")
+                cursor.execute(f"INSERT OR IGNORE INTO ignore(guild_id) VALUES({i.id})")
+                cursor.execute(f"INSERT OR IGNORE INTO auto(guild_id) VALUES({i.id})")
+                cursor.execute(f"INSERT OR IGNORE INTO logs(guild_id) VALUES({i.id})")
+                cursor.execute(f"SELECT * FROM  invc WHERE guild_id = {i.id}")
+                in_vc = cursor.fetchone()
+                if in_vc is None:
+                    x = {}
+                else:
+                    x = literal_eval(in_vc['vc'])
+                for j in i.channels:
+                    if str(j.type) == "voice":
+                        if j.id not in x:
+                            x[j.id] = None
+                        check = True
+                        for k in j.members:
+                            if not k.bot:
+                                check= False
+                                if i.id in voice_db.user_start:
+                                    if k.id not in voice_db.user_start[i.id]:
+                                        voice_db.user_start[i.id][k.id] = t
+                                else:
+                                    voice_db.user_start[i.id] ={k.id: t}
+                        if not check:
+                            if i.id in voice_db.channel_start:
+                                if j.id not in voice_db.channel_start[i.id]:
+                                    voice_db.channel_start[i.id][j.id] = t
                             else:
-                                voice_db.user_start[i.id] ={k.id: t}
-                    if not check:
-                        if i.id in voice_db.channel_start:
-                            if j.id not in voice_db.channel_start[i.id]:
-                                voice_db.channel_start[i.id][j.id] = t
-                        else:
-                            voice_db.channel_start[i.id] ={j.id: t}
+                                voice_db.channel_start[i.id] ={j.id: t}
+                if in_vc is None:
+                    val = (i.id, f"{x}")
+                    query = f"INSERT OR IGNORE INTO invc(guild_id, vc) VALUES(?, ?)"
+                    cursor.execute(query, val)
+                else:
+                    query = f"UPDATE invc SET 'vc' = ? WHERE guild_id = ?"
+                    val = (f"{x}", i.id,)
+                    cursor.execute(query, val)
+        db.commit()
+        cursor.close()
+        db.close()
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):

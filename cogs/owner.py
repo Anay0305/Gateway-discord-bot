@@ -276,13 +276,15 @@ class owner(commands.Cog):
                     await user.send(f"You are blacklisted from using {self.bot.user.name} for {reason}")
                 except:
                     pass
-                return await ctx.send(f"{str(user)} is added to blacklisted users for {reason}")
+                await ctx.send(f"{str(user)} is added to blacklisted users for {reason}")
             else:
                 try:
                     await user.send(f"You are blacklisted from using {self.bot.user.name}")
                 except:
                     pass
-                return await ctx.send(f"{str(user)} is added to blacklisted users")
+                await ctx.send(f"{str(user)} is added to blacklisted users")
+            webhook = discord.SyncWebhook.from_url(botinfo.webhook_blacklist_logs)
+            webhook.send(embed=discord.Embed(title="User Blacklisted", description=f"User Name: {user.name} - {user.mention}\nUser Id: {user.id}\nReason: {reason or 'None'}\nBlacklisted by: {ctx.author.name} - {ctx.author.mention} [{ctx.author.id}]", color=botinfo.root_color), username=f"{str(self.bot.user)} | Blacklisted User Logs", avatar_url=self.bot.user.avatar.url)
 
     @user.command()
     @commands.is_owner()
@@ -298,6 +300,8 @@ class owner(commands.Cog):
                     await user.send(f"You are allowed to use the bot now")
                 except:
                     pass
+                webhook = discord.SyncWebhook.from_url(botinfo.webhook_blacklist_logs)
+                webhook.send(embed=discord.Embed(title="User Whitelisted", description=f"User Name: {user.name} - {user.mention}\nUser Id: {user.id}\Whitelisted by: {ctx.author.name} - {ctx.author.mention} [{ctx.author.id}]", color=botinfo.root_color), username=f"{str(self.bot.user)} | Whitelisted User Logs", avatar_url=self.bot.user.avatar.url)
                 return await ctx.send(f"{str(user)} is removed from blacklisted users")
     
     @user.command()
@@ -351,6 +355,8 @@ class owner(commands.Cog):
             else:
                 bl_db.append(guild.id)
                 database.update("bl_guilds", "guild_ids", f"{bl_db}", "main", 1)
+                webhook = discord.SyncWebhook.from_url(botinfo.webhook_blacklist_logs)
+                webhook.send(embed=discord.Embed(title="Guild Blacklisted", description=f"Guild Name: {ctx.guild.name}\nGuild Id: {ctx.guild.id}\nGuild Members: {ctx.guild.member_count}\nBlacklisted by: {ctx.author.name} - {ctx.author.mention} [{ctx.author.id}]", color=botinfo.root_color), username=f"{str(self.bot.user)} | Blacklist Guild Logs", avatar_url=self.bot.user.avatar.url)
                 return await ctx.send(f"{str(guild)} is added to blacklisted guild.")
         else:
             _db = database.fetchone("*", "bl_guilds", "main", 1)
@@ -360,6 +366,8 @@ class owner(commands.Cog):
             else:
                 bl_db.append(guild.lower())
                 database.update("bl_guilds", "guild_names", f"{bl_db}", "main", 1)
+                webhook = discord.SyncWebhook.from_url(botinfo.webhook_blacklist_logs)
+                webhook.send(embed=discord.Embed(title="Guild Blacklisted", description=f"Guild containing: '{ctx.guild.name}'\nBlacklisted by: {ctx.author.name} - {ctx.author.mention} [{ctx.author.id}]", color=botinfo.root_color), username=f"{str(self.bot.user)} | Blacklist Guild Logs", avatar_url=self.bot.user.avatar.url)
                 return await ctx.send(f"'{str(guild)}' is added to blacklisted guild.")
 
     @server.command(name="remove")
@@ -373,15 +381,19 @@ class owner(commands.Cog):
             else:
                 bl_db.remove(guild.id)
                 database.update("bl_guilds", "guild_ids", f"{bl_db}", "main", 1)
+                webhook = discord.SyncWebhook.from_url(botinfo.webhook_blacklist_logs)
+                webhook.send(embed=discord.Embed(title="Guild Whitelisted", description=f"Guild Name: {ctx.guild.name}\nGuild Id: {ctx.guild.id}\nGuild Members: {ctx.guild.member_count}\nWhitelisted by: {ctx.author.name} - {ctx.author.mention} [{ctx.author.id}]", color=botinfo.root_color), username=f"{str(self.bot.user)} | Whitelisted Guild Logs", avatar_url=self.bot.user.avatar.url)
                 return await ctx.send(f"{str(guild)} is removed from blacklisted guild.")
         else:
             _db = database.fetchone("*", "bl_guilds", "main", 1)
             bl_db = literal_eval(_db["guild_names"])
-            if guild.lower() in bl_db:
+            if guild.lower() not in bl_db:
                 return await ctx.send(f"'{str(guild)}' is not a blacklisted guild.")
             else:
                 bl_db.append(guild.lower())
                 database.update("bl_guilds", "guild_names", f"{bl_db}", "main", 1)
+                webhook = discord.SyncWebhook.from_url(botinfo.webhook_blacklist_logs)
+                webhook.send(embed=discord.Embed(title="Guild Whitelisted", description=f"Guild containing: '{ctx.guild.name}'\nWhitelisted by: {ctx.author.name} - {ctx.author.mention} [{ctx.author.id}]", color=botinfo.root_color), username=f"{str(self.bot.user)} | Whitelisted Guild Logs", avatar_url=self.bot.user.avatar.url)
                 return await ctx.send(f"'{str(guild)}' is removed from blacklisted guild.")
     
     @server.command(name="show")

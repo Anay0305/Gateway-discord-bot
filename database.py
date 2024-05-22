@@ -438,6 +438,9 @@ def get_guild_prefix(guild_id):
         res = cursor.fetchone()
     cursor.close()
     db.close()
+    if res is None:
+        insert("prefixes", "guild_id", (guild_id,))
+        return "-"
     return res["prefix"]
 
 def fetchone(xx, table_name, q, value):

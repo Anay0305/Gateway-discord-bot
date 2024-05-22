@@ -110,7 +110,6 @@ class Bot(commands.AutoShardedBot):
             await self.load_extension(extension)
         await self.tree.sync()
 
-
 bot = Bot(get_pre, intents)
 ownerids = botinfo.botowner
 bot.owner_ids = ownerids
@@ -137,6 +136,32 @@ async def process_commands(message: discord.Message) -> None:
             webhook = discord.SyncWebhook.from_url(botinfo.webhook_ratelimit_logs)
             webhook.send("The bot is being ratelimited", username=f"{str(bot.user)} | Ratelimit Logs", avatar_url=bot.user.avatar.url)
     ctx = await bot.get_context(message)
+    if ctx.guild.id in botinfo.rate_limit:
+        x = botinfo.rate_limit[ctx.guild.id]
+        if datetime.datetime.now().timestamp() - x['start_time'] < 5:
+            if x['count'] >= 8:
+                _db = database.fetchone("*", "bl_guilds", "main", 1)
+                bl_db = literal_eval(_db["guild_ids"])
+                bl_db.append(ctx.guild.id)
+                database.update("bl_guilds", "guild_ids", f"{bl_db}", "main", 1)
+                init = await ctx.send(embed=discord.Embed(title=f"Guild Blacklised from using commands", description="**This guild is blacklisted for trying to ratelimit the bot or take it down by their dumb methods, if you think so that this was a mistake by the bot kindly report it in the [Support Server](https://discord.gg/K4v4aEuwp6).**", color=botinfo.wrong_color))
+                webhook = discord.SyncWebhook.from_url(botinfo.webhook_blacklist_logs)
+                webhook.send(embed=discord.Embed(title="Automated Guild Blacklisted", description=f"**Some Kiddos were trying to ratelimit the bot in {ctx.message.jump_url} so I blacklisted the whole guild.**\nGuild Name: {ctx.guild.name}\nGuild Id: {ctx.guild.id}\nGuild Members: {ctx.guild.member_count}\nChannel: {ctx.channel.name} [{ctx.channel.mention}]", color=botinfo.root_color), username=f"{str(bot.user)} | Blacklist Guild Logs", avatar_url=bot.user.avatar.url)
+                if ctx.guild.me.guild_permissions.manage_messages:
+                    async for msg in message.channel.history(limit=50):
+                        if msg.author.id == bot.user.id and msg.id != init.id and msg.created_at.timestamp() - x['start_time'] <= 5:
+                            await msg.delete()
+                del botinfo.rate_limit[ctx.guild.id]
+                return
+            else:
+                x['count'] +=1
+        else:
+            x['start_time'] = datetime.datetime.now().timestamp()
+    else:
+        botinfo.rate_limit[ctx.guild.id] = {
+            "start_time": datetime.datetime.now().timestamp(),
+            "count": 1
+        }
     ig_db = database.fetchone("*", "ignore", "guild_id", message.guild.id)
     if ig_db is None:
       if ctx.command:
@@ -208,14 +233,6 @@ async def on_message(message: discord.Message) -> None:
     if not message.guild.me.guild_permissions.send_messages:
         return
     ctx = await bot.get_context(message)
-    if re.fullmatch(rf"<@!?{bot.user.id}>", message.content) and not ctx.author.bot:
-        prefix = database.get_guild_prefix(message.guild.id)
-        emb = discord.Embed(description=f"Hey {message.author.mention} My Prefix is `{prefix}`\nTo view all my modules do `{prefix}help` or </help:1240018917204955198>.\nFor module related help use `{prefix}help <module name>` or </help:1063005466914979900> `<module name>`", color=botinfo.root_color)
-        page = discord.ui.View()
-        page.add_item(discord.ui.Button(label="Invite me", url="https://discord.com/api/oauth2/authorize?client_id=1240005601220755557&&permissions=8&scope=bot"))
-        page.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/K4v4aEuwp6"))
-        #page.add_item(discord.ui.Button(label="Vote", url="https://top.gg/bot/880765863953858601/vote"))
-        await ctx.reply(embed=emb, mention_author=False, view=page)
     bl_db = database.fetchone("*", "bl_guilds", "main", 1)
     if bl_db is not None:
         bl_db = literal_eval(bl_db["guild_ids"])
@@ -226,6 +243,40 @@ async def on_message(message: discord.Message) -> None:
         bl_db = literal_eval(bl_db["user_ids"])
         if ctx.author.id in bl_db:
             return
+    if re.fullmatch(rf"<@!?{bot.user.id}>", message.content) and not ctx.author.bot:
+        if ctx.guild.id in botinfo.rate_limit:
+            x = botinfo.rate_limit[ctx.guild.id]
+            if datetime.datetime.now().timestamp() - x['start_time'] < 5:
+                if x['count'] >= 8:
+                    _db = database.fetchone("*", "bl_guilds", "main", 1)
+                    bl_db = literal_eval(_db["guild_ids"])
+                    bl_db.append(ctx.guild.id)
+                    database.update("bl_guilds", "guild_ids", f"{bl_db}", "main", 1)
+                    init = await ctx.send(embed=discord.Embed(title=f"Guild Blacklised from using commands", description="**This guild is blacklisted for trying to ratelimit the bot or take it down by their dumb methods, if you think so that this was a mistake by the bot kindly report it in the [Support Server](https://discord.gg/K4v4aEuwp6).**", color=botinfo.wrong_color))
+                    webhook = discord.SyncWebhook.from_url(botinfo.webhook_blacklist_logs)
+                    webhook.send(embed=discord.Embed(title="Automated Guild Blacklisted", description=f"**Some Kiddos were trying to ratelimit the bot in {ctx.message.jump_url} so I blacklisted the whole guild.**\nGuild Name: {ctx.guild.name}\nGuild Id: {ctx.guild.id}\nGuild Members: {ctx.guild.member_count}\nChannel: {ctx.channel.name} [{ctx.channel.mention}]", color=botinfo.root_color), username=f"{str(bot.user)} | Blacklist Guild Logs", avatar_url=bot.user.avatar.url)
+                    if ctx.guild.me.guild_permissions.manage_messages:
+                        async for msg in message.channel.history(limit=50):
+                            if msg.author.id == bot.user.id and msg.id != init.id and msg.created_at.timestamp() - x['start_time'] <= 5:
+                                await msg.delete()
+                    del botinfo.rate_limit[ctx.guild.id]
+                    return
+                else:
+                    x['count'] +=1
+            else:
+                x['start_time'] = datetime.datetime.now().timestamp()
+        else:
+            botinfo.rate_limit[ctx.guild.id] = {
+                "start_time": datetime.datetime.now().timestamp(),
+                "count": 1
+            }
+        prefix = database.get_guild_prefix(message.guild.id)
+        emb = discord.Embed(description=f"Hey {message.author.mention} My Prefix is `{prefix}`\nTo view all my modules do `{prefix}help` or </help:1240018917204955198>.\nFor module related help use `{prefix}help <module name>` or </help:1063005466914979900> `<module name>`", color=botinfo.root_color)
+        page = discord.ui.View()
+        page.add_item(discord.ui.Button(label="Invite me", url="https://discord.com/api/oauth2/authorize?client_id=1240005601220755557&&permissions=8&scope=bot"))
+        page.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/K4v4aEuwp6"))
+        #page.add_item(discord.ui.Button(label="Vote", url="https://top.gg/bot/880765863953858601/vote"))
+        await ctx.reply(embed=emb, mention_author=False, view=page, delete_after=10)
     ig_db = database.fetchone("*", "ignore", "guild_id", message.guild.id)
     if ig_db is not None:
         xd = literal_eval(ig_db['user'])
