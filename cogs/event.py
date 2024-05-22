@@ -178,7 +178,7 @@ class event(commands.Cog):
         if bl_db is not None:
             bl_db = literal_eval(bl_db["guild_names"])
             for i in bl_db:
-                if i in guild.name:
+                if i in guild.name.lower():
                     await guild.leave()
                     return webhook.send(content=f"Blacklist guild with name {i} was added.", username=f"{str(self.bot.user)} | Blacklisted guild Join Logs", avatar_url=self.bot.user.avatar.url)
         webhook.send(embed=em, username=f"{str(self.bot.user)} | Join Logs", avatar_url=self.bot.user.avatar.url)
