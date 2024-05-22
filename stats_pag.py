@@ -98,7 +98,7 @@ def lb_(icon, name, guild_id, banner, requester, mode:str, typee:str, data, curr
     for i in data:
         c+=1
         logo_res = requests.get(data[i][2])
-        AVATAR_SIZE = 51
+        AVATAR_SIZE = 52
         avatar_image = Image.open(BytesIO(logo_res.content)).convert("RGB")
         avatar_image = avatar_image.resize((int(AVATAR_SIZE), int(AVATAR_SIZE)))
         mask = Image.new('L', (int(AVATAR_SIZE), int(AVATAR_SIZE)), 0)
