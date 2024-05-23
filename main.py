@@ -13,24 +13,6 @@ import wavelink
 import database
 from cogs.extra import by_channel, by_cmd, by_module, by_role, get_prefix
 from premium import check_upgraded
-logging.basicConfig(level=logging.DEBUG)
-log = logging.getLogger(__name__)
-
-async def on_request_end(
-    session: aiohttp.ClientSession,
-    trace_config_ctx,
-    params: aiohttp.TraceRequestEndParams,
-) -> None:
-    if params.response.status >= 400:
-        log.warning(
-            'Request to %s failed with status code %s with method %s',
-            params.url,
-            params.response.status,
-            params.method,
-        )
-
-trace = aiohttp.TraceConfig()
-trace.on_request_end.append(on_request_end)
 
 botinfo.starttime = datetime.datetime.now(datetime.UTC)
 check = False
@@ -94,7 +76,7 @@ intents = discord.Intents.all()
 intents.presences = False
 class Bot(commands.AutoShardedBot):
     def __init__(self, get_pre, intents) -> None:
-        super().__init__(command_prefix = get_pre, http_trace=trace, case_insensitive=True, intents=intents)
+        super().__init__(command_prefix = get_pre, case_insensitive=True, intents=intents)
 
     async def setup_hook(self) -> None:
         nodes: list[wavelink.Node] = [wavelink.Node(uri="http://159.203.133.30:2333/", password="anaygupta")]
