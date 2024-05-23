@@ -66,7 +66,10 @@ def lb_(icon, name, guild_id, banner, requester, mode:str, typee:str, data, curr
     draw.text( (150, 42), f"{name}", fill="white", font=font)
     draw.text( (150, 74), f"ID: {guild_id}", fill="white", font=font)
     if start_date == end_date:
-        hm = f"Today: {start_date}"
+        if start_date == str(datetime.now().date()):
+            hm = f"Today: {start_date}"
+        else:
+            hm = start_date
     else:
         hm = f"{start_date} to {end_date}"
     if mode.lower() == "messages":
@@ -125,7 +128,37 @@ def lb_(icon, name, guild_id, banner, requester, mode:str, typee:str, data, curr
         image.save(image_binary, 'PNG')
         image_binary.seek(0)
         return discord.File(fp=image_binary, filename='profile.png')
-    
+
+
+class PageChangeModal(discord.ui.Modal, title="Go to page"):
+    """Modal that prompts users for the page number to change to"""
+
+    page_number: discord.ui.TextInput[discord.ui.Modal] = discord.ui.TextInput(label="Page number", style=discord.TextStyle.short)
+
+    def __init__(self, interface: 'StatPaginationView'):
+        super().__init__(timeout=interface.timeout)
+        self.interface = interface
+        self.page_number.label = f"Page number (1-{len(interface.file_list)})"
+        self.page_number.min_length = 1
+        self.page_number.max_length = len(str(interface.file_list))
+
+    async def on_submit(self, interaction: discord.Interaction, /):
+        try:
+            if not self.page_number.value:
+                raise ValueError("Page number not filled")
+
+            self.interface.current = int(self.page_number.value) - 1
+        except ValueError:
+            await interaction.response.send_message(
+                content=f"``{self.page_number.value}`` could not be converted to a page number",
+                ephemeral=True
+            )
+        else:
+            file = lb_(self.interface.icon, self.interface.ctx.guild.name, self.interface.ctx.guild.id, self.interface.ctx.guild.banner, self.interface.ctx.author, self.interface.mode, self.interface.typee, self.interface.file_list[self.interface.current], self.interface.current+1, len(self.interface.file_list), self.interface.start_, self.interface.end_)
+            await interaction.response.edit_message(content=None,
+                attachments=[file], view=self.interface
+            )
+
 class StatPaginationView(discord.ui.View):
     current = 0
 
@@ -175,7 +208,6 @@ class StatPaginationView(discord.ui.View):
         await interaction.response.edit_message(content=None,
             attachments=[file], view=self
         )
-        self.view = self.current
 
     @discord.ui.button(label="Back", style=discord.ButtonStyle.green, disabled=True)
     async def previous(
@@ -206,7 +238,6 @@ class StatPaginationView(discord.ui.View):
         await interaction.response.edit_message(content=None,
             attachments=[file], view=self
         )
-        self.view = self.current
       
    
     @discord.ui.button(emoji="<a:Cross:937350485919289364>", style=discord.ButtonStyle.red)
@@ -235,7 +266,6 @@ class StatPaginationView(discord.ui.View):
         await interaction.response.edit_message(content=None,
             attachments=[file], view=self
         )
-        self.view = self.current
 
     @discord.ui.button(label="≫", style=discord.ButtonStyle.blurple, disabled=False)
     async def _last(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -256,7 +286,6 @@ class StatPaginationView(discord.ui.View):
         await interaction.response.edit_message(content=None,
             attachments=[file], view=self
         )
-        self.view = self.current
     
     async def start(self, ctx: commands.Context, interaction: discord.Interaction=None):
         file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.id, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[0], self.current+1, len(self.file_list), self.start_, self.end_)
