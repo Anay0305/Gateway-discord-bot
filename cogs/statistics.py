@@ -352,13 +352,12 @@ class Statistics(commands.Cog):
                     break
                 dic = channel_db
             des = {}
-            await ctx.send(dic)
+            dic = dict(sorted(dic.items(), key=lambda item: item[1], reverse=True))
             for i in dic:
                 u = discord.utils.get(ctx.guild.channels, id=i)
                 if u is not None:
-                    des["#" + u.name] = [f"{dic[i]} Messages", count, ctx.guild.me.display_avatar.url]
+                    des["#" + u.name + f"[{u.id}]"] = [f"{dic[i]} Messages", count, ctx.guild.me.display_avatar.url]
                     count+=1
-            await ctx.send(des)
             lss = []
             xd = {}
             coun = 0
@@ -486,7 +485,7 @@ class Statistics(commands.Cog):
             for i in dic:
                 u = discord.utils.get(ctx.guild.channels, id=i)
                 if u is not None:
-                    des["#" + u.name] = [converttime(dic[i]), count, ctx.guild.me.display_avatar.url]
+                    des["#" + u.name + f"[{u.id}]"] = [converttime(dic[i]), count, ctx.guild.me.display_avatar.url]
                     count+=1
             lss = []
             xd = {}
