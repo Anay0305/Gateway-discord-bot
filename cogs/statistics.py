@@ -297,6 +297,7 @@ class Statistics(commands.Cog):
                     break
                 dic = user_db
             des = {}
+            dic = dict(sorted(dic.items(), key=lambda item: item[1], reverse=True))
             for i in dic:
                 u = discord.utils.get(ctx.guild.members, id=i)
                 if u is not None:
@@ -351,6 +352,7 @@ class Statistics(commands.Cog):
                     break
                 dic = channel_db
             des = {}
+            dic = dict(sorted(dic.items(), key=lambda item: item[1], reverse=True))
             for i in dic:
                 u = discord.utils.get(ctx.guild.channels, id=i)
                 if u is not None:
@@ -424,6 +426,7 @@ class Statistics(commands.Cog):
                     break
                 dic = user_db
             des = {}
+            dic = dict(sorted(dic.items(), key=lambda item: item[1], reverse=True))
             for i in dic:
                 u = discord.utils.get(ctx.guild.members, id=i)
                 if u is not None:
@@ -478,6 +481,7 @@ class Statistics(commands.Cog):
                     break
                 dic = channel_db
             des = {}
+            dic = dict(sorted(dic.items(), key=lambda item: item[1], reverse=True))
             for i in dic:
                 u = discord.utils.get(ctx.guild.channels, id=i)
                 if u is not None:
