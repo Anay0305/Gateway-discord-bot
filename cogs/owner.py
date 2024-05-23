@@ -301,7 +301,7 @@ class owner(commands.Cog):
                 except:
                     pass
                 webhook = discord.SyncWebhook.from_url(botinfo.webhook_blacklist_logs)
-                webhook.send(embed=discord.Embed(title="User Whitelisted", description=f"User Name: {user.name} - {user.mention}\nUser Id: {user.id}\Whitelisted by: {ctx.author.name} - {ctx.author.mention} [{ctx.author.id}]", color=botinfo.root_color), username=f"{str(self.bot.user)} | Whitelisted User Logs", avatar_url=self.bot.user.avatar.url)
+                webhook.send(embed=discord.Embed(title="User Whitelisted", description=f"User Name: {user.name} - {user.mention}\nUser Id: {user.id}\nWhitelisted by: {ctx.author.name} - {ctx.author.mention} [{ctx.author.id}]", color=botinfo.root_color), username=f"{str(self.bot.user)} | Whitelisted User Logs", avatar_url=self.bot.user.avatar.url)
                 return await ctx.send(f"{str(user)} is removed from blacklisted users")
     
     @user.command()
