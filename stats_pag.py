@@ -171,7 +171,6 @@ class StatPaginationView(discord.ui.View):
             self.next.disabled = True
             self._last.disabled = True
         file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.id, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
-        await asyncio.sleep(1)
         await interaction.response.edit_message(content=None,
             attachments=[file], view=self
         )
@@ -203,7 +202,6 @@ class StatPaginationView(discord.ui.View):
 
 
         file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.id, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
-        await asyncio.sleep(1)
         await interaction.response.edit_message(content=None,
             attachments=[file], view=self
         )
@@ -233,7 +231,6 @@ class StatPaginationView(discord.ui.View):
             self.first.disabled = True
 
         file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.id, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
-        await asyncio.sleep(1)
         await interaction.response.edit_message(content=None,
             attachments=[file], view=self
         )
@@ -255,7 +252,6 @@ class StatPaginationView(discord.ui.View):
             self.previous.disabled = True
 
         file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.id, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
-        await asyncio.sleep(1)
         await interaction.response.edit_message(content=None,
             attachments=[file], view=self
         )
