@@ -368,6 +368,6 @@ async def on_message_edit(before: discord.Message, after: discord.Message):
                     return
     await bot.process_commands(after)
 
-#bot.run('MTI0MDAwNTYwMTIyMDc1NTU1Nw.Ghp7NV.jSO1uHw1d6TlCeV526RLEYaUM9-KxtNTDs-o58')
+bot.run('MTI0MDAwNTYwMTIyMDc1NTU1Nw.Ghp7NV.jSO1uHw1d6TlCeV526RLEYaUM9-KxtNTDs-o58')
 
-bot.run('MTIxNTM3NjQzMDYyMDM1MjUxMw.GEM4H3.me5UPCr8PYFecjzPDFKApr0CQtN-ysf9BGKgvs')
+#bot.run('MTIxNTM3NjQzMDYyMDM1MjUxMw.GEM4H3.me5UPCr8PYFecjzPDFKApr0CQtN-ysf9BGKgvs')
