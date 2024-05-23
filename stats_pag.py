@@ -131,7 +131,6 @@ def lb_(icon, name, guild_id, banner, requester, mode:str, typee:str, data, curr
 
 
 class PageChangeModal(discord.ui.Modal, title="Go to page"):
-    """Modal that prompts users for the page number to change to"""
 
     page_number: discord.ui.TextInput[discord.ui.Modal] = discord.ui.TextInput(label="Page number", style=discord.TextStyle.short)
 
