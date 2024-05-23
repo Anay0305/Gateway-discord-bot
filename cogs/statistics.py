@@ -358,6 +358,7 @@ class Statistics(commands.Cog):
                 if u is not None:
                     des["#" + u.name] = [f"{dic[i]} Messages", count, ctx.guild.me.display_avatar.url]
                     count+=1
+            await ctx.send(des)
             lss = []
             xd = {}
             coun = 0
