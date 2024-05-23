@@ -243,7 +243,7 @@ class StatPaginationView(discord.ui.View):
     @discord.ui.button(emoji="<a:Cross:937350485919289364>", style=discord.ButtonStyle.red)
     async def stop(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.message.delete()
-        self.stop()
+        return
 
     @discord.ui.button(label="Next", style=discord.ButtonStyle.green, disabled=False)
     async def next(self, interaction: discord.Interaction, button: discord.ui.Button):
