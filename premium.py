@@ -254,35 +254,6 @@ class premium(commands.Cog):
                     c = await give_prem(user_dc, tier, converted_time)
             else:
                 pass
-
-    @commands.Cog.listener()
-    async def on_ready(self):
-        self.check_prem.start()
-        #self.patreon.start()
-        db = sqlite3.connect('premium.sqlite3')
-        cursor = db.cursor()
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS "main" (
-                    "user_id"	INTEGER,
-                    "duration"	INTEGER,
-                    "total"	INTEGER,
-                    "guilds"	TEXT DEFAULT [],
-                    "tier"	TEXT,
-                    PRIMARY KEY("user_id")
-            )
-            ''')
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS "guild" (
-                    "guild_id"	INTEGER,
-                    "activator"	INTEGER,
-                    "since"	INTEGER,
-                    "till"	INTEGER,
-                    PRIMARY KEY("guild_id")
-            )
-            ''')
-        db.commit()
-        cursor.close()
-        db.close()
     
     
     @commands.group(invoke_without_command=True, name="premium", aliases=["prem"], description="Premium")

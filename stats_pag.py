@@ -286,6 +286,10 @@ class StatPaginationView(discord.ui.View):
         await interaction.response.edit_message(content=None,
             attachments=[file], view=self
         )
+
+    @discord.ui.button(label="Go to Page", style=discord.ButtonStyle.grey, disabled=False)
+    async def _goto(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_modal(PageChangeModal(self))
     
     async def start(self, ctx: commands.Context, interaction: discord.Interaction=None):
         file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.id, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[0], self.current+1, len(self.file_list), self.start_, self.end_)

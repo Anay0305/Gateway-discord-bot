@@ -102,45 +102,7 @@ class event(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         bot = self.bot
-        try:
-            await loadselfroles(bot)
-        except:
-            pass
-        try:
-            await loadgw(bot)
-        except:
-            pass
         await bot.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.listening, name="/help"))
-        bot.add_view(ticketpanel(bot))
-        bot.add_view(ticketchannelpanel(bot))
-        bot.add_view(tickredel(bot))
-        bot.add_view(interface(bot))
-        await loadmsetup(bot)
-        await asyncio.sleep(3)
-        query = "SELECT * FROM  '247'"
-        with sqlite3.connect('./database.sqlite3') as db:
-            db.row_factory = sqlite3.Row
-            cursor = db.cursor()
-            cursor.execute("DROP TABLE help")
-            coun = 0
-            try:
-                cursor.execute(query)
-                m_db = cursor.fetchall()
-                for i in m_db:
-                    try:
-                        c = bot.get_channel(i['channel_id'])
-                        if check_upgraded(c.guild.id):
-                            vc: wavelink.Player = await c.connect(cls=wavelink.Player, self_deaf=True)
-                            coun+=1
-                    except:
-                        pass
-            except:
-                pass
-        db.commit()
-        cursor.close()
-        db.close()
-        await database.create_tables()
-        print(f'Logged in as {bot.user.name}({bot.user.id})')
         t = round(datetime.datetime.now().timestamp())
         with sqlite3.connect('./database.sqlite3') as db:
             db.row_factory = sqlite3.Row
@@ -185,10 +147,42 @@ class event(commands.Cog):
                     query = f"UPDATE invc SET 'vc' = ? WHERE guild_id = ?"
                     val = (f"{x}", i.id,)
                     cursor.execute(query, val)
+            db.commit()
+            query = "SELECT * FROM  '247'"
+            cursor.execute("DROP TABLE help")
+            coun = 0
+            try:
+                cursor.execute(query)
+                m_db = cursor.fetchall()
+                for i in m_db:
+                    try:
+                        c = bot.get_channel(i['channel_id'])
+                        if check_upgraded(c.guild.id):
+                            vc: wavelink.Player = await c.connect(cls=wavelink.Player, self_deaf=True)
+                            coun+=1
+                    except:
+                        pass
+            except:
+                pass
         db.commit()
         cursor.close()
         db.close()
-
+        await database.create_tables()
+        try:
+            await loadselfroles(bot)
+        except:
+            pass
+        try:
+            await loadgw(bot)
+        except:
+            pass
+        bot.add_view(ticketpanel(bot))
+        bot.add_view(ticketchannelpanel(bot))
+        bot.add_view(tickredel(bot))
+        bot.add_view(interface(bot))
+        await loadmsetup(bot)
+        print(f'Logged in as {bot.user.name}({bot.user.id})')
+        
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
         await self.bot.wait_until_ready()

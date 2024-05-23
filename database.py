@@ -429,6 +429,30 @@ async def create_tables():
     db.commit()
     cursor.close()
     db.close()
+    db = sqlite3.connect('premium.sqlite3')
+    cursor = db.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS "main" (
+                "user_id"	INTEGER,
+                "duration"	INTEGER,
+                "total"	INTEGER,
+                "guilds"	TEXT DEFAULT [],
+                "tier"	TEXT,
+                PRIMARY KEY("user_id")
+        )
+        ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS "guild" (
+                "guild_id"	INTEGER,
+                "activator"	INTEGER,
+                "since"	INTEGER,
+                "till"	INTEGER,
+                PRIMARY KEY("guild_id")
+        )
+        ''')
+    db.commit()
+    cursor.close()
+    db.close()
 
 def get_guild_prefix(guild_id):
     with sqlite3.connect('database.sqlite3') as db:

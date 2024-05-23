@@ -32,7 +32,7 @@ async def on_request_end(
 trace = aiohttp.TraceConfig()
 trace.on_request_end.append(on_request_end)
 
-botinfo.starttime = datetime.datetime.utcnow()
+botinfo.starttime = datetime.datetime.now(datetime.UTC)
 check = False
 
 async def add_count(ctx, user, guild, cmd_name):
@@ -108,6 +108,7 @@ class Bot(commands.AutoShardedBot):
 
         for extension in initial_extensions:
             await self.load_extension(extension)
+        await database.create_tables()
         await self.tree.sync()
 
 bot = Bot(get_pre, intents)
@@ -385,4 +386,6 @@ async def on_message_edit(before: discord.Message, after: discord.Message):
                     return
     await bot.process_commands(after)
 
-bot.run('MTI0MDAwNTYwMTIyMDc1NTU1Nw.Ghp7NV.jSO1uHw1d6TlCeV526RLEYaUM9-KxtNTDs-o58')
+#bot.run('MTI0MDAwNTYwMTIyMDc1NTU1Nw.Ghp7NV.jSO1uHw1d6TlCeV526RLEYaUM9-KxtNTDs-o58')
+
+bot.run('MTIxNTM3NjQzMDYyMDM1MjUxMw.GEM4H3.me5UPCr8PYFecjzPDFKApr0CQtN-ysf9BGKgvs')
