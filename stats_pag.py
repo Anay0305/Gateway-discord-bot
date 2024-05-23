@@ -33,6 +33,7 @@ def lb_(icon, name, guild_id, banner, requester, mode:str, typee:str, data, curr
         with open("bg.jpg", 'rb') as file:
             image = Image.open(BytesIO(file.read())).convert("RGBA")
             file.close()
+        image = image.resize((width,height))
     else:
         _res = requests.get(banner.url)
         image = Image.open(BytesIO(_res.content)).convert("RGBA")
