@@ -352,7 +352,7 @@ class Statistics(commands.Cog):
                     break
                 dic = channel_db
             des = {}
-            dic = dict(sorted(dic.items(), key=lambda item: item[1], reverse=True))
+            await ctx.send(dic)
             for i in dic:
                 u = discord.utils.get(ctx.guild.channels, id=i)
                 if u is not None:
