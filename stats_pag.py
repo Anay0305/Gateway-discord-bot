@@ -154,6 +154,7 @@ class PageChangeModal(discord.ui.Modal, title="Go to page"):
                 ephemeral=True
             )
         else:
+            await interaction.message.edit(content="<a:loading:1215453200463958086>", attachments=[])
             file = lb_(self.interface.icon, self.interface.ctx.guild.name, self.interface.ctx.guild.id, self.interface.ctx.guild.banner, self.interface.ctx.author, self.interface.mode, self.interface.typee, self.interface.file_list[self.interface.current], self.interface.current+1, len(self.interface.file_list), self.interface.start_, self.interface.end_)
             await interaction.response.edit_message(content=None,
                 attachments=[file], view=self.interface
