@@ -1549,6 +1549,8 @@ class antinuke(commands.Cog):
                     c1 = False
                 else:
                     c1 = True
+            else:
+                c1 = False
         except:
             c1 = False
         try:
@@ -1557,6 +1559,8 @@ class antinuke(commands.Cog):
                     c2 = False
                 else:
                     c2 = True
+            else:
+                c2 = False
         except:
             c2 = False
         if not c1 and not c2:
