@@ -267,7 +267,7 @@ class premium(commands.Cog):
         em.add_field(name="Tiers & Prices", value=des, inline=False)
         em.description = "To purchase premium kindly go and make a ticket in the [Support Server](https://discord.gg/K4v4aEuwp6)"
         v = discord.ui.View()
-        v.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/K4v4aEuwp6"))
+        v.add_item(discord.ui.Button(label="Support Server", url=f"https://discord.gg/K4v4aEuwp6"))
         return await ctx.reply(embed=em, view=v)
 
     @_prem.command(name="users")
@@ -373,7 +373,7 @@ class premium(commands.Cog):
         if p_db is None:
             em = discord.Embed(description=f"{user.mention} don't have premium of the bot\nTo purchase premium kindly go and make a ticket in the [Support Server](https://discord.gg/K4v4aEuwp6)", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Premium", icon_url=self.bot.user.avatar.url)
             v = discord.ui.View()
-            v.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/K4v4aEuwp6"))
+            v.add_item(discord.ui.Button(label="Support Server", url=f"https://discord.gg/K4v4aEuwp6"))
             return await ctx.reply(embed=em, view=v)
         else:
             tier = p_db['tier']

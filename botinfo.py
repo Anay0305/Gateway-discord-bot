@@ -4,6 +4,7 @@ workowner = main_devs + [1096997719635140628]
 bot_id = 880765863953858601
 dbltoken = ""
 topgg_link = "https://top.gg/bot/880765863953858601/vote"
+support_server = "https://discord.gg/K4v4aEuwp6"
 
 wavelink_uri = "http://159.203.133.30:2333/"
 wavelink_pass = "anaygupta"
