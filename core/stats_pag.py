@@ -129,7 +129,6 @@ def lb_(icon, name, guild_id, banner, requester, mode:str, typee:str, data, curr
         image_binary.seek(0)
         return discord.File(fp=image_binary, filename='profile.png')
 
-
 class PageChangeModal(discord.ui.Modal, title="Go to page"):
 
     page_number: discord.ui.TextInput[discord.ui.Modal] = discord.ui.TextInput(label="Page number", style=discord.TextStyle.short)
@@ -142,6 +141,7 @@ class PageChangeModal(discord.ui.Modal, title="Go to page"):
         self.page_number.max_length = len(str(len(interface.file_list)))
 
     async def on_submit(self, interaction: discord.Interaction, /):
+        await interaction.response.defer(ephemeral=False, thinking=False)
         try:
             if not self.page_number.value:
                 raise ValueError("Page number not filled")
@@ -155,7 +155,7 @@ class PageChangeModal(discord.ui.Modal, title="Go to page"):
         else:
             await interaction.message.edit(content="<a:loading:1215453200463958086>", attachments=[])
             file = lb_(self.interface.icon, self.interface.ctx.guild.name, self.interface.ctx.guild.id, self.interface.ctx.guild.banner, self.interface.ctx.author, self.interface.mode, self.interface.typee, self.interface.file_list[self.interface.current], self.interface.current+1, len(self.interface.file_list), self.interface.start_, self.interface.end_)
-            await interaction.response.edit_message(content=None,
+            await interaction.message.edit(content=None,
                 attachments=[file], view=self.interface
             )
 
@@ -192,6 +192,7 @@ class StatPaginationView(discord.ui.View):
 
     @discord.ui.button(label="≪", style=discord.ButtonStyle.blurple, disabled=True)
     async def first(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.defer(ephemeral=False, thinking=False)
         self.current = 0
         await interaction.message.edit(content="<a:loading:1215453200463958086>", attachments=[])
 
@@ -205,7 +206,7 @@ class StatPaginationView(discord.ui.View):
             self.next.disabled = True
             self._last.disabled = True
         file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.id, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
-        await interaction.response.edit_message(content=None,
+        await interaction.message.edit(content=None,
             attachments=[file], view=self
         )
 
@@ -213,6 +214,7 @@ class StatPaginationView(discord.ui.View):
     async def previous(
         self, interaction: discord.Interaction, button: discord.ui.Button
     ):
+        await interaction.response.defer(ephemeral=False, thinking=False)
         self.current = self.current - 1
         await interaction.message.edit(content="<a:loading:1215453200463958086>", attachments=[])
 
@@ -235,18 +237,20 @@ class StatPaginationView(discord.ui.View):
 
 
         file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.id, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
-        await interaction.response.edit_message(content=None,
+        await interaction.message.edit(content=None,
             attachments=[file], view=self
         )
       
    
     @discord.ui.button(emoji="<a:Cross:937350485919289364>", style=discord.ButtonStyle.red)
     async def stop(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.defer(ephemeral=False, thinking=False)
         await interaction.message.delete()
         return
 
     @discord.ui.button(label="Next", style=discord.ButtonStyle.green, disabled=False)
     async def next(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.defer(ephemeral=False, thinking=False)
         self.current += 1
         await interaction.message.edit(content="<a:loading:1215453200463958086>", attachments=[])
 
@@ -263,7 +267,7 @@ class StatPaginationView(discord.ui.View):
             self.first.disabled = True
 
         file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.id, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
-        await interaction.response.edit_message(content=None,
+        await interaction.message.edit(content=None,
             attachments=[file], view=self
         )
 
@@ -283,18 +287,30 @@ class StatPaginationView(discord.ui.View):
             self.previous.disabled = True
 
         file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.id, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
-        await interaction.response.edit_message(content=None,
+        await interaction.message.edit(content=None,
             attachments=[file], view=self
         )
 
     @discord.ui.button(label="Go to Page", style=discord.ButtonStyle.grey, disabled=False)
     async def _goto(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.defer(ephemeral=False, thinking=False)
         await interaction.response.send_modal(PageChangeModal(self))
     
-    async def start(self, ctx: commands.Context, interaction: discord.Interaction=None):
+    async def start(self, ctx: commands.Context, interaction: discord.Interaction=None, message: discord.Message=None):
+        if message:
+            await message.edit(content="<a:loading:1215453200463958086>", attachments=[])
         file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.id, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[0], self.current+1, len(self.file_list), self.start_, self.end_)
         if len(self.file_list) != 1:
-            if interaction is not None:
+            if message is not None:
+                self.first.row = 1
+                self.next.row = 1
+                self.stop.row = 1
+                self.previous.row = 1
+                self._last.row = 1
+                self._goto.row = 2
+                await message.edit(content=None, attachments=[file], view=self)
+                self.message = message
+            elif interaction is not None:
                 self.message = await interaction.response.send_message(file=file, view=self, ephemeral=True)
             else:
                 self.message = await ctx.send(file=file, view=self)
@@ -302,7 +318,16 @@ class StatPaginationView(discord.ui.View):
             await self.wait()
             return self.message
         else:
-            if interaction is not None:
+            if message is not None:
+                self.remove_item(self.first)
+                self.remove_item(self.previous)
+                self.remove_item(self.stop)
+                self.remove_item(self.next)
+                self.remove_item(self._last)
+                self.remove_item(self._goto)
+                await message.edit(content=None, attachments=[file], view=self)
+                self.message = message
+            elif interaction is not None:
                 self.message = await interaction.response.send_message(file=file, ephemeral=True)
             else:
                 self.message = await ctx.send(file=file)
