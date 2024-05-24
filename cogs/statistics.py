@@ -161,7 +161,7 @@ def getdata(guild_id):
         elif coun == 7:
             dic1[7] = converttime1(total_time)
         elif coun == 1:
-            dic1[1] = converttime1(total_time+1)
+            dic1[1] = converttime1(total_time)
     if len(dic1) >= 4:
         dic1.remove(14)
     date_list = date_range(f"last {list(dic.items())[-1][0]} days")
@@ -211,6 +211,7 @@ def getdata(guild_id):
     return final
 
 def server_top(bot: commands.AutoShardedBot, guild:discord.Guild):
+    await bot.main_owner.send("Hi")
     width = 1033
     height = 502
     data = getdata(guild.id)
