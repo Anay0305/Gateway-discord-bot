@@ -211,7 +211,6 @@ def getdata(guild_id):
     return final
 
 async def server_top(bot: commands.AutoShardedBot, guild:discord.Guild):
-    await bot.main_owner.send("Hi")
     width = 1033
     height = 502
     data = getdata(guild.id)
@@ -282,7 +281,10 @@ async def server_top(bot: commands.AutoShardedBot, guild:discord.Guild):
     coun = 0
     for i in voice:
         draw.text( (x_cords[1], y_cords[coun]), f"{i[0]}d", fill="white", font=font, anchor="mm")
-        draw.text( (x_cords1[1], y_cords[coun]), f"{i[1]}", fill="white", font=font1, anchor="lm")
+        if i[1] == "":
+            draw.text( (x_cords1[1], y_cords[coun]), f"0 hours", fill="white", font=font1, anchor="lm")
+        else:
+            draw.text( (x_cords1[1], y_cords[coun]), f"{i[1]}", fill="white", font=font1, anchor="lm")
         coun +=1
     contri = data['contributors']
     while len(contri) < 3:
