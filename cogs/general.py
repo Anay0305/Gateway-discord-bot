@@ -375,7 +375,7 @@ class general(commands.Cog):
     async def uptime(self, ctx):
         bot = self.bot
         pfp = ctx.author.display_avatar.url
-        uptime = datetime.datetime.utcnow() - starttime
+        uptime = datetime.datetime.now(datetime.UTC) - starttime
         uptime = str(uptime).split('.')[0]
         embed = discord.Embed(title="Bot's Uptime", description=f"```{uptime}```",
                               color=botinfo.root_color)
