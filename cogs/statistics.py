@@ -688,7 +688,7 @@ class Statistics(commands.Cog):
         }
         database.update_bulk("messages_db", dic, "guild_id", message.guild.id)
 
-    @commands.hybrid_group(aliases=["lb", "leaderboard"], invoke_without_command=True, description="Shows The help page for LeaderBoard")
+    @commands.hybrid_group(name="statistics", aliases=["top", "stats", "lb", "leaderboard"], invoke_without_command=True, description="Shows The help page for LeaderBoard")
     async def statistics(self, ctx: commands.Context):
         prefix = ctx.prefix
         if prefix == f"<@{self.bot.user.id}> ":

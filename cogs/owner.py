@@ -54,7 +54,7 @@ class owner(commands.Cog):
     @commands.group(
         invoke_without_command=True, description="Shows the help menu for top"
     )
-    async def top(self, ctx: commands.Context):
+    async def bottop(self, ctx: commands.Context):
         if ctx.author.id not in workowner:
           return await ctx.send("Only Bot Dev Can Run This Command")
         ls = ["top", "top commands", "top users"]
@@ -72,7 +72,7 @@ class owner(commands.Cog):
         listem.set_footer(text=f"Made by {str(anay)}" ,  icon_url=anay.avatar.url)
         await ctx.send(embed=listem)
          
-    @top.command(name="users", aliases=["user"], description="Shows the top users of the bot")
+    @bottop.command(name="users", aliases=["user"], description="Shows the top users of the bot")
     async def _user(self, ctx: commands.Context):
         if ctx.author.id not in workowner:
           return await ctx.send("Only Bot Dev Can Run This Command")
@@ -115,7 +115,7 @@ class owner(commands.Cog):
         await init.delete()
         await page.start(ctx)
 
-    #@top.command(name="guilds", aliases=["guild", "servers", "server"], description="Shows the top guilds of the bot")
+    #@bottop.command(name="guilds", aliases=["guild", "servers", "server"], description="Shows the top guilds of the bot")
     async def _guild(self, ctx: commands.Context):
         if ctx.author.id not in workowner:
           return await ctx.send("Only Bot Dev Can Run This Command")
@@ -154,7 +154,7 @@ class owner(commands.Cog):
         await init.delete()
         await page.start(ctx)
 
-    @top.command(name="commands", aliases=["command", "cmd", "cmds"], description="Shows the top commands of the bot")
+    @bottop.command(name="commands", aliases=["command", "cmd", "cmds"], description="Shows the top commands of the bot")
     async def _commands(self, ctx: commands.Context):
         if ctx.author.id not in workowner:
           return await ctx.send("Only Bot Dev Can Run This Command")

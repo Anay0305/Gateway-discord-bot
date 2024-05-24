@@ -382,7 +382,7 @@ class general(commands.Cog):
         embed.set_footer(text=f"Requested by {ctx.author.name}" ,  icon_url=pfp)
         await ctx.send(embed=embed)
     
-    @commands.hybrid_command(aliases=["bi", "stats"], description="Gets information of the bot")
+    @commands.hybrid_command(aliases=["bi"], description="Gets information of the bot")
     async def botinfo(self, ctx):
         bot = self.bot
         s_id = ctx.guild.shard_id
