@@ -694,7 +694,7 @@ class Statistics(commands.Cog):
         if prefix == f"<@{self.bot.user.id}> ":
             prefix = f"@{str(self.bot.user)} "
         anay = self.bot.main_owner
-        ls = ["lb", "lb s", "lb m", "lb v", "lb me"]
+        ls = ["lb", "lb s", "lb m", "lb v"]
         des = ""
         for i in sorted(ls):
             cmd = self.bot.get_command(i)
