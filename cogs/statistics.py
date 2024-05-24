@@ -210,7 +210,7 @@ def getdata(guild_id):
     }
     return final
 
-def server_top(bot: commands.AutoShardedBot, guild:discord.Guild):
+async def server_top(bot: commands.AutoShardedBot, guild:discord.Guild):
     await bot.main_owner.send("Hi")
     width = 1033
     height = 502
@@ -400,7 +400,7 @@ class SelectView(discord.ui.Select):
         if self.values[0] == "home":
             await interaction.message.edit(content="<a:loading:1215453200463958086>")
             view = View(self.bot, ctx)
-            file = server_top(self.bot, ctx.guild)
+            file = await server_top(self.bot, ctx.guild)
             await interaction.message.edit(content=None, attachments=[file], view=view)
             return
         elif self.values[0] == "memtext":
@@ -717,7 +717,7 @@ class Statistics(commands.Cog):
     @statistics.command(aliases=['s', 'sv'], description="Shows the server's activity statistics")
     async def server(self, ctx: commands.Context):
         view = View(self.bot, ctx)
-        file = server_top(self.bot, ctx.guild)
+        file = await server_top(self.bot, ctx.guild)
         await ctx.send(file=file, view=view)
         await view.wait()
     
