@@ -1,15 +1,15 @@
 import discord
 import sqlite3
-import database
-import emojis
+import core.database as database
+import core.emojis as emojis
 import botinfo
 import requests
 import typing
-from voice_db import *
+from core.voice_db import *
 from discord.ext import commands
 from ast import literal_eval
-from paginators import PaginationView
-from stats_pag import StatPaginationView
+from core.paginators import PaginationView
+from core.stats_pag import StatPaginationView
 from datetime import datetime, timedelta
 
 def converttime(seconds):

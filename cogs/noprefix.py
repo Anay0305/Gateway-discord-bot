@@ -5,9 +5,9 @@ import re
 import sqlite3
 from ast import literal_eval
 from botinfo import *
-import database
-from paginators import PaginationView
-import emojis
+import core.database as database
+from core.paginators import PaginationView
+import core.emojis as emojis
 import botinfo
 
 class noprefix(commands.Cog):

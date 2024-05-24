@@ -4,10 +4,10 @@ from discord.ext import commands, tasks
 from ast import literal_eval
 import sqlite3
 import io
-from paginators import PaginationView
+from core.paginators import PaginationView
 import asyncio
 import botinfo
-import emojis
+import core.emojis as emojis
 
 async def getopenuser(guild, channel):
     query = "SELECT * FROM  ticket WHERE guild_id = ?"

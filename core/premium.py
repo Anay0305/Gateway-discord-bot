@@ -6,7 +6,7 @@ import wavelink
 import sqlite3
 import datetime
 from ast import literal_eval
-from paginators import PaginationView
+from core.paginators import PaginationView
 from io import BytesIO
 from botinfo import *
 

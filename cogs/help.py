@@ -1,13 +1,13 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-import database
+import core.database as database
 import datetime
-from paginators import PaginationView
-from hpag import HPaginationView
+from core.paginators import PaginationView
+from core.hpag import HPaginationView
 import random
 from typing import Optional, List
-import emojis
+import core.emojis as emojis
 import botinfo
 
 class help(commands.Cog):
@@ -144,9 +144,9 @@ class help(commands.Cog):
                 count+=1
             database.insert("help", "main, 'no'", (x, 0))
             page = HPaginationView(embed_list=em_list, no=no, cogs=emojis.cogs, i=x, ctx=ctx)
-            page.add_item(discord.ui.Button(label="Invite me", url=discord.utils.oauth_url(self.bot.user.id)))
-            page.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/K4v4aEuwp6"))
-            #page.add_item(discord.ui.Button(label="Vote", url="https://top.gg/bot/880765863953858601/vote"))
+            page.add_item(discord.ui.Button(label="Invite me", url=f"https://discord.com/api/oauth2/authorize?client_id={botinfo.bot_id}&&permissions=8&scope=bot"))
+            page.add_item(discord.ui.Button(label="Support Server", url="{botinfo.support_server}"))
+            #page.add_item(discord.ui.Button(label="Vote", url="{botinfo.topgg_link}"))
             await page.start(ctx)
 
     @help.autocomplete("command")
@@ -325,22 +325,22 @@ class help(commands.Cog):
     
     @commands.command(aliases=['inv'])
     async def invite(self, ctx):
-        em = discord.Embed(description=f"> [Click To Invite {self.bot.user.name} in Your Server](https://discord.com/api/oauth2/authorize?client_id={self.bot.user.id}&&permissions=8&scope=bot)", color=0x00ffff)
+        em = discord.Embed(description=f"> [Click To Invite {self.bot.user.name} in Your Server](https://discord.com/api/oauth2/authorize?client_id={self.bot.user.id}&&permissions=8&scope=bot)\n> [Click To Join Support Server]({botinfo.support_server})", color=0x00ffff)
         await ctx.reply(embed=em, mention_author=False)
 
     @commands.command()
     async def support(self, ctx):
-        em = discord.Embed(description=f"> [Click To Invite {self.bot.user.name} in Your Server](https://discord.com/api/oauth2/authorize?client_id={self.bot.user.id}&&permissions=8&scope=bot)\n> [Click To Join Support Server](https://discord.gg/K4v4aEuwp6)", color=0x00ffff)
+        em = discord.Embed(description=f"> [Click To Invite {self.bot.user.name} in Your Server](https://discord.com/api/oauth2/authorize?client_id={self.bot.user.id}&&permissions=8&scope=bot)\n> [Click To Join Support Server]({botinfo.support_server})", color=0x00ffff)
         await ctx.reply(embed=em, mention_author=False)
         
     #@commands.command()
     async def website(self, ctx):
-        em = discord.Embed(description=f"> [Click To Invite {self.bot.user.name} in Your Server](https://discord.com/api/oauth2/authorize?client_id={self.bot.user.id}&&permissions=8&scope=bot)\n> [Click To vote {self.bot.user.name}](https://top.gg/bot/880765863953858601/vote)\n> [Click To check out Website of the bot](https://gatewaybot.xyz)\n> [Click To Join Support Server](https://discord.gg/K4v4aEuwp6)", color=0x00ffff)
+        em = discord.Embed(description=f"> [Click To Invite {self.bot.user.name} in Your Server](https://discord.com/api/oauth2/authorize?client_id={self.bot.user.id}&&permissions=8&scope=bot)\n> [Click To vote {self.bot.user.name}]({botinfo.topgg_link})\n> [Click To check out Website of the bot](https://gatewaybot.xyz)\n> [Click To Join Support Server]({botinfo.support_server})", color=0x00ffff)
         await ctx.reply(embed=em, mention_author=False)
     
     #@commands.command()
     async def vote(self, ctx):
-        em = discord.Embed(description=f"> [Click To Invite {self.bot.user.name} in Your Server](https://discord.com/api/oauth2/authorize?client_id={self.bot.user.id}&&permissions=8&scope=bot)\n> [Click To vote {self.bot.user.name}](https://top.gg/bot/880765863953858601/vote)\n> [Click To check out Website of the bot](https://gatewaybot.xyz)\n> [Click To Join Support Server](https://discord.gg/K4v4aEuwp6)", color=0x00ffff)
+        em = discord.Embed(description=f"> [Click To Invite {self.bot.user.name} in Your Server](https://discord.com/api/oauth2/authorize?client_id={self.bot.user.id}&&permissions=8&scope=bot)\n> [Click To vote {self.bot.user.name}]({botinfo.topgg_link})\n> [Click To check out Website of the bot](https://gatewaybot.xyz)\n> [Click To Join Support Server]({botinfo.support_server})", color=0x00ffff)
         await ctx.reply(embed=em, mention_author=False)
         
     #@commands.command(aliases=['documentation', 'docs', 'document', 'documents'])

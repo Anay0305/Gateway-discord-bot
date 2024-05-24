@@ -5,10 +5,10 @@ from discord.ext import commands, tasks
 from ast import literal_eval
 import sqlite3
 import botinfo
-import database
-import emojis
+import core.database as database
+import core.emojis as emojis
 import asyncio
-from paginators import PaginationView
+from core.paginators import PaginationView
 
 def check_lockrole_bypass(role: discord.Role, guild: discord.Guild, user: discord.Member):
     with sqlite3.connect('./database.sqlite3') as db:

@@ -1,13 +1,13 @@
 import discord
 from discord.ext import commands
 from discord import *
-import database
+import core.database as database
 import random
 from ast import literal_eval
-from embed import *
-from converter import *
+from core.embed import *
+from core.converter import *
 import botinfo
-import emojis
+import core.emojis as emojis
 
 class BasicView(discord.ui.View):
     def __init__(self, ctx: commands.Context, timeout = 60):

@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from typing import Union
 import datetime
-import emojis
+import core.emojis as emojis
 import botinfo
 import typing
 

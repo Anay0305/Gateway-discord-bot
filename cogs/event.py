@@ -7,13 +7,13 @@ from cogs.ticket import ticketpanel, tickredel, ticketchannelpanel
 from cogs.selfroles import DropdownSelfRoleView, ButtonSelfRoleView
 from cogs.giveaway import GWBUTTON
 import botinfo
-import database
-import emojis
+import core.database as database
+import core.emojis as emojis
 from cogs.music import interface
-from premium import check_upgraded
+from core.premium import check_upgraded
 import wavelink
 import asyncio
-import voice_db
+import core.voice_db as voice_db
 import datetime
 
 async def loadmsetup(bot: commands.AutoShardedBot):

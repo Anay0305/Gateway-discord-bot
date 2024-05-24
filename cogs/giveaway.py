@@ -5,11 +5,11 @@ import datetime
 import time as timeee
 import random
 from ast import literal_eval
-from paginators import PaginationView
+from core.paginators import PaginationView
 from discord.ext import commands, tasks
 import botinfo
-import database
-import emojis
+import core.database as database
+import core.emojis as emojis
 
 def convert(date):
     date.replace("second", "s")
@@ -139,7 +139,7 @@ class GWBUTTON(discord.ui.View):
         else:
             em.description = f"> You successfully left Giveaway [{str(xd[interaction.message.id]['prize']).upper()}]({interaction.message.jump_url})"
         v = discord.ui.View()
-        v.add_item(discord.ui.Button(label="Invite me", url=discord.utils.oauth_url(interaction.client.user.id)))
+        v.add_item(discord.ui.Button(label="Invite me", url=f"https://discord.com/api/oauth2/authorize?client_id={botinfo.bot_id}&&permissions=8&scope=bot"))
         try:
             await interaction.user.send(embed=em, view=v)
         except:

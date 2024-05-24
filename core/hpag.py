@@ -1,7 +1,7 @@
 from discord.ext import commands
 import discord
 import sqlite3
-import emojis
+import core.emojis as emojis
 import botinfo
 
 def change_page(id, c: int):

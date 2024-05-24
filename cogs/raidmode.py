@@ -5,8 +5,8 @@ import os
 import sqlite3
 import datetime
 from ast import literal_eval
-import database
-import emojis
+import core.database as database
+import core.emojis as emojis
 import botinfo
 
 class BasicView(discord.ui.View):

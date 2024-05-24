@@ -11,11 +11,11 @@ import requests
 import random
 from io import BytesIO
 from botinfo import *
-from paginators import PaginationView
+from core.paginators import PaginationView
 import matplotlib
-from embed import *
-import database
-import emojis
+from core.embed import *
+import core.database as database
+import core.emojis as emojis
 import botinfo
 from cogs.antinuke import check_lockrole_bypass
 

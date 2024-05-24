@@ -1,15 +1,15 @@
 import discord
 import sqlite3
-import database
-import emojis
+import core.database as database
+import core.emojis as emojis
 import botinfo
 import requests
 import typing
-from voice_db import *
+from core.voice_db import *
 from discord.ext import commands
 from ast import literal_eval
-from paginators import PaginationView
-from stats_pag import StatPaginationView
+from core.paginators import PaginationView
+from core.stats_pag import StatPaginationView
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
 from datetime import datetime, timedelta
 from io import BytesIO
@@ -37,7 +37,7 @@ def profile(icon, name, guild_id, banner, requester, mode:str, typee:str, data, 
         end_date = str(datetime.now().date())
 
     if not banner:
-        with open("bg.jpg", 'rb') as file:
+        with open("Images/bg.jpg", 'rb') as file:
             image = Image.open(BytesIO(file.read())).convert("RGBA")
             file.close()
     else:
@@ -49,7 +49,7 @@ def profile(icon, name, guild_id, banner, requester, mode:str, typee:str, data, 
         enhancer = ImageEnhance.Brightness(image)
         image = enhancer.enhance(brightness_factor)
     draw = ImageDraw.Draw(image)
-    with open("mask.jpg", 'rb') as file:
+    with open("Images/mask.jpg", 'rb') as file:
         imagee = Image.open(BytesIO(file.read())).convert("RGBA")
         file.close()
     imagee = imagee.resize((width,height))
@@ -87,7 +87,7 @@ def profile(icon, name, guild_id, banner, requester, mode:str, typee:str, data, 
     font = ImageFont.truetype('Fonts/Montserrat-SemiBold.ttf', 20)
     draw.text( (45, 476), f"Requested By {str(requester)}", fill="white", font=font, anchor="lm")
     font = ImageFont.truetype('Fonts/Montserrat-Bold.ttf', 20)
-    draw.text( (915, 476), f"Powered By Sputnik", fill="white", font=font, anchor="rm")
+    draw.text( (915, 476), f"Powered By Gateway", fill="white", font=font, anchor="rm")
     font = ImageFont.truetype('Fonts/Montserrat-Medium.ttf', 18)
     draw.text( (955, 14), f"Page {current}/{total}", fill="white", font=font, anchor="rm")
     ls = [

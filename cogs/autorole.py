@@ -2,8 +2,8 @@ import discord
 from ast import literal_eval
 import sqlite3
 from discord.ext import commands
-import database
-import emojis
+import core.database as database
+import core.emojis as emojis
 
 class autorole(commands.Cog):
   def __init__(self, bot):

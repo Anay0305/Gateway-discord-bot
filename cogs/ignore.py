@@ -5,8 +5,8 @@ from typing import Union, Optional
 import re
 import sqlite3
 from botinfo import *
-from paginators import PaginationView
-import emojis
+from core.paginators import PaginationView
+import core.emojis as emojis
 import botinfo
 
 def getigdata(guild_id):

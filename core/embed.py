@@ -15,11 +15,11 @@ import requests
 import random
 from io import BytesIO
 from botinfo import *
-from paginators import PaginationView
+from core.paginators import PaginationView
 import matplotlib
-from converter import *
+from core.converter import *
 import botinfo
-import emojis
+import core.emojis as emojis
 
 xdd = {}
 

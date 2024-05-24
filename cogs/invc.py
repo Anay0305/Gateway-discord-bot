@@ -2,10 +2,10 @@ import discord
 import datetime
 from discord.ext import commands, tasks
 from ast import literal_eval
-import database
+import core.database as database
 import io
-import emojis
-from paginators import PaginationView
+import core.emojis as emojis
+from core.paginators import PaginationView
 import botinfo
 import asyncio
 

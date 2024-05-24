@@ -8,14 +8,14 @@ import typing
 import datetime
 import re
 import random
-import database
+import core.database as database
 from typing import Union
 import sqlite3
 import botinfo
-import emojis
-from paginators import PaginationView
+import core.emojis as emojis
+from core.paginators import PaginationView
 from ast import literal_eval
-from premium import check_upgraded
+from core.premium import check_upgraded
 from botinfo import *
 
 URL_REG = re.compile(r'https?://(?:www\.)?.+')
@@ -587,7 +587,7 @@ class interface(discord.ui.View):
             em = discord.Embed(title="Queue concluded", color=0x070606)
             em.set_footer(text="| No more songs left to play in queue.", icon_url=self.ctx.guild.me.display_avatar.url)
             v = discord.ui.View()
-            #v.add_item(discord.ui.Button(label="Vote", url="https://top.gg/bot/880765863953858601/vote"))
+            #v.add_item(discord.ui.Button(label="Vote", url=f"{botinfo.topgg_link}"))
             return await interaction.channel.send(embed=em, view=v, mention_author=False, delete_after=15)
         else:
             last = self.vc.queue.pop()
@@ -1809,7 +1809,7 @@ class music(commands.Cog):
             em = discord.Embed(color=0x070606)
             em.set_footer(text="| Destroyed the queue and stopped the player!", icon_url=ctx.author.display_avatar.url)
             v = discord.ui.View()
-            #v.add_item(discord.ui.Button(label="Vote", url="https://top.gg/bot/880765863953858601/vote"))
+            #v.add_item(discord.ui.Button(label="Vote", url=f"{botinfo.topgg_link}"))
             await ctx.reply(embed=em, view=v)
         else:
             em = discord.Embed(color=0xff0000)
@@ -1924,7 +1924,7 @@ class music(commands.Cog):
             em = discord.Embed(title="Queue concluded", color=0x070606)
             em.set_footer(text="| No more songs left to play in queue.", icon_url=ctx.guild.me.display_avatar.url)
             v = discord.ui.View()
-            #v.add_item(discord.ui.Button(label="Vote", url="https://top.gg/bot/880765863953858601/vote"))
+            #v.add_item(discord.ui.Button(label="Vote", url=f"{botinfo.topgg_link}"))
             return await ctx.reply(embed=em, view=v)
         else:
             await vc.stop()
@@ -2051,7 +2051,7 @@ class music(commands.Cog):
         em = discord.Embed(color=0x070606)
         em.set_footer(text="| Destroyed the queue and left the voice channel!", icon_url=ctx.author.display_avatar.url)
         v = discord.ui.View()
-        #v.add_item(discord.ui.Button(label="Vote", url="https://top.gg/bot/880765863953858601/vote"))
+        #v.add_item(discord.ui.Button(label="Vote", url=f"{botinfo.topgg_link}"))
         await ctx.reply(embed=em, view=v)
         await asyncio.sleep(30)
         query = "SELECT * FROM  '247' WHERE guild_id = ?"
@@ -2081,9 +2081,9 @@ class music(commands.Cog):
     async def setup(self, ctx: commands.Context, *, channel: Union[discord.VoiceChannel, discord.TextChannel]=None):
         c = check_upgraded(ctx.guild.id)
         if not c:
-            em = discord.Embed(description=f"You just tried to execute a premium command but this guild is not upgarded\nYou can buy bot's premium by creating a ticket in the [Support Server](https://discord.gg/K4v4aEuwp6)", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Premium feature", icon_url=self.bot.user.avatar.url)
+            em = discord.Embed(description=f"You just tried to execute a premium command but this guild is not upgarded\nYou can buy bot's premium by creating a ticket in the [Support Server]({botinfo.support_server})", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Premium feature", icon_url=self.bot.user.avatar.url)
             v = discord.ui.View()
-            v.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/K4v4aEuwp6"))
+            v.add_item(discord.ui.Button(label="Support Server", url=f"{botinfo.support_server}"))
             return await ctx.reply(embed=em, view=v)
         query = "SELECT * FROM setup WHERE guild_id = ?"
         val = (ctx.guild.id,)
@@ -2105,9 +2105,9 @@ class music(commands.Cog):
                 await view.wait()
                 await init.delete()
                 if view.value == "voice":
-                    c = await ctx.guild.create_voice_channel(name=f"sputnik song request")
+                    c = await ctx.guild.create_voice_channel(name=f"gateway song request")
                 elif view.value == "text":
-                    c = await ctx.guild.create_text_channel(name=f"sputnik song request")
+                    c = await ctx.guild.create_text_channel(name=f"gateway song request")
                 else:
                     return
             else:
@@ -2147,9 +2147,9 @@ class music(commands.Cog):
     async def _sss(self, ctx):
         c = check_upgraded(ctx.guild.id)
         if not c:
-            em = discord.Embed(description=f"You just tried to execute a premium command but this guild is not upgarded\nYou can buy bot's premium by creating a ticket in the [Support Server](https://discord.gg/K4v4aEuwp6)", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Premium feature", icon_url=self.bot.user.avatar.url)
+            em = discord.Embed(description=f"You just tried to execute a premium command but this guild is not upgarded\nYou can buy bot's premium by creating a ticket in the [Support Server]({botinfo.support_server})", color=0x7aaaff).set_footer(text=f"{self.bot.user.name} Premium feature", icon_url=self.bot.user.avatar.url)
             v = discord.ui.View()
-            v.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/K4v4aEuwp6"))
+            v.add_item(discord.ui.Button(label="Support Server", url="{botinfo.support_server}"))
             return await ctx.reply(embed=em, view=v)
         if not getattr(ctx.author.voice, "channel", None):
             embed = discord.Embed(
@@ -2260,7 +2260,7 @@ class music(commands.Cog):
                     except:
                         tm = tm
                     count += 1
-                    q.append(f"`[{'0' + str(count) if count < 10 else count}]` | [{i}](https://discord.gg/K4v4aEuwp6) - [{tm}]")
+                    q.append(f"`[{'0' + str(count) if count < 10 else count}]` | [{i}]({botinfo.support_server}) - [{tm}]")
                 for i in range(0, len(q), 10):
                     ls.append(q[i: i + 10])
                 em_list = []

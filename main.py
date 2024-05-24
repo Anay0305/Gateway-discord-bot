@@ -7,15 +7,12 @@ import re
 from ast import literal_eval
 import botinfo
 import asyncio
-import aiohttp
-import logging
 import wavelink
-import database
+import core.database as database
 from cogs.extra import by_channel, by_cmd, by_module, by_role, get_prefix
-from premium import check_upgraded
+from core.premium import check_upgraded
 
 botinfo.starttime = datetime.datetime.now(datetime.UTC)
-check = False
 
 async def add_count(ctx, user, guild, cmd_name):
     user_columns = database.fetchone("*", "count", "xd", 1)
@@ -73,13 +70,12 @@ async def get_pre(bot, ctx):
     return commands.when_mentioned_or(prefix)(bot,ctx)
 
 intents = discord.Intents.all()
-intents.presences = False
 class Bot(commands.AutoShardedBot):
     def __init__(self, get_pre, intents) -> None:
         super().__init__(command_prefix = get_pre, case_insensitive=True, intents=intents)
 
     async def setup_hook(self) -> None:
-        nodes: list[wavelink.Node] = [wavelink.Node(uri="http://159.203.133.30:2333/", password="anaygupta")]
+        nodes: list[wavelink.Node] = [wavelink.Node(uri=botinfo.wavelink_uri, password=botinfo.wavelink_pass)]
         self.wavelink = nodes[0]
         await wavelink.Pool.connect(nodes=nodes, client=self)
         initial_extensions = ['jishaku']
@@ -94,15 +90,13 @@ class Bot(commands.AutoShardedBot):
         await self.tree.sync()
 
 bot = Bot(get_pre, intents)
-ownerids = botinfo.botowner
+ownerids = botinfo.main_devs
 bot.owner_ids = ownerids
 bot.remove_command("help")
 
 @bot.event
 async def on_ready():
-    check = True
     bot.main_owner = discord.utils.get(bot.users, id=1141685323299045517)
-    #bot.loop.create_task(node_connect())
     #bot.topggpy = topgg.client.DBLClient(bot=bot, token=botinfo.dbltoken, autopost=True, post_shard_count=False, autopost_interval=900)
 
 @bot.event
@@ -137,7 +131,7 @@ async def process_commands(message: discord.Message) -> None:
                         bl_db = literal_eval(_db["guild_ids"])
                         bl_db.append(ctx.guild.id)
                         database.update("bl_guilds", "guild_ids", f"{bl_db}", "main", 1)
-                        init = await ctx.send(embed=discord.Embed(title=f"Guild Blacklised from using commands", description="**This guild is blacklisted for trying to ratelimit the bot or take it down by their dumb methods, if you think so that this was a mistake by the bot kindly report it in the [Support Server](https://discord.gg/K4v4aEuwp6).**", color=botinfo.wrong_color))
+                        init = await ctx.send(embed=discord.Embed(title=f"Guild Blacklised from using commands", description="**This guild is blacklisted for trying to ratelimit the bot or take it down by their dumb methods, if you think so that this was a mistake by the bot kindly report it in the [Support Server]({botinfo.support_server}).**", color=botinfo.wrong_color))
                         webhook = discord.SyncWebhook.from_url(botinfo.webhook_blacklist_logs)
                         webhook.send(embed=discord.Embed(title="Automated Guild Blacklisted", description=f"**Some Kiddos were trying to ratelimit the bot in {ctx.message.jump_url} so I blacklisted the whole guild.**\nGuild Name: {ctx.guild.name}\nGuild Id: {ctx.guild.id}\nGuild Members: {ctx.guild.member_count}\nChannel: {ctx.channel.name} [{ctx.channel.mention}]", color=botinfo.root_color), username=f"{str(bot.user)} | Blacklist Guild Logs", avatar_url=bot.user.avatar.url)
                         if ctx.guild.me.guild_permissions.manage_messages:
@@ -235,7 +229,7 @@ async def on_message(message: discord.Message) -> None:
                     bl_db = literal_eval(_db["guild_ids"])
                     bl_db.append(ctx.guild.id)
                     database.update("bl_guilds", "guild_ids", f"{bl_db}", "main", 1)
-                    init = await ctx.send(embed=discord.Embed(title=f"Guild Blacklised from using commands", description="**This guild is blacklisted for trying to ratelimit the bot or take it down by their dumb methods, if you think so that this was a mistake by the bot kindly report it in the [Support Server](https://discord.gg/K4v4aEuwp6).**", color=botinfo.wrong_color))
+                    init = await ctx.send(embed=discord.Embed(title=f"Guild Blacklised from using commands", description="**This guild is blacklisted for trying to ratelimit the bot or take it down by their dumb methods, if you think so that this was a mistake by the bot kindly report it in the [Support Server]().**", color=botinfo.wrong_color))
                     webhook = discord.SyncWebhook.from_url(botinfo.webhook_blacklist_logs)
                     webhook.send(embed=discord.Embed(title="Automated Guild Blacklisted", description=f"**Some Kiddos were trying to ratelimit the bot in {ctx.message.jump_url} so I blacklisted the whole guild.**\nGuild Name: {ctx.guild.name}\nGuild Id: {ctx.guild.id}\nGuild Members: {ctx.guild.member_count}\nChannel: {ctx.channel.name} [{ctx.channel.mention}]", color=botinfo.root_color), username=f"{str(bot.user)} | Blacklist Guild Logs", avatar_url=bot.user.avatar.url)
                     if ctx.guild.me.guild_permissions.manage_messages:
@@ -256,9 +250,9 @@ async def on_message(message: discord.Message) -> None:
         prefix = database.get_guild_prefix(message.guild.id)
         emb = discord.Embed(description=f"Hey {message.author.mention} My Prefix is `{prefix}`\nTo view all my modules do `{prefix}help` or </help:1240018917204955198>.\nFor module related help use `{prefix}help <module name>` or </help:1063005466914979900> `<module name>`", color=botinfo.root_color)
         page = discord.ui.View()
-        page.add_item(discord.ui.Button(label="Invite me", url="https://discord.com/api/oauth2/authorize?client_id=1240005601220755557&&permissions=8&scope=bot"))
-        page.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/K4v4aEuwp6"))
-        #page.add_item(discord.ui.Button(label="Vote", url="https://top.gg/bot/880765863953858601/vote"))
+        page.add_item(discord.ui.Button(label="Invite me", url=f"https://discord.com/api/oauth2/authorize?client_id={botinfo.bot_id}&&permissions=8&scope=bot"))
+        page.add_item(discord.ui.Button(label="Support Server", url=f"{botinfo.support_server}"))
+        #page.add_item(discord.ui.Button(label="Vote", url=f"{botinfo.topgg_link}"))
         await ctx.reply(embed=emb, mention_author=False, view=page, delete_after=10)
     ig_db = database.fetchone("*", "ignore", "guild_id", message.guild.id)
     if ig_db is not None:
@@ -368,6 +362,4 @@ async def on_message_edit(before: discord.Message, after: discord.Message):
                     return
     await bot.process_commands(after)
 
-bot.run('MTI0MDAwNTYwMTIyMDc1NTU1Nw.Ghp7NV.jSO1uHw1d6TlCeV526RLEYaUM9-KxtNTDs-o58')
-
-#bot.run('MTIxNTM3NjQzMDYyMDM1MjUxMw.GEM4H3.me5UPCr8PYFecjzPDFKApr0CQtN-ysf9BGKgvs')
+bot.run(botinfo.gateway_token)

@@ -4,14 +4,14 @@ import platform
 from discord.ext import commands
 import os
 import sqlite3
-import emojis
+import core.emojis as emojis
 import datetime
 import requests
 from typing import Union
 import os
 import time
 import wavelink
-from paginators import PaginationView
+from core.paginators import PaginationView
 from ast import literal_eval
 from botinfo import *
 from PIL import Image, ImageDraw, ImageFont
@@ -19,11 +19,11 @@ import requests
 import numpy as np
 from io import BytesIO
 import re
-import database
-import emojis
+import core.database as database
+import core.emojis as emojis
 import botinfo
 import asyncio
-from premium import check_upgraded
+from core.premium import check_upgraded
 from cogs.music import voiceortext, interface
 
 def identify_code_language(code):
@@ -131,7 +131,7 @@ async def profile(bot: commands.Bot, ctx: commands.Context, user: discord.Member
     height = 720
 
     # Create new image and ImageDraw object
-    with open("profile_bg.jpg", 'rb') as file:
+    with open("Images/profile_bg.jpg", 'rb') as file:
         image = Image.open(BytesIO(file.read())).convert("RGBA")
         file.close()
     image = image.resize((width,height))
@@ -189,7 +189,7 @@ async def profile(bot: commands.Bot, ctx: commands.Context, user: discord.Member
         image.paste(avatar_image, (px, 222), avatar_image)
         px+=32
     #draw.rounded_rectangle((970, 0, 1180, 50), radius=3, fill=(255, 0, 0, 128))
-    draw.text( (640, 28), text="Sputnik", font=ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 34), fill=(165,42,42), anchor="mm")
+    draw.text( (640, 28), text="Gateway", font=ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 34), fill=(165,42,42), anchor="mm")
     #draw.rounded_rectangle((100, 0, 310, 50), radius=3, fill=(255, 0, 0, 128))
     draw.text( (215, 28), text=f"Rank #{user_rank}", font=ImageFont.truetype('Fonts/Alkatra-Medium.ttf', 34), fill=(0, 10, 36), anchor="mm")
     count = 1
@@ -439,13 +439,13 @@ class general(commands.Cog):
                              f"**• Python Version:** {platform.python_version()}\n"
                              f"**• Discord.py Version:** **{discord.__version__}**\n"
                              f"**• __Code Information__:**\n"
-                             f"**\u2192** **Total no. of Files:** **[{files} Files](https://discord.gg/K4v4aEuwp6)**\n"
-                             f"**\u2192** **Total no. of Lines:** **[{lines} Lines](https://discord.gg/K4v4aEuwp6)**")
+                             f"**\u2192** **Total no. of Files:** **[{files} Files]({botinfo.support_server})**\n"
+                             f"**\u2192** **Total no. of Lines:** **[{lines} Lines]({botinfo.support_server})**")
         embed.set_thumbnail(url=self.bot.user.avatar.url)
         embed.set_footer(text=f"Requested By {str(ctx.author)}", icon_url=ctx.author.display_avatar.url)
         page = discord.ui.View()
-        page.add_item(discord.ui.Button(label="Invite me", url=discord.utils.oauth_url(self.bot.user.id)))
-        page.add_item(discord.ui.Button(label="Support Server", url="https://discord.gg/K4v4aEuwp6"))
+        page.add_item(discord.ui.Button(label="Invite me", url=f"https://discord.com/api/oauth2/authorize?client_id={botinfo.bot_id}&&permissions=8&scope=bot"))
+        page.add_item(discord.ui.Button(label="Support Server", url=f"{botinfo.support_server}"))
         await ctx.reply(embed = embed, mention_author=False, view=page)
 
     @commands.hybrid_command(name="afk", description="Changes the afk status of user")

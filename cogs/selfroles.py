@@ -3,10 +3,10 @@ import datetime
 from discord.ext import commands, tasks
 from ast import literal_eval
 import asyncio
-import database
-from embed import *
-from converter import *
-import emojis
+import core.database as database
+from core.embed import *
+from core.converter import *
+import core.emojis as emojis
 import botinfo
 
 xd = {}

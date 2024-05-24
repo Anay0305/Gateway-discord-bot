@@ -2,14 +2,14 @@ import discord
 from discord.ext import commands
 import sqlite3
 import datetime
-from paginators import PaginationView
+from core.paginators import PaginationView
 from botinfo import *
 import os
 from io import BytesIO
 from ast import literal_eval
 from typing import Union
-import database
-import emojis
+import core.database as database
+import core.emojis as emojis
 import botinfo
 
 class owner(commands.Cog):
@@ -541,7 +541,7 @@ class owner(commands.Cog):
     @commands.command()
     @commands.is_owner()
     async def gleave(self, ctx, *,guild_id: int):
-        if ctx.author.id not in botowner:
+        if ctx.author.id not in main_devs:
           return await ctx.send("Only Bot Dev Can Run This Command")
         xd = discord.utils.get(self.bot.guilds, id=guild_id)
         if xd is None:

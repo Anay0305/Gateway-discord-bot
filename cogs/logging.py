@@ -4,10 +4,10 @@ from discord.ext import commands, tasks
 from ast import literal_eval
 import io
 import botinfo
-import database
-import emojis
+import core.database as database
+import core.emojis as emojis
 import sqlite3
-from paginators import PaginationView
+from core.paginators import PaginationView
 
 class enablemenu(discord.ui.Select):
     def __init__(self, ctx: commands.Context, channel: discord.TextChannel):

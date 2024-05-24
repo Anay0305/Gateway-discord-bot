@@ -1,6 +1,12 @@
-main_devs = [1141685323299045517, 563766170675576873, 1096997719635140628]
-botowner = [1141685323299045517, 563766170675576873, 1096997719635140628]
-workowner = [1141685323299045517, 563766170675576873, 1096997719635140628]
+main_devs = [1141685323299045517, 933738517845118976, 966230921084796999]
+workowner = main_devs + [1096997719635140628]
+
+bot_id = 880765863953858601
+dbltoken = ""
+topgg_link = "https://top.gg/bot/880765863953858601/vote"
+
+wavelink_uri = "http://159.203.133.30:2333/"
+wavelink_pass = "anaygupta"
 
 root_color = 0x00ecc6
 wrong_color = 0xff0000
@@ -19,3 +25,7 @@ webhook_blacklist_logs = "https://discord.com/api/webhooks/1242872845277855784/2
 starttime = 0
 rate_limit = {}
 warning_count = {}
+
+sputnik_token = "MTI0MDAwNTYwMTIyMDc1NTU1Nw.Ghp7NV.jSO1uHw1d6TlCeV526RLEYaUM9-KxtNTDs-o58"
+gateway_token = "ODgwNzY1ODYzOTUzODU4NjAx.GIkKnz.aY_wX8Hqq3WNVQJ2D3coM9aoRUb8tI7A7ODX7I"
+slut_token = "MTIxNTM3NjQzMDYyMDM1MjUxMw.GEM4H3.me5UPCr8PYFecjzPDFKApr0CQtN-ysf9BGKgvs"

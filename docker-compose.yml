@@ -1,6 +1,6 @@
 services:
   spread:
-    container_name: sputnik
+    container_name: gateway
     build: ./
     restart: unless-stopped
     env_file:
