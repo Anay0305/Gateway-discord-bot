@@ -139,7 +139,7 @@ class PageChangeModal(discord.ui.Modal, title="Go to page"):
         self.interface = interface
         self.page_number.label = f"Page number (1-{len(interface.file_list)})"
         self.page_number.min_length = 1
-        self.page_number.max_length = len(str(interface.file_list))
+        self.page_number.max_length = len(str(len(interface.file_list)))
 
     async def on_submit(self, interaction: discord.Interaction, /):
         try:
