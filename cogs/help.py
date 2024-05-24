@@ -145,7 +145,7 @@ class help(commands.Cog):
             database.insert("help", "main, 'no'", (x, 0))
             page = HPaginationView(embed_list=em_list, no=no, cogs=emojis.cogs, i=x, ctx=ctx)
             page.add_item(discord.ui.Button(label="Invite me", url=f"https://discord.com/api/oauth2/authorize?client_id={botinfo.bot_id}&&permissions=8&scope=bot"))
-            page.add_item(discord.ui.Button(label="Support Server", url="{botinfo.support_server}"))
+            #page.add_item(discord.ui.Button(label="Support Server", url="{botinfo.support_server}"))
             #page.add_item(discord.ui.Button(label="Vote", url="{botinfo.topgg_link}"))
             await page.start(ctx)
 
