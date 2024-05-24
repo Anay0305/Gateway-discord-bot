@@ -161,7 +161,7 @@ def getdata(guild_id):
         elif coun == 7:
             dic1[7] = converttime1(total_time)
         elif coun == 1:
-            dic1[1] = converttime1(total_time)
+            dic1[1] = converttime1(total_time+1)
     if len(dic1) >= 4:
         dic1.remove(14)
     date_list = date_range(f"last {list(dic.items())[-1][0]} days")
