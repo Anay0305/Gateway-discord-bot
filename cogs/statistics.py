@@ -115,7 +115,7 @@ def getdata(guild_id):
     coun = 0
     dic = {}
     total_msgs = 0
-    for i in day_db:
+    for i in reversed(day_db):
         coun += 1
         for k in day_db[i]['users']:
             total_msgs += day_db[i]['users'][k]
@@ -147,7 +147,7 @@ def getdata(guild_id):
     coun = 0
     dic1 = {}
     total_time = 0
-    for i in day_db1:
+    for i in reversed(day_db1):
         coun += 1
         for k in day_db1[i]['users']:
             total_time += day_db1[i]['users'][k]
