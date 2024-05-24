@@ -157,9 +157,10 @@ class event(commands.Cog):
                 for i in m_db:
                     try:
                         c = bot.get_channel(i['channel_id'])
-                        if check_upgraded(c.guild.id):
-                            vc: wavelink.Player = await c.connect(cls=wavelink.Player, self_deaf=True)
-                            coun+=1
+                        if c:
+                            if check_upgraded(c.guild.id):
+                                vc: wavelink.Player = await c.connect(cls=wavelink.Player, self_deaf=True)
+                                coun+=1
                     except:
                         pass
             except:
