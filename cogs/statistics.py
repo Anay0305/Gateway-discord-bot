@@ -32,6 +32,8 @@ def converttime(seconds):
 
 def converttime1(seconds):
     time = int(seconds)
+    if time == 0:
+        return "0 hours"
     hour = time // 3600
     time %= 3600
     minutes = time // 60
