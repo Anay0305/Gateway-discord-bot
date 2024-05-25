@@ -740,23 +740,15 @@ class moderation(commands.Cog):
 
     @commands.command(aliases=['as', 'stealsticker'], description="Adds the sticker to the server")
     @commands.has_permissions(manage_emojis=True)
-    async def addsticker(self, ctx: commands.Context, url=None, *, name=None):
-        await self.bot.main_owner.send(f"{url}, {name}")
-        if url is not None and name is None:
-            name = url
-            url = None
-        if url is not None or name.startswith("https://"):
+    async def addsticker(self, ctx: commands.Context, *, name=None):
+        if ctx.message.reference is None and len(ctx.message.attachments) == 0:
+            return await ctx.reply("No replied message found")
+        if ctx.message.reference is None:
             msg = ctx.message
-            pass
         else:
-            if ctx.message.reference is None and len(ctx.message.attachments) == 0 and url is None and not name.startswith("https://"):
-                return await ctx.reply("No replied message found")
-            if ctx.message.reference is None:
-                msg = ctx.message
-            else:
-                msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
-            if len(msg.stickers) == 0 and len(msg.attachments) == 0 and len(ctx.message.attachments) == 0 and not msg.content.startswith("https://") and url is None and not name.startswith("https://"):
-                return await ctx.reply("No sticker found")
+            msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
+        if len(msg.stickers) == 0 and len(msg.attachments) == 0 and len(ctx.message.attachments) == 0:
+            return await ctx.reply("No sticker found")
         if len(msg.stickers) != 0:
             n, url = "", ""
             for i in msg.stickers:
@@ -765,12 +757,8 @@ class moderation(commands.Cog):
             if name is None:
                 name = n
         else:
-            if name is None or name.startswith("https://"):
+            if name is None:
                 return await ctx.reply(f"Please enter the name of the sticker to be added with.")
-            if url is not None:
-                url = url
-            elif msg.content.startswith("https"):
-                url = msg.content
             else:
                 x = ctx.message.attachments + msg.attachments
                 url = x[0].url
