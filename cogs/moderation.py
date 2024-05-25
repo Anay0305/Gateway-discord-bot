@@ -781,6 +781,7 @@ class moderation(commands.Cog):
             fname = "Sticker.gif"
         else:
             fname = "Sticker.png"
+        await ctx.send(response.status_code)
         file = discord.File(BytesIO(response.content), fname)
         s = await ctx.guild.create_sticker(name=name, description= f"Sticker created by {str(self.bot.user)}", emoji="❤️", file=file)
         await ctx.reply(f"Sticker created with name `{name}`", stickers=[s])
