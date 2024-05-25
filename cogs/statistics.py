@@ -52,6 +52,9 @@ def converttime1(seconds):
         else:
             x = "mins"
         ls.append(f"{minutes} {x}")
+    if len(ls) == 0:
+        if seconds != 0:
+            ls.append(f"{seconds} seconds")
     return ' '.join(ls)
 
 def convert_date(date_str):
@@ -118,7 +121,7 @@ def getdata(guild_id):
     for i in reversed(day_db):
         coun += 1
         for k in day_db[i]['users']:
-            total_msgs += day_db[i]['users'][k]
+            total_msgs += day_db[i]['users'][k]['count']
         if coun == len(day_db):
             dic[coun] = total_msgs
         elif coun == 30:
@@ -150,7 +153,7 @@ def getdata(guild_id):
     for i in reversed(day_db1):
         coun += 1
         for k in day_db1[i]['users']:
-            total_time += day_db1[i]['users'][k]
+            total_time += day_db1[i]['users'][k]['time']
         if coun == len(day_db1):
             dic1[coun] = converttime1(total_time)
         elif coun == 30:
@@ -176,7 +179,7 @@ def getdata(guild_id):
                     dic_text_users[j] =day_db[i]['users'][j]
             for j in day_db[i]['channels']:
                 if j in dic_text_channels:
-                    dic_text_channels[j]+=day_db[i]['channels'][j]
+                    dic_text_channels[j]['count']+=day_db[i]['channels'][j]['count']
                 else:
                     dic_text_channels[j] =day_db[i]['channels'][j]
     date_list = date_range(f"last {list(dic1.items())[-1][0]} days")
@@ -186,18 +189,18 @@ def getdata(guild_id):
         if i in day_db1:
             for j in day_db1[i]['users']:
                 if j in dic_vc_users:
-                    dic_vc_users[j]+=day_db1[i]['users'][j]
+                    dic_vc_users[j]['time']+=day_db1[i]['users'][j]['time']
                 else:
                     dic_vc_users[j] =day_db1[i]['users'][j]
             for j in day_db1[i]['channels']:
                 if j in dic_vc_channels:
-                    dic_vc_channels[j]+=day_db1[i]['channels'][j]
+                    dic_vc_channels[j]['time']+=day_db1[i]['channels'][j]['time']
                 else:
                     dic_vc_channels[j] =day_db1[i]['channels'][j]
-    dic_text_users = dict(sorted(dic_text_users.items(), key=lambda item: item[1], reverse=True))
-    dic_text_channels = dict(sorted(dic_text_channels.items(), key=lambda item: item[1], reverse=True))
-    dic_vc_users = dict(sorted(dic_vc_users.items(), key=lambda item: item[1], reverse=True))
-    dic_vc_channels = dict(sorted(dic_vc_channels.items(), key=lambda item: item[1], reverse=True))
+    dic_text_users = dict(sorted(dic_text_users.items(), key=lambda item: item[1]['count'], reverse=True))
+    dic_text_channels = dict(sorted(dic_text_channels.items(), key=lambda item: item[1]['count'], reverse=True))
+    dic_vc_users = dict(sorted(dic_vc_users.items(), key=lambda item: item[1]['time'], reverse=True))
+    dic_vc_channels = dict(sorted(dic_vc_channels.items(), key=lambda item: item[1]['time'], reverse=True))
     final = {
         "messages": list(dic.items()),
         "voice": list(dic1.items()),
@@ -210,7 +213,7 @@ def getdata(guild_id):
     }
     return final
 
-async def server_top(bot: commands.AutoShardedBot, guild:discord.Guild):
+async def server_top(bot_icon, guild:discord.Guild):
     width = 1033
     height = 502
     data = getdata(guild.id)
@@ -237,7 +240,7 @@ async def server_top(bot: commands.AutoShardedBot, guild:discord.Guild):
     if guild.icon:
         icon = guild.icon.url
     else:
-        icon = bot.user.display_avatar.url
+        icon = bot_icon
     logo_res = requests.get(icon)
     AVATAR_SIZE = 72
     avatar_image = Image.open(BytesIO(logo_res.content)).convert("RGB")
@@ -280,6 +283,7 @@ async def server_top(bot: commands.AutoShardedBot, guild:discord.Guild):
             voice.append(voice[-1])
     coun = 0
     for i in voice:
+        print(i)
         draw.text( (x_cords[1], y_cords[coun]), f"{i[0]}d", fill="white", font=font, anchor="mm")
         if i[1] == "":
             draw.text( (x_cords1[1], y_cords[coun]), f"0 hours", fill="white", font=font1, anchor="lm")
@@ -296,53 +300,53 @@ async def server_top(bot: commands.AutoShardedBot, guild:discord.Guild):
         coun +=1
     font = ImageFont.truetype('Fonts/Montserrat-Medium.ttf', 22)
     name_font = ImageFont.truetype('Fonts/Montserrat-MediumItalic.ttf', 24)
+    mem_ids = [i.id for i in guild.members]
+    chan_ids = [i.id for i in guild.channels]
     for i in data['top_member_text']:
-        top_member_text = discord.utils.get(bot.users, id=i[0])
-        if top_member_text is not None:
-            name = top_member_text.name
+        if i[0] in mem_ids:
+            name = i[1]['display_name']
             n = name
             while name_font.getlength(name) >= 140:
                 name = name[0:-1]
             if n != name:
                 name = name[0:-2] + "..."
             draw.text( (164, 372), f"{name}", fill="white", font=name_font, anchor="mm")
-            draw.text( (248, 372), f"{i[1]} Messages", fill="white", font=font, anchor="lm")
+            draw.text( (248, 372), f"{i[1]['count']} Messages", fill="white", font=font, anchor="lm")
             break
     for i in data['top_member_vc']:
-        top_member_vc = discord.utils.get(bot.users, id=i[0])
-        if top_member_vc is not None:
-            name = top_member_vc.name
+        if i[0] in mem_ids:
+            print(i)
+            name = i[1]['display_name']
             n = name
             while name_font.getlength(name) >= 140:
                 name = name[0:-1]
             if n != name:
                 name = name[0:-2] + "..."
             draw.text( (164, 438), f"{name}", fill="white", font=name_font, anchor="mm")
-            draw.text( (248, 438), f"{converttime1(i[1])}", fill="white", font=font, anchor="lm")
+            draw.text( (248, 438), f"{converttime1(i[1]['time'])}", fill="white", font=font, anchor="lm")
             break
     for i in data['top_channel_text']:
-        top_channel_text = discord.utils.get(guild.channels, id=i[0])
-        if top_channel_text is not None:
-            name = top_channel_text.name
+        if i[0] in chan_ids:
+            name = i[1]['name']
             n = name
             while name_font.getlength(name) >= 128:
                 name = name[0:-1]
             if n != name:
                 name = name[0:-2] + "..."
             draw.text( (666, 372), f"{name}", fill="white", font=name_font, anchor="mm")
-            draw.text( (740, 372), f"{i[1]} Messages", fill="white", font=font, anchor="lm")
+            draw.text( (740, 372), f"{i[1]['count']} Messages", fill="white", font=font, anchor="lm")
             break
     for i in data['top_channel_vc']:
-        top_channel_vc = discord.utils.get(guild.channels, id=i[0])
-        if top_channel_vc is not None:
-            name = top_channel_vc.name
+        if i[0] in chan_ids:
+            print(i)
+            name = i[1]['name']
             n = name
             while name_font.getlength(name) >= 128:
                 name = name[0:-1]
             if n != name:
                 name = name[0:-2] + "..."
             draw.text( (666, 438), f"{name}", fill="white", font=name_font, anchor="mm")
-            draw.text( (740, 438), f"{converttime1(i[1])}", fill="white", font=font, anchor="lm")
+            draw.text( (740, 438), f"{converttime1(i[1]['time'])}", fill="white", font=font, anchor="lm")
             break
     
     with BytesIO() as image_binary:
@@ -402,7 +406,7 @@ class SelectView(discord.ui.Select):
         if self.values[0] == "home":
             await interaction.message.edit(content="<a:loading:1215453200463958086>")
             view = View(self.bot, ctx)
-            file = await server_top(self.bot, ctx.guild)
+            file = await server_top(self.bot.user.display_avatar.url, ctx.guild)
             await interaction.message.edit(content=None, attachments=[file], view=view)
             return
         elif self.values[0] == "memtext":
@@ -416,12 +420,13 @@ class SelectView(discord.ui.Select):
                 break
             dic = user_db
             des = {}
-            dic = dict(sorted(dic.items(), key=lambda item: item[1], reverse=True))
+            dic = dict(sorted(dic.items(), key=lambda item: item[1]['count'], reverse=True))
+            x = [i.id for i in ctx.guild.members]
             for i in dic:
-                u = discord.utils.get(ctx.guild.members, id=i)
-                if u is not None:
-                    des[u.name + " | " + u.display_name] = [f"{dic[i]} Messages", count, u.display_avatar.url]
-                    count+=1
+                if i not in x:
+                    continue
+                des[dic[i]['display_name'] + " | " + dic[i]['name']] = [f"{dic[i]['count']} Messages", count, dic[i]['avatar']]
+                count+=1
             lss = []
             xd = {}
             coun = 0
@@ -451,12 +456,13 @@ class SelectView(discord.ui.Select):
                 break
             dic = channel_db
             des = {}
-            dic = dict(sorted(dic.items(), key=lambda item: item[1], reverse=True))
+            dic = dict(sorted(dic.items(), key=lambda item: item[1]['count'], reverse=True))
+            x = [i.id for i in ctx.guild.channels]
             for i in dic:
-                u = discord.utils.get(ctx.guild.channels, id=i)
-                if u is not None:
-                    des["#" + u.name + f"[{u.id}]"] = [f"{dic[i]} Messages", count, ctx.guild.me.display_avatar.url]
-                    count+=1
+                if i not in x:
+                    continue
+                des["#" + dic[i]['name'] + f"[{i}]"] = [f"{dic[i]['count']} Messages", count, ctx.guild.me.display_avatar.url]
+                count+=1
             lss = []
             xd = {}
             coun = 0
@@ -488,12 +494,13 @@ class SelectView(discord.ui.Select):
                 break
             dic = user_db
             des = {}
-            dic = dict(sorted(dic.items(), key=lambda item: item[1], reverse=True))
+            dic = dict(sorted(dic.items(), key=lambda item: item[1]['time'], reverse=True))
+            x = [i.id for i in ctx.guild.members]
             for i in dic:
-                u = discord.utils.get(ctx.guild.members, id=i)
-                if u is not None:
-                    des[u.name + " | " + u.display_name] = [converttime(dic[i]), count, u.display_avatar.url]
-                    count+=1
+                if i not in x:
+                    continue
+                des[dic[i]['display_name'] + " | " + dic[i]['name']] = [converttime(dic[i]['time']), count, dic[i]['avatar']]
+                count+=1
             lss = []
             xd = {}
             coun = 0
@@ -525,12 +532,13 @@ class SelectView(discord.ui.Select):
                 break
             dic = channel_db
             des = {}
-            dic = dict(sorted(dic.items(), key=lambda item: item[1], reverse=True))
+            dic = dict(sorted(dic.items(), key=lambda item: item[1]['time'], reverse=True))
+            x = [i.id for i in ctx.guild.channels]
             for i in dic:
-                u = discord.utils.get(ctx.guild.channels, id=i)
-                if u is not None:
-                    des["#" + u.name + f"[{u.id}]"] = [converttime(dic[i]), count, ctx.guild.me.display_avatar.url]
-                    count+=1
+                if i not in x:
+                    continue
+                des["#" + dic[i]['name'] + f"[{i}]"] = [converttime(dic[i]['time']), count, ctx.guild.me.display_avatar.url]
+                count+=1
             lss = []
             xd = {}
             coun = 0
@@ -596,25 +604,45 @@ class Statistics(commands.Cog):
                     channel_time = round(datetime.now().timestamp() - channel_start[guild.id][before.channel.id])
                     del channel_start[guild.id][before.channel.id]
                     if before.channel.id in channel_db:
-                        channel_db[before.channel.id] += channel_time
+                        coun = channel_db[before.channel.id]['time'] + channel_time
                     else:
-                        channel_db[before.channel.id] = channel_time
+                        coun = channel_time
+                    channel_db[before.channel.id] = {
+                        'name': before.channel.name,
+                        'time': coun
+                    }
                     if before.channel.id in day_db[today]['channels']:
-                        day_db[today]['channels'][before.channel.id] += channel_time
+                        coun = day_db[today]['channels'][before.channel.id]['time'] + channel_time
                     else:
-                        day_db[today]['channels'][before.channel.id] = channel_time
+                        coun = channel_time
+                    day_db[today]['channels'][before.channel.id] = {
+                        'name': before.channel.name,
+                        'time': coun
+                    }
             if check_bl_channel(after.channel):
                 if guild.id in user_start:
                     user_time = round(datetime.now().timestamp() - user_start[guild.id][member.id])
                     del user_start[guild.id][member.id]
                     if member.id in user_db:
-                        user_db[member.id] += user_time
+                        coun = user_db[member.id]['time'] + user_time
                     else:
-                        user_db[member.id] = user_time
+                        coun = user_time
+                    user_db[member.id] = {
+                        'name': member.name,
+                        'display_name': member.display_name,
+                        'avatar': member.display_avatar.url,
+                        'time': coun
+                    }
                     if member.id in day_db[today]['users']:
-                        day_db[today]['users'][member.id] += user_time
+                        coun = day_db[today]['users'][member.id]['time'] + user_time
                     else:
-                        day_db[today]['users'][member.id] = user_time
+                        coun = user_time
+                    day_db[today]['users'][member.id] = {
+                        'name': member.name,
+                        'display_name': member.display_name,
+                        'avatar': member.display_avatar.url,
+                        'time': coun
+                    }
             else:
                 if guild.id in channel_start:
                     if after.channel.id not in channel_start[guild.id]:
@@ -637,10 +665,10 @@ class Statistics(commands.Cog):
                 channel_start[guild.id] = {
                     after.channel.id: round(datetime.now().timestamp())
                 }
-        day_db[today]['users'] = dict(sorted(day_db[today]['users'].items(), key=lambda item: item[1], reverse=True))
-        day_db[today]['channels'] = dict(sorted(day_db[today]['channels'].items(), key=lambda item: item[1], reverse=True))
-        user_db = dict(sorted(user_db.items(), key=lambda item: item[1], reverse=True))
-        channel_db = dict(sorted(channel_db.items(), key=lambda item: item[1] ,reverse=True))
+        day_db[today]['users'] = dict(sorted(day_db[today]['users'].items(), key=lambda item: item[1]['time'], reverse=True))
+        day_db[today]['channels'] = dict(sorted(day_db[today]['channels'].items(), key=lambda item: item[1]['time'], reverse=True))
+        user_db = dict(sorted(user_db.items(), key=lambda item: item[1]['time'], reverse=True))
+        channel_db = dict(sorted(channel_db.items(), key=lambda item: item[1]['time'] ,reverse=True))
         dic = {
             'user_time': f"{user_db}",
             'channel_time': f"{channel_db}",
@@ -659,14 +687,24 @@ class Statistics(commands.Cog):
         res = database.fetchone("*", "messages_db", "guild_id", message.guild.id)
         user_db = literal_eval(res['user_messages'])
         if message.author.id in user_db:
-            user_db[message.author.id] += 1
+            coun = user_db[message.author.id]['count'] + 1
         else:
-            user_db[message.author.id] = 1
+            coun = 1
+        user_db[message.author.id] = {
+            'display_name': message.author.display_name,
+            'name': message.author.name,
+            'avatar': message.author.display_avatar.url,
+            'count': coun
+        }
         channel_db = literal_eval(res['channel_messages'])
         if message.channel.id in channel_db:
-            channel_db[message.channel.id] += 1
+            coun = channel_db[message.channel.id]['count'] + 1
         else:
-            channel_db[message.channel.id] = 1
+            coun = 1
+        channel_db[message.channel.id] = {
+            'name': message.channel.name,
+            'count': coun
+        }
         day_db = literal_eval(res['specific_day_messages'])
         today = f"{str(datetime.now().date())}"
         if today not in day_db:
@@ -675,17 +713,27 @@ class Statistics(commands.Cog):
                 'channels': {}
             }
         if message.author.id in day_db[today]['users']:
-            day_db[today]['users'][message.author.id] += 1
+            coun = day_db[today]['users'][message.author.id]['count'] + 1
         else:
-            day_db[today]['users'][message.author.id] = 1
+            coun = 1
+        day_db[today]['users'][message.author.id] = {
+            'display_name': message.author.display_name,
+            'name': message.author.name,
+            'avatar': message.author.display_avatar.url,
+            'count': coun
+        }
         if message.channel.id in day_db[today]['channels']:
-            day_db[today]['channels'][message.channel.id] += 1
+            coun = day_db[today]['channels'][message.channel.id]['count'] + 1
         else:
-            day_db[today]['channels'][message.channel.id] = 1
-        day_db[today]['users'] = dict(sorted(day_db[today]['users'].items(), key=lambda item: item[1], reverse=True))
-        day_db[today]['channels'] = dict(sorted(day_db[today]['channels'].items(), key=lambda item: item[1], reverse=True))
-        user_db = dict(sorted(user_db.items(), key=lambda item: item[1], reverse=True))
-        channel_db = dict(sorted(channel_db.items(), key=lambda item: item[1], reverse=True))
+            coun = 1
+        day_db[today]['channels'][message.channel.id] = {
+            'name': message.channel.name,
+            'count': coun
+        }
+        day_db[today]['users'] = dict(sorted(day_db[today]['users'].items(), key=lambda item: item[1]['count'], reverse=True))
+        day_db[today]['channels'] = dict(sorted(day_db[today]['channels'].items(), key=lambda item: item[1]['count'], reverse=True))
+        user_db = dict(sorted(user_db.items(), key=lambda item: item[1]['count'], reverse=True))
+        channel_db = dict(sorted(channel_db.items(), key=lambda item: item[1]['count'], reverse=True))
         dic = {
             'user_messages': f"{user_db}",
             'channel_messages': f"{channel_db}",
@@ -719,7 +767,7 @@ class Statistics(commands.Cog):
     @statistics.command(aliases=['s', 'sv'], description="Shows the server's activity statistics")
     async def server(self, ctx: commands.Context):
         view = View(self.bot, ctx)
-        file = await server_top(self.bot, ctx.guild)
+        file = await server_top(self.bot.user.display_avatar.url, ctx.guild)
         await ctx.send(file=file, view=view)
         await view.wait()
     
@@ -764,7 +812,7 @@ class Statistics(commands.Cog):
                     if i in day_db:
                         for j in day_db[i]['users']:
                             if j in dic:
-                                dic[j]+=day_db[i]['users'][j]
+                                dic[j]['count'] +=day_db[i]['users'][j]['count']
                             else:
                                 dic[j] =day_db[i]['users'][j]
                 start_ = date_list[0]
@@ -776,12 +824,13 @@ class Statistics(commands.Cog):
                     break
                 dic = user_db
             des = {}
-            dic = dict(sorted(dic.items(), key=lambda item: item[1], reverse=True))
+            dic = dict(sorted(dic.items(), key=lambda item: item[1]['count'], reverse=True))
+            x = [i.id for i in ctx.guild.members]
             for i in dic:
-                u = discord.utils.get(ctx.guild.members, id=i)
-                if u is not None:
-                    des[u.name + " | " + u.display_name] = [f"{dic[i]} Messages", count, u.display_avatar.url]
-                    count+=1
+                if i not in x:
+                    continue
+                des[dic[i]['display_name'] + " | " + dic[i]['name']] = [f"{dic[i]['count']} Messages", count, dic[i]['avatar']]
+                count+=1
             lss = []
             xd = {}
             coun = 0
@@ -819,7 +868,7 @@ class Statistics(commands.Cog):
                     if i in day_db:
                         for j in day_db[i]['channels']:
                             if j in dic:
-                                dic[j]+=day_db[i]['channels'][j]
+                                dic[j]['count']+=day_db[i]['channels'][j]['count']
                             else:
                                 dic[j] =day_db[i]['channels'][j]
                 start_ = date_list[0]
@@ -831,12 +880,13 @@ class Statistics(commands.Cog):
                     break
                 dic = channel_db
             des = {}
-            dic = dict(sorted(dic.items(), key=lambda item: item[1], reverse=True))
+            dic = dict(sorted(dic.items(), key=lambda item: item[1]['count'], reverse=True))
+            x = [i.id for i in ctx.guild.channels]
             for i in dic:
-                u = discord.utils.get(ctx.guild.channels, id=i)
-                if u is not None:
-                    des["#" + u.name + f"[{u.id}]"] = [f"{dic[i]} Messages", count, ctx.guild.me.display_avatar.url]
-                    count+=1
+                if i not in x:
+                    continue
+                des["#" + dic[i]['name'] + f"[{i}]"] = [f"{dic[i]['count']} Messages", count, ctx.guild.me.display_avatar.url]
+                count+=1
             lss = []
             xd = {}
             coun = 0
@@ -893,7 +943,7 @@ class Statistics(commands.Cog):
                     if i in day_db:
                         for j in day_db[i]['users']:
                             if j in dic:
-                                dic[j]+=day_db[i]['users'][j]
+                                dic[j]['time']+=day_db[i]['users'][j]['time']
                             else:
                                 dic[j] =day_db[i]['users'][j]
                 start_ = date_list[0]
@@ -905,12 +955,13 @@ class Statistics(commands.Cog):
                     break
                 dic = user_db
             des = {}
-            dic = dict(sorted(dic.items(), key=lambda item: item[1], reverse=True))
+            dic = dict(sorted(dic.items(), key=lambda item: item[1]['time'], reverse=True))
+            x = [i.id for i in ctx.guild.members]
             for i in dic:
-                u = discord.utils.get(ctx.guild.members, id=i)
-                if u is not None:
-                    des[u.name + " | " + u.display_name] = [converttime(dic[i]), count, u.display_avatar.url]
-                    count+=1
+                if i not in x:
+                    continue
+                des[dic[i]['display_name'] + " | " + dic[i]['name']] = [converttime(dic[i]['time']), count, dic[i]['avatar']]
+                count+=1
             lss = []
             xd = {}
             coun = 0
@@ -948,7 +999,7 @@ class Statistics(commands.Cog):
                     if i in day_db:
                         for j in day_db[i]['channels']:
                             if j in dic:
-                                dic[j]+=day_db[i]['channels'][j]
+                                dic[j]['time']+=day_db[i]['channels'][j]['time']
                             else:
                                 dic[j] =day_db[i]['channels'][j]
                 start_ = date_list[0]
@@ -960,12 +1011,13 @@ class Statistics(commands.Cog):
                     break
                 dic = channel_db
             des = {}
-            dic = dict(sorted(dic.items(), key=lambda item: item[1], reverse=True))
+            dic = dict(sorted(dic.items(), key=lambda item: item[1]['time'], reverse=True))
+            x = [i.id for i in ctx.guild.channels]
             for i in dic:
-                u = discord.utils.get(ctx.guild.channels, id=i)
-                if u is not None:
-                    des["#" + u.name + f"[{u.id}]"] = [converttime(dic[i]), count, ctx.guild.me.display_avatar.url]
-                    count+=1
+                if i not in x:
+                    continue
+                des["#" + dic[i]['name'] + f"[{i}]"] = [converttime(dic[i]['time']), count, ctx.guild.me.display_avatar.url]
+                count+=1
             lss = []
             xd = {}
             coun = 0
