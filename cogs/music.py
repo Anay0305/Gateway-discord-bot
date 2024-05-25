@@ -337,9 +337,9 @@ class extraaction(discord.ui.Select):
                 res = await player.node.send(method="GET" , path=f"v4/sessions/{player.node.session_id}/players/{player.guild.id}/lyrics")
             except wavelink.exceptions.LavalinkException as e:
                 if e.status == 400:
-                   return await interaction.response.send_message("No songs are currently being played by the bot", emphirial=True)
+                   return await interaction.response.send_message("No songs are currently being played by the bot", ephemeral=True)
                 else:
-                    return await interaction.response.send_message(embed=discord.Embed(description=f"I couldn't found any lyrics for [{player.current.title}]({player.current.uri})", color=botinfo.wrong_color), emphirial=True)
+                    return await interaction.response.send_message(embed=discord.Embed(description=f"I couldn't found any lyrics for [{player.current.title}]({player.current.uri})", color=botinfo.wrong_color), ephemeral=True)
             x = res['lines']
             des = []
             for i in x:
@@ -347,7 +347,7 @@ class extraaction(discord.ui.Select):
             em = discord.Embed(description='\n'.join(des), color=botinfo.root_color)
             em.set_author(name=f"Lyrics for {player.current.title}", url=player.current.uri)
             em.set_footer(text=f"Poweded by Gateway", icon_url=ctx.guild.me.display_avatar.url)
-            return await interaction.response.send_message(embed=em, emphirial=True)
+            return await interaction.response.send_message(embed=em, ephemeral=True)
         elif val == "replay":
             await vc.seek(0)
             await interaction.response.send_message(f"Replayed the current song", ephemeral=True)
