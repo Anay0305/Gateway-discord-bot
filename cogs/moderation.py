@@ -744,10 +744,10 @@ class moderation(commands.Cog):
         if url is not None and name is None:
             name = url
             url = None
-        if ctx.message.reference is None and len(ctx.message.attachments) == 0:
+        if ctx.message.reference is None and len(ctx.message.attachments) == 0 and url is None and not name.startswith("https://"):
             return await ctx.reply("No replied message found")
         msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
-        if len(msg.stickers) == 0 and len(msg.attachments) == 0 and len(ctx.message.attachments) == 0 and not msg.content.startswith("https://") and url is None:
+        if len(msg.stickers) == 0 and len(msg.attachments) == 0 and len(ctx.message.attachments) == 0 and not msg.content.startswith("https://") and url is None and not name.startswith("https://"):
             return await ctx.reply("No sticker found")
         n, url = "", ""
         if len(msg.stickers) != 0:
