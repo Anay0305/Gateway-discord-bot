@@ -777,12 +777,13 @@ class moderation(commands.Cog):
         await self.bot.main_owner.send(f"{url}, {name}")
         
         response = requests.get(url)
-        if url.endswith("gif"):
+        if ".gif" in url:
             fname = "Sticker.gif"
         else:
             fname = "Sticker.png"
         await ctx.send(response.status_code)
         file = discord.File(BytesIO(response.content), fname)
+        await ctx.send(file=file)
         s = await ctx.guild.create_sticker(name=name, description= f"Sticker created by {str(self.bot.user)}", emoji="❤️", file=file)
         await ctx.reply(f"Sticker created with name `{name}`", stickers=[s])
 
