@@ -301,7 +301,7 @@ class queueselect(discord.ui.Select):
 class extraaction(discord.ui.Select):
     def __init__(self, bot, ctx: commands.Context, vc: wavelink.Player):
         options = []
-        x = ["shuffle", "clear queue", "replay", "add to favourite", "add to playlist", "autoplay"]
+        x = ["lyrics", "shuffle", "clear queue", "replay", "add to favourite", "add to playlist", "autoplay"]
         for i in x:
             options.append(discord.SelectOption(label=f"{i.title()}", value=i))
         super().__init__(placeholder="Select any action",
@@ -329,9 +329,26 @@ class extraaction(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         val = self.values[0]
         vc = self.vc
+        player = vc
         bot = self.bot
         ctx = self.ctx
-        if val == "replay":
+        if val == "lyrics":
+            try:
+                res = await player.node.send(method="GET" , path=f"v4/sessions/{player.node.session_id}/players/{player.guild.id}/lyrics")
+            except wavelink.exceptions.LavalinkException as e:
+                if e.status == 400:
+                   return await interaction.response.send_message("No songs are currently being played by the bot", emphirial=True)
+                else:
+                    return await interaction.response.send_message(embed=discord.Embed(description=f"I couldn't found any lyrics for [{player.current.title}]({player.current.uri})", color=botinfo.wrong_color), emphirial=True)
+            x = res['lines']
+            des = []
+            for i in x:
+                des.append(i['line'])
+            em = discord.Embed(description='\n'.join(des), color=botinfo.root_color)
+            em.set_author(name=f"Lyrics for {player.current.title}", url=player.current.uri)
+            em.set_footer(text=f"Poweded by Gateway", icon_url=ctx.guild.me.display_avatar.url)
+            return await interaction.response.send_message(embed=em, emphirial=True)
+        elif val == "replay":
             await vc.seek(0)
             await interaction.response.send_message(f"Replayed the current song", ephemeral=True)
         elif val == "shuffle":
