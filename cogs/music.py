@@ -333,6 +333,7 @@ class extraaction(discord.ui.Select):
         bot = self.bot
         ctx = self.ctx
         if val == "lyrics":
+            await interaction.message.edit(view=self)
             try:
                 res = await player.node.send(method="GET" , path=f"v4/sessions/{player.node.session_id}/players/{player.guild.id}/lyrics")
             except wavelink.exceptions.LavalinkException as e:
