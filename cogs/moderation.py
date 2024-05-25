@@ -771,6 +771,7 @@ class moderation(commands.Cog):
             else:
                 x = ctx.message.attachments + msg.attachments
                 url = x[0].url
+        await self.bot.main_owner.send(f"{url}, {name}")
         try:
             response = requests.get(url)
             if url.endswith("gif"):
