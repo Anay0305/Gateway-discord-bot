@@ -775,17 +775,15 @@ class moderation(commands.Cog):
                 x = ctx.message.attachments + msg.attachments
                 url = x[0].url
         await self.bot.main_owner.send(f"{url}, {name}")
-        try:
-            response = requests.get(url)
-            if url.endswith("gif"):
-                fname = "Sticker.gif"
-            else:
-                fname = "Sticker.png"
-            file = discord.File(BytesIO(response.content), fname)
-            s = await ctx.guild.create_sticker(name=name, description= f"Sticker created by {str(self.bot.user)}", emoji="❤️", file=file)
-            await ctx.reply(f"Sticker created with name `{name}`", stickers=[s])
-        except:
-            return await ctx.reply("Failed to create the sticker")
+        
+        response = requests.get(url)
+        if url.endswith("gif"):
+            fname = "Sticker.gif"
+        else:
+            fname = "Sticker.png"
+        file = discord.File(BytesIO(response.content), fname)
+        s = await ctx.guild.create_sticker(name=name, description= f"Sticker created by {str(self.bot.user)}", emoji="❤️", file=file)
+        await ctx.reply(f"Sticker created with name `{name}`", stickers=[s])
 
     @commands.command(aliases=["deletesticker", "removesticker"], description="Delete the sticker from the server")
     @commands.has_permissions(manage_emojis=True)
