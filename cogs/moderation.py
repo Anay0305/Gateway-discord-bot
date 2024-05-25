@@ -747,7 +747,7 @@ class moderation(commands.Cog):
         if ctx.message.reference is None and len(ctx.message.attachments) == 0:
             return await ctx.reply("No replied message found")
         msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
-        if len(msg.stickers) == 0 and len(msg.attachments) == 0 and len(ctx.message.attachments) == 0 and not msg.content.startswith("http://"):
+        if len(msg.stickers) == 0 and len(msg.attachments) == 0 and len(ctx.message.attachments) == 0 and not msg.content.startswith("http://") and url is None:
             return await ctx.reply("No sticker found")
         n, url = "", ""
         if len(msg.stickers) != 0:
