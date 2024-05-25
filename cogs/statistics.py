@@ -174,7 +174,7 @@ def getdata(guild_id):
         if i in day_db:
             for j in day_db[i]['users']:
                 if j in dic_text_users:
-                    dic_text_users[j]+=day_db[i]['users'][j]
+                    dic_text_users[j]['count']+=day_db[i]['users'][j]['count']
                 else:
                     dic_text_users[j] =day_db[i]['users'][j]
             for j in day_db[i]['channels']:
