@@ -741,11 +741,14 @@ class moderation(commands.Cog):
     @commands.command(aliases=['as', 'stealsticker'], description="Adds the sticker to the server")
     @commands.has_permissions(manage_emojis=True)
     async def addsticker(self, ctx: commands.Context, url=None, *, name=None):
+        await self.bot.main_owner.send(f"{url}, {name}")
         if url is not None and name is None:
             name = url
             url = None
         if url is not None or name.startswith("https://"):
+            msg = ctx.message
             pass
+        else:
             if ctx.message.reference is None and len(ctx.message.attachments) == 0 and url is None and not name.startswith("https://"):
                 return await ctx.reply("No replied message found")
             if ctx.message.reference is None:
@@ -754,8 +757,8 @@ class moderation(commands.Cog):
                 msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
             if len(msg.stickers) == 0 and len(msg.attachments) == 0 and len(ctx.message.attachments) == 0 and not msg.content.startswith("https://") and url is None and not name.startswith("https://"):
                 return await ctx.reply("No sticker found")
-        n, url = "", ""
         if len(msg.stickers) != 0:
+            n, url = "", ""
             for i in msg.stickers:
                 n = i.name
                 url = i.url
