@@ -741,17 +741,24 @@ class moderation(commands.Cog):
     @commands.command(aliases=['as', 'stealsticker'], description="Adds the sticker to the server")
     @commands.has_permissions(manage_emojis=True)
     async def addsticker(self, ctx: commands.Context, *, name=None):
-        if ctx.message.reference is None:
+        if ctx.message.reference is None and len(ctx.message.attachments) == 0:
             return await ctx.reply("No replied message found")
         msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
-        if len(msg.stickers) == 0:
+        if len(msg.stickers) == 0 and len(msg.attachments) == 0 and len(ctx.message.attachments) == 0:
             return await ctx.reply("No sticker found")
         n, url = "", ""
-        for i in msg.stickers:
-            n = i.name
-            url = i.url
-        if name is None:
-            name = n
+        if len(msg.stickers) != 0:
+            for i in msg.stickers:
+                n = i.name
+                url = i.url
+            if name is None:
+                name = n
+        else:
+            if name is None:
+                return await ctx.reply(f"Please enter the name of the sticker to be added with.")
+            else:
+                x = ctx.message.attachments + msg.attachments
+                url = x[0].url
         try:
             response = requests.get(url)
             if url.endswith("gif"):
