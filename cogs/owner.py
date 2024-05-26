@@ -13,10 +13,11 @@ import core.emojis as emojis
 import botinfo
 import wavelink
 import requests
+import subprocess
 
 class owner(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot
+        self.bot: commands.AutoShardedBot = bot
 
     @commands.command()
     @commands.is_owner()
@@ -32,6 +33,28 @@ class owner(commands.Cog):
                 await ctx.reply(f"Error: {response.json()['error']}")
 
         except requests.exceptions.RequestException as e:
+            await ctx.reply(f"Error: {e}")
+    
+    @commands.command(aliases=["autopush", "autoup"])
+    @commands.is_owner()
+    async def autoupdate(self, ctx: commands.Context):
+        try:
+            result = subprocess.run(['git', 'pull'], capture_output=True, text=True)
+            
+            if result.returncode == 0:
+                output = result.stdout
+                await ctx.reply("Git pull command executed successfully.")
+                count = 0
+                for i in self.bot.extensions:
+                    if i.replace(".", "/") in output:
+                        count+=1
+                        self.bot.reload_extension(i)
+                await ctx.reply(f"Reloaded {count} cogs.")
+            else:
+                error_message = result.stderr
+                await ctx.reply(f"Error: {error_message}")
+
+        except Exception as e:
             await ctx.reply(f"Error: {e}")
 
     @commands.group(invoke_without_command=True)
