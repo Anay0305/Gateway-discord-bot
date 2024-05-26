@@ -12,7 +12,6 @@ from ast import literal_eval
 from core.paginators import PaginationView
 from core.stats_pag import StatPaginationView
 from datetime import datetime, timedelta
-from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
 from io import BytesIO
 
 def converttime(seconds):
@@ -276,7 +275,6 @@ class SelectView(discord.ui.Select):
             else:
                 banner = None
             data = {
-                "guild_id": ctx.guild.id,
                 "guild_name": ctx.guild.name,
                 "icon": icon,
                 "mem_ids": [i.id for i in ctx.guild.members],
@@ -667,7 +665,6 @@ class Statistics(commands.Cog):
         else:
             banner = None
         data = {
-            "guild_id": ctx.guild.id,
             "guild_name": ctx.guild.name,
             "icon": icon,
             "mem_ids": [i.id for i in ctx.guild.members],

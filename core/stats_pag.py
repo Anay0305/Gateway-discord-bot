@@ -1,7 +1,6 @@
 import botinfo
 from discord.ext import commands
 import discord
-from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
 from datetime import datetime
 from io import BytesIO
 import requests

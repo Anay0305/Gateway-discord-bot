@@ -16,15 +16,12 @@ from ast import literal_eval
 from botinfo import *
 from PIL import Image, ImageDraw, ImageFont
 import requests
-import numpy as np
 from io import BytesIO
 import re
 import core.database as database
 import core.emojis as emojis
 import botinfo
 import asyncio
-from core.premium import check_upgraded
-from cogs.music import voiceortext, interface
 
 def identify_code_language(code):
     # Define regular expressions for common programming languages
@@ -587,41 +584,41 @@ class general(commands.Cog):
             else:
                 if user_columns['OWNER'] == 1:
                     bdg = f"{emojis.owner}"
-                    des.append(discord.PartialEmoji.from_str(bdg))
+                    des.append(bdg)
                 if user_columns['DEVELOPER'] == 1:
                     bdg = f"{emojis.dev}"
-                    des.append(discord.PartialEmoji.from_str(bdg))
+                    des.append(bdg)
                 if user_columns['ADMIN'] == 1:
                     bdg = f"{emojis.admin}"
-                    des.append(discord.PartialEmoji.from_str(bdg))
+                    des.append(bdg)
                 if user_columns['MOD'] == 1:
                     bdg = f"{emojis.mod}"
-                    des.append(discord.PartialEmoji.from_str(bdg))
+                    des.append(bdg)
                 if user_columns['STAFF'] == 1:
                     bdg = f"{emojis.staff}"
-                    des.append(discord.PartialEmoji.from_str(bdg))
+                    des.append(bdg)
                 if user_columns['PARTNER'] == 1:
                     bdg = f"{emojis.partner}"
-                    des.append(discord.PartialEmoji.from_str(bdg))
+                    des.append(bdg)
                 if user_columns['SUPPORTER'] == 1:
                     bdg = f"{emojis.early_sup}"
-                    des.append(discord.PartialEmoji.from_str(bdg))
+                    des.append(bdg)
                 if user_columns['SPECIAL'] == 1:
                     bdg = f"{emojis.hype}"
-                    des.append(discord.PartialEmoji.from_str(bdg))
-            balance = discord.PartialEmoji.from_str("<:balance:933685821092016158>")
-            bravery = discord.PartialEmoji.from_str("<:bravery:933685857582448671>")
-            brillance = discord.PartialEmoji.from_str("<:brillance:933685893024337980>")
-            bug_1 = discord.PartialEmoji.from_str("<:bug_hunter_1:933685410738085899>")
-            bug_2 = discord.PartialEmoji.from_str("<:bug_hunter_2:933685491486847036>")
-            early = discord.PartialEmoji.from_str("<:early_sup:933685551012397107>")
-            hype = discord.PartialEmoji.from_str("<a:hype:933685735905710080>")
-            partner = discord.PartialEmoji.from_str("<:partner:933685923567251517>")
-            staff = discord.PartialEmoji.from_str("<a:staff:933685961932558337>")
-            system = discord.PartialEmoji.from_str("<:system:933686023995682848>")
-            veri_bot = discord.PartialEmoji.from_str("<:verified_bot:933686190920564736>")
-            veri_dev = discord.PartialEmoji.from_str("<:verified_dev:933685666477379647>")
-            act_dev = discord.PartialEmoji.from_str("<:active_developer:1040478576581029928>")
+                    des.append(bdg)
+            balance = "<:balance:933685821092016158>"
+            bravery = "<:bravery:933685857582448671>"
+            brillance = "<:brillance:933685893024337980>"
+            bug_1 = "<:bug_hunter_1:933685410738085899>"
+            bug_2 = "<:bug_hunter_2:933685491486847036>"
+            early = "<:early_sup:933685551012397107>"
+            hype = "<a:hype:933685735905710080>"
+            partner = "<:partner:933685923567251517>"
+            staff = "<a:staff:933685961932558337>"
+            system = "<:system:933686023995682848>"
+            veri_bot = "<:verified_bot:933686190920564736>"
+            veri_dev = "<:verified_dev:933685666477379647>"
+            act_dev = "<:active_developer:1040478576581029928>"
             badge = []
             if member.public_flags.bug_hunter == True:
                 badge.append(bug_1)
@@ -704,7 +701,47 @@ class general(commands.Cog):
                 if i == mem.id:
                     break
                 u_count+=1
-            await profile(self.bot, ctx, mem, b_db, u_db, p_ls, init, des, badge, cmd_runned, u_count, title)
+            if u_db is None:
+                totaltime = 0
+                s_dic = {}
+                f_dic = {}
+                t_dic = {}
+            else:
+                totaltime = u_db['totaltime']
+                s_dic = literal_eval(u_db['server'])
+                f_dic = literal_eval(u_db['friend'])
+                t_dic = literal_eval(u_db['track'])
+            if b_db is None:
+                bf_dic = {}
+            else:
+                bf_dic = literal_eval(b_db['user'])
+            xd = {}
+            count = 0
+            for i in s_dic:
+                if count >= 5:
+                    break
+                count +=1
+                g = self.bot.get_guild(i)
+                if g is None:
+                    n = "Unknown Server"+f"{count}"
+                else:
+                    n = g.name+f"{count}"
+                xd[n] = s_dic[i]
+            s_dic = xd
+            xdd = []
+            count = 0
+            for i in f_dic:
+                if count >= 3:
+                    break
+                count +=1
+                g = await self.bot.fetch_user(i)
+                if g is None:
+                    n = "Unknown User"+f"{count}"
+                else:
+                    n = str(g)+f"{count}"
+                xdd[n] = f_dic[i]
+            f_dic = xdd
+            await profile(mem.display_avatar.url, mem.display_name, mem.id, bf_dic, totaltime, s_dic, f_dic, t_dic, p_ls, init, des, badge, cmd_runned, u_count, title)
 
     @profile.command(name="add", aliases=["a"], description="Gives the badge to user")
     async def badge_add(self, ctx, member: discord.User, *, badge):

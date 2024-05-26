@@ -12,9 +12,27 @@ import core.database as database
 import core.emojis as emojis
 import botinfo
 import wavelink
+import requests
+
 class owner(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.command()
+    @commands.is_owner()
+    async def api_up(self, ctx: commands.Context):
+        api_url = api_url+"git_pull"
+        try:
+            response = requests.get(api_url)
+
+            if response.status_code == 200:
+                await ctx.reply("Git pull command executed successfully.")
+                await ctx.reply(f"Output: ```{response.json()['output']}```")
+            else:
+                await ctx.reply(f"Error: {response.json()['error']}")
+
+        except requests.exceptions.RequestException as e:
+            await ctx.reply(f"Error: {e}")
 
     @commands.group(invoke_without_command=True)
     async def title(self, ctx):
