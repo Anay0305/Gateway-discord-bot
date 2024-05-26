@@ -97,6 +97,20 @@ class event(commands.Cog):
 
     @commands.Cog.listener()
     async def on_shard_ready(self, shard_id):
+        bot = self.bot
+        try:
+            await loadselfroles(bot)
+        except:
+            pass
+        try:
+            await loadgw(bot)
+        except:
+            pass
+        await bot.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.listening, name="/help"))
+        bot.add_view(ticketpanel(bot))
+        bot.add_view(ticketchannelpanel(bot))
+        bot.add_view(tickredel(bot))
+        bot.add_view(interface(bot))
         webhook = discord.SyncWebhook.from_url(webhook_shard_logs)
         webhook.send(f"Shard {shard_id} is Now ready", username=f"{str(self.bot.user)} | Shard Logs", avatar_url=self.bot.user.avatar.url)
 
@@ -116,6 +130,7 @@ class event(commands.Cog):
             await loadgw(bot)
         except:
             pass
+        await bot.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.listening, name="/help"))
         bot.add_view(ticketpanel(bot))
         bot.add_view(ticketchannelpanel(bot))
         bot.add_view(tickredel(bot))
