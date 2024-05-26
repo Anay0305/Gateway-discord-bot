@@ -557,7 +557,7 @@ class general(commands.Cog):
                     n = g.name+f"{count}"
                 xd[n] = s_dic[i]
             s_dic = xd
-            xdd = []
+            xdd = {}
             count = 0
             for i in f_dic:
                 if count >= 3:
