@@ -36,7 +36,7 @@ class owner(commands.Cog):
         except requests.exceptions.RequestException as e:
             await ctx.reply(f"Error: {e}")
     
-    @commands.command(aliases=["autopush", "autoup"])
+    @commands.command(aliases=["autopush", "autoup", "ap"])
     @commands.is_owner()
     async def autoupdate(self, ctx: commands.Context):
         try:
