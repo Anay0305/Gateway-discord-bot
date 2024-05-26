@@ -50,7 +50,8 @@ class owner(commands.Cog):
                     x = i
                     if i.replace(".", "/") in output:
                         ls.append(x)
-                        await self.bot.reload_extension(x)
+                for i in ls:
+                    await self.bot.reload_extension(i)
                 if len(ls) == 0:
                     ls.append("0")
                 await ctx.send(f"Reloaded {', '.join(ls)} cogs.")
