@@ -327,6 +327,8 @@ class StatPaginationView(discord.ui.View):
             'start_date': self.start_,
             'end_date': self.end_
         }
+        for i in file_data:
+            await ctx.send(f"{i}, {type({file_data[i]}")
         api_url = botinfo.api_url+"/leaderboard"
         payload = json.dumps(file_data)
 
