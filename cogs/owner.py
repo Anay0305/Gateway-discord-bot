@@ -4,6 +4,7 @@ import sqlite3
 import datetime
 from core.paginators import PaginationView
 from botinfo import *
+import botinfo
 import os
 from io import BytesIO
 from ast import literal_eval
@@ -22,7 +23,7 @@ class owner(commands.Cog):
     @commands.command()
     @commands.is_owner()
     async def api_up(self, ctx: commands.Context):
-        api_url = api_url+"git_pull"
+        api_url = botinfo.api_url+"git_pull"
         try:
             response = requests.get(api_url)
 
