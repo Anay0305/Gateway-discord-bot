@@ -6,128 +6,7 @@ from datetime import datetime
 from io import BytesIO
 import requests
 import asyncio
-
-def converttime(seconds):
-    time = int(seconds)
-    hour = time // 3600
-    time %= 3600
-    minutes = time // 60
-    time %= 60
-    seconds = time
-    ls = []
-    if hour != 0:
-        ls.append(f"{hour}hrs")
-    if minutes != 0:
-        ls.append(f"{minutes}mins")
-    if seconds != 0:
-        ls.append(f"{seconds}secs")
-    return ' '.join(ls)
-
-def lb_(icon, name, guild_id, banner, requester, mode:str, typee:str, data, current, total, start_date, end_date=None):
-    width = 960
-    height = 500
-    if end_date is None:
-        end_date = str(datetime.now().date())
-
-    if not banner:
-        with open("Images/bg.jpg", 'rb') as file:
-            image = Image.open(BytesIO(file.read())).convert("RGBA")
-            file.close()
-        image = image.resize((width,height))
-    else:
-        _res = requests.get(banner.url)
-        image = Image.open(BytesIO(_res.content)).convert("RGBA")
-        image = image.resize((width,height))
-        image = image.filter(ImageFilter.GaussianBlur(radius=2))
-        brightness_factor = 0.5
-        enhancer = ImageEnhance.Brightness(image)
-        image = enhancer.enhance(brightness_factor)
-    draw = ImageDraw.Draw(image)
-    with open("Images/mask.jpg", 'rb') as file:
-        imagee = Image.open(BytesIO(file.read())).convert("RGBA")
-        file.close()
-    imagee = imagee.resize((width,height))
-    image.paste(imagee, (0, 0), mask=imagee)
-    logo_res = requests.get(icon)
-    AVATAR_SIZE = 83
-    avatar_image = Image.open(BytesIO(logo_res.content)).convert("RGB")
-    avatar_image = avatar_image.resize((AVATAR_SIZE, AVATAR_SIZE)) #
-    border_radius = 23
-    mask = Image.new("L", (AVATAR_SIZE, AVATAR_SIZE), 0)
-    draw_mask = ImageDraw.Draw(mask)
-    draw_mask.rounded_rectangle((0, 0, AVATAR_SIZE, AVATAR_SIZE), radius=border_radius, fill=255)
-    image.paste(avatar_image, (53, 31), mask)
-    font = ImageFont.truetype('Fonts/Montserrat-Bold.ttf', 24)
-    n = name
-    while font.getlength(name) >= 415:
-      name = name[0:-1]
-    if n != name:
-      name = name[0:-2] + "..."
-    draw.text( (150, 42), f"{name}", fill="white", font=font)
-    draw.text( (150, 74), f"ID: {guild_id}", fill="white", font=font)
-    if start_date == end_date:
-        if start_date == str(datetime.now().date()):
-            hm = f"Today: {start_date}"
-        else:
-            hm = start_date
-    else:
-        hm = f"{start_date} to {end_date}"
-    if mode.lower() == "messages":
-        if typee.lower() == "users":
-            xd = "User Messages"
-        else:
-            xd = "Text Channels"
-    else:
-        if typee.lower() == "users":
-            xd = "Voice Users"
-        else:
-            xd = "Voice Channels"
-    font = ImageFont.truetype('Fonts/Montserrat-Bold.ttf', 21)
-    draw.text( (580, 42), f"{xd} LeaderBoard", fill="white", font=font)
-    font = ImageFont.truetype('Fonts/Montserrat-SemiBold.ttf', 21)
-    draw.text( (580, 74), hm, fill="white", font=font)
-    font = ImageFont.truetype('Fonts/Montserrat-SemiBold.ttf', 20)
-    draw.text( (45, 476), f"Requested By {str(requester)}", fill="white", font=font, anchor="lm")
-    font = ImageFont.truetype('Fonts/Montserrat-Bold.ttf', 20)
-    draw.text( (915, 476), f"Powered By Gateway", fill="white", font=font, anchor="rm")
-    font = ImageFont.truetype('Fonts/Montserrat-Medium.ttf', 18)
-    draw.text( (915, 14), f"Page {current}/{total}", fill="white", font=font, anchor="rm")
-    ls = [
-        139, 205, 271, 338, 404
-    ]
-    ls1 = [
-        139+26, 205+26, 271+26, 338+26, 404+26
-    ]
-    c = 0
-    for i in data:
-        c+=1
-        logo_res = requests.get(data[i][2])
-        AVATAR_SIZE = 52
-        avatar_image = Image.open(BytesIO(logo_res.content)).convert("RGB")
-        avatar_image = avatar_image.resize((int(AVATAR_SIZE), int(AVATAR_SIZE)))
-        mask = Image.new('L', (int(AVATAR_SIZE), int(AVATAR_SIZE)), 0)
-        circle_draw = ImageDraw.Draw(mask)
-        circle_draw.ellipse((0, 0, AVATAR_SIZE, AVATAR_SIZE), fill=255)
-        num_font = ImageFont.truetype('Fonts/Montserrat-Bold.ttf', 20)
-        font = ImageFont.truetype('Fonts/Montserrat-Medium.ttf', 18)
-        n = i
-        while font.getlength(n) >= 320 - num_font.getlength(f"{data[i][1]}. "):
-            n = n[0:-1]
-        if n != i:
-            n = n[0:-2] + "..."
-        if c % 2 != 0:
-            image.paste(avatar_image, (53, ls[int((c-1)/2)]), mask)
-            draw.text( (130, ls1[int((c-1)/2)]), f"{data[i][1]}. ", fill=(255,255,255), font=num_font, anchor="lm")
-            draw.text( (135 + num_font.getlength(f"{data[i][1]}. "), ls1[int((c-1)/2)]), f"{n}\n{data[i][0]}", fill=(255,255,255), font=font, anchor="lm")
-        else:
-            image.paste(avatar_image, (500, ls[int((c-1)/2)]), mask)
-            draw.text( (130+447, ls1[int((c-1)/2)]), f"{data[i][1]}. ", fill=(255,255,255), font=num_font, anchor="lm")
-            draw.text( (135+447 + num_font.getlength(f"{data[i][1]}. "), ls1[int((c-1)/2)]), f"{n}\n{data[i][0]}", fill=(255,255,255), font=font, anchor="lm")
-
-    with BytesIO() as image_binary:
-        image.save(image_binary, 'PNG')
-        image_binary.seek(0)
-        return discord.File(fp=image_binary, filename='profile.png')
+import json
 
 class PageChangeModal(discord.ui.Modal, title="Go to page"):
 
@@ -154,7 +33,34 @@ class PageChangeModal(discord.ui.Modal, title="Go to page"):
             )
         else:
             await interaction.message.edit(content="<a:loading:1215453200463958086>", attachments=[])
-            file = lb_(self.interface.icon, self.interface.ctx.guild.name, self.interface.ctx.guild.id, self.interface.ctx.guild.banner, self.interface.ctx.author, self.interface.mode, self.interface.typee, self.interface.file_list[self.interface.current], self.interface.current+1, len(self.interface.file_list), self.interface.start_, self.interface.end_)
+            file_data = {
+                'guild_icon': self.interface.icon,
+                'guild_name': self.interface.ctx.guild.name,
+                'guild_id': self.interface.ctx.guild.id,
+                'guild_banner': self.interface.ctx.guild.banner,
+                'requester': self.interface.ctx.author,
+                'mode': self.interface.mode,
+                'type': self.interface.typee,
+                'data': self.interface.file_list[self.interface.current],
+                'current': self.interface.current + 1,
+                'total': len(self.interface.file_list),
+                'start_date': self.interface.start_,
+                'end_date': self.interface.end_
+            }
+            api_url = botinfo.api_url+"/leaderboard"
+            payload = json.dumps(file_data)
+
+            headers = {
+                "Content-Type": "application/json"
+            }
+
+            response = requests.post(api_url, data=payload, headers=headers)
+
+            if response.status_code == 200:
+                file = discord.File(fp=BytesIO(response.content), filename='server_stats.png')
+            else:
+                await interaction.message.delete()
+                return await interaction.message.channel.send(f"Got some error while fetching the image.")
             await interaction.message.edit(content=None,
                 attachments=[file], view=self.interface
             )
@@ -205,7 +111,34 @@ class StatPaginationView(discord.ui.View):
         else:
             self.next.disabled = True
             self._last.disabled = True
-        file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.id, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
+        file_data = {
+            'guild_icon': self.icon,
+            'guild_name': self.ctx.guild.name,
+            'guild_id': self.ctx.guild.id,
+            'guild_banner': self.ctx.guild.banner,
+            'requester': self.ctx.author,
+            'mode': self.mode,
+            'type': self.typee,
+            'data': self.file_list[self.current],
+            'current': self.current + 1,
+            'total': len(self.file_list),
+            'start_date': self.start_,
+            'end_date': self.end_
+        }
+        api_url = botinfo.api_url+"/leaderboard"
+        payload = json.dumps(file_data)
+
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        response = requests.post(api_url, data=payload, headers=headers)
+
+        if response.status_code == 200:
+            file = discord.File(fp=BytesIO(response.content), filename='server_stats.png')
+        else:
+            await interaction.message.delete()
+            return await interaction.message.channel.send(f"Got some error while fetching the image.")
         await interaction.message.edit(content=None,
             attachments=[file], view=self
         )
@@ -236,7 +169,34 @@ class StatPaginationView(discord.ui.View):
             button.disabled = False
 
 
-        file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.id, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
+        file_data = {
+            'guild_icon': self.icon,
+            'guild_name': self.ctx.guild.name,
+            'guild_id': self.ctx.guild.id,
+            'guild_banner': self.ctx.guild.banner,
+            'requester': self.ctx.author,
+            'mode': self.mode,
+            'type': self.typee,
+            'data': self.file_list[self.current],
+            'current': self.current + 1,
+            'total': len(self.file_list),
+            'start_date': self.start_,
+            'end_date': self.end_
+        }
+        api_url = botinfo.api_url+"/leaderboard"
+        payload = json.dumps(file_data)
+
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        response = requests.post(api_url, data=payload, headers=headers)
+
+        if response.status_code == 200:
+            file = discord.File(fp=BytesIO(response.content), filename='server_stats.png')
+        else:
+            await interaction.message.delete()
+            return await interaction.message.channel.send(f"Got some error while fetching the image.")
         await interaction.message.edit(content=None,
             attachments=[file], view=self
         )
@@ -266,7 +226,34 @@ class StatPaginationView(discord.ui.View):
             self.previous.disabled = True
             self.first.disabled = True
 
-        file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.id, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
+        file_data = {
+            'guild_icon': self.icon,
+            'guild_name': self.ctx.guild.name,
+            'guild_id': self.ctx.guild.id,
+            'guild_banner': self.ctx.guild.banner,
+            'requester': self.ctx.author,
+            'mode': self.mode,
+            'type': self.typee,
+            'data': self.file_list[self.current],
+            'current': self.current + 1,
+            'total': len(self.file_list),
+            'start_date': self.start_,
+            'end_date': self.end_
+        }
+        api_url = botinfo.api_url+"/leaderboard"
+        payload = json.dumps(file_data)
+
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        response = requests.post(api_url, data=payload, headers=headers)
+
+        if response.status_code == 200:
+            file = discord.File(fp=BytesIO(response.content), filename='server_stats.png')
+        else:
+            await interaction.message.delete()
+            return await interaction.message.channel.send(f"Got some error while fetching the image.")
         await interaction.message.edit(content=None,
             attachments=[file], view=self
         )
@@ -286,7 +273,34 @@ class StatPaginationView(discord.ui.View):
             self.first.disabled = True
             self.previous.disabled = True
 
-        file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.id, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[self.current], self.current+1, len(self.file_list), self.start_, self.end_)
+        file_data = {
+            'guild_icon': self.icon,
+            'guild_name': self.ctx.guild.name,
+            'guild_id': self.ctx.guild.id,
+            'guild_banner': self.ctx.guild.banner,
+            'requester': self.ctx.author,
+            'mode': self.mode,
+            'type': self.typee,
+            'data': self.file_list[self.current],
+            'current': self.current + 1,
+            'total': len(self.file_list),
+            'start_date': self.start_,
+            'end_date': self.end_
+        }
+        api_url = botinfo.api_url+"/leaderboard"
+        payload = json.dumps(file_data)
+
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        response = requests.post(api_url, data=payload, headers=headers)
+
+        if response.status_code == 200:
+            file = discord.File(fp=BytesIO(response.content), filename='server_stats.png')
+        else:
+            await interaction.message.delete()
+            return await interaction.message.channel.send(f"Got some error while fetching the image.")
         await interaction.message.edit(content=None,
             attachments=[file], view=self
         )
@@ -299,7 +313,34 @@ class StatPaginationView(discord.ui.View):
     async def start(self, ctx: commands.Context, interaction: discord.Interaction=None, message: discord.Message=None):
         if message:
             await message.edit(content="<a:loading:1215453200463958086>", attachments=[])
-        file = lb_(self.icon, self.ctx.guild.name, self.ctx.guild.id, self.ctx.guild.banner, self.ctx.author, self.mode, self.typee, self.file_list[0], self.current+1, len(self.file_list), self.start_, self.end_)
+        file_data = {
+            'guild_icon': self.icon,
+            'guild_name': self.ctx.guild.name,
+            'guild_id': self.ctx.guild.id,
+            'guild_banner': self.ctx.guild.banner,
+            'requester': self.ctx.author,
+            'mode': self.mode,
+            'type': self.typee,
+            'data': self.file_list[0],
+            'current': self.current + 1,
+            'total': len(self.file_list),
+            'start_date': self.start_,
+            'end_date': self.end_
+        }
+        api_url = botinfo.api_url+"/leaderboard"
+        payload = json.dumps(file_data)
+
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        response = requests.post(api_url, data=payload, headers=headers)
+
+        if response.status_code == 200:
+            file = discord.File(fp=BytesIO(response.content), filename='server_stats.png')
+        else:
+            await interaction.message.delete()
+            return await interaction.message.channel.send(f"Got some error while fetching the image.")
         if len(self.file_list) != 1:
             if message is not None:
                 self.first.row = 1

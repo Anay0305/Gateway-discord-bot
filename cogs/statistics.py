@@ -4,6 +4,7 @@ import core.database as database
 import core.emojis as emojis
 import botinfo
 import requests
+import json
 import typing
 from core.voice_db import *
 from discord.ext import commands
@@ -213,147 +214,6 @@ def getdata(guild_id):
     }
     return final
 
-async def server_top(bot_icon, guild:discord.Guild):
-    width = 1033
-    height = 502
-    data = getdata(guild.id)
-    banner = guild.banner
-    if not banner:
-        with open("Images/bg.jpg", 'rb') as file:
-            image = Image.open(BytesIO(file.read())).convert("RGBA")
-            file.close()
-        image = image.resize((width,height))
-    else:
-        _res = requests.get(banner.url)
-        image = Image.open(BytesIO(_res.content)).convert("RGBA")
-        image = image.resize((width,height))
-        image = image.filter(ImageFilter.GaussianBlur(radius=2))
-        brightness_factor = 0.5
-        enhancer = ImageEnhance.Brightness(image)
-        image = enhancer.enhance(brightness_factor)
-    draw = ImageDraw.Draw(image)
-    with open("Images/server_stats_mask.png", 'rb') as file:
-        imagee = Image.open(BytesIO(file.read())).convert("RGBA")
-        file.close()
-    imagee = imagee.resize((width,height))
-    image.paste(imagee, (0, 0), mask=imagee)
-    if guild.icon:
-        icon = guild.icon.url
-    else:
-        icon = bot_icon
-    logo_res = requests.get(icon)
-    AVATAR_SIZE = 72
-    avatar_image = Image.open(BytesIO(logo_res.content)).convert("RGB")
-    avatar_image = avatar_image.resize((AVATAR_SIZE, AVATAR_SIZE)) #
-    border_radius = 20
-    mask = Image.new("L", (AVATAR_SIZE, AVATAR_SIZE), 0)
-    draw_mask = ImageDraw.Draw(mask)
-    draw_mask.rounded_rectangle((0, 0, AVATAR_SIZE, AVATAR_SIZE), radius=border_radius, fill=255)
-    image.paste(avatar_image, (18, 23), mask)
-    font = ImageFont.truetype('Fonts/Montserrat-Bold.ttf', 26)
-    name = guild.name
-    n = name
-    while font.getlength(name) >= 415:
-      name = name[0:-1]
-    if n != name:
-      name = name[0:-2] + "..."
-    draw.text( (105, 46), f"{name}", fill="white", font=font, anchor="lm")
-    font = ImageFont.truetype('Fonts/Montserrat-Regular.ttf', 17)
-    font = ImageFont.truetype('Fonts/Montserrat-MediumItalic.ttf', 16)
-    draw.text( (888, 66), f"Server Lookback Last {data['lookback']} days\n~ TimeZone: UTC", fill="white", font=font, anchor="mm")
-    font = ImageFont.truetype('Fonts/Montserrat-SemiBold.ttf', 24)
-    x_cords = [60, 399, 736]
-    x_cords1 = [100, 438, 776]
-    y_cords = [166, 210, 254]
-    font1 = ImageFont.truetype('Fonts/Montserrat-Medium.ttf', 22)
-    msgs = data['messages']
-    while len(msgs) < 3:
-        msgs.append(msgs[-1])
-    coun = 0
-    for i in msgs:
-        draw.text( (x_cords[0], y_cords[coun]), f"{i[0]}d", fill="white", font=font, anchor="mm")
-        draw.text( (x_cords1[0], y_cords[coun]), f"{i[1]} Messages", fill="white", font=font1, anchor="lm")
-        coun +=1
-    voice = data['voice']
-    if len(voice) == 0:
-        for i in msgs:
-            voice.append((i, "0 hours"))
-    else:
-        while len(voice) < 3:
-            voice.append(voice[-1])
-    coun = 0
-    for i in voice:
-        print(i)
-        draw.text( (x_cords[1], y_cords[coun]), f"{i[0]}d", fill="white", font=font, anchor="mm")
-        if i[1] == "":
-            draw.text( (x_cords1[1], y_cords[coun]), f"0 hours", fill="white", font=font1, anchor="lm")
-        else:
-            draw.text( (x_cords1[1], y_cords[coun]), f"{i[1]}", fill="white", font=font1, anchor="lm")
-        coun +=1
-    contri = data['contributors']
-    while len(contri) < 3:
-        contri.append(contri[-1])
-    coun = 0
-    for i in contri:
-        draw.text( (x_cords[2], y_cords[coun]), f"{i[0]}d", fill="white", font=font, anchor="mm")
-        draw.text( (x_cords1[2], y_cords[coun]), f"{i[1]} Members", fill="white", font=font1, anchor="lm")
-        coun +=1
-    font = ImageFont.truetype('Fonts/Montserrat-Medium.ttf', 22)
-    name_font = ImageFont.truetype('Fonts/Montserrat-MediumItalic.ttf', 24)
-    mem_ids = [i.id for i in guild.members]
-    chan_ids = [i.id for i in guild.channels]
-    for i in data['top_member_text']:
-        if i[0] in mem_ids:
-            name = i[1]['display_name']
-            n = name
-            while name_font.getlength(name) >= 140:
-                name = name[0:-1]
-            if n != name:
-                name = name[0:-2] + "..."
-            draw.text( (164, 372), f"{name}", fill="white", font=name_font, anchor="mm")
-            draw.text( (248, 372), f"{i[1]['count']} Messages", fill="white", font=font, anchor="lm")
-            break
-    for i in data['top_member_vc']:
-        if i[0] in mem_ids:
-            print(i)
-            name = i[1]['display_name']
-            n = name
-            while name_font.getlength(name) >= 140:
-                name = name[0:-1]
-            if n != name:
-                name = name[0:-2] + "..."
-            draw.text( (164, 438), f"{name}", fill="white", font=name_font, anchor="mm")
-            draw.text( (248, 438), f"{converttime1(i[1]['time'])}", fill="white", font=font, anchor="lm")
-            break
-    for i in data['top_channel_text']:
-        if i[0] in chan_ids:
-            name = i[1]['name']
-            n = name
-            while name_font.getlength(name) >= 128:
-                name = name[0:-1]
-            if n != name:
-                name = name[0:-2] + "..."
-            draw.text( (666, 372), f"{name}", fill="white", font=name_font, anchor="mm")
-            draw.text( (740, 372), f"{i[1]['count']} Messages", fill="white", font=font, anchor="lm")
-            break
-    for i in data['top_channel_vc']:
-        if i[0] in chan_ids:
-            print(i)
-            name = i[1]['name']
-            n = name
-            while name_font.getlength(name) >= 128:
-                name = name[0:-1]
-            if n != name:
-                name = name[0:-2] + "..."
-            draw.text( (666, 438), f"{name}", fill="white", font=name_font, anchor="mm")
-            draw.text( (740, 438), f"{converttime1(i[1]['time'])}", fill="white", font=font, anchor="lm")
-            break
-    
-    with BytesIO() as image_binary:
-        image.save(image_binary, 'PNG')
-        image_binary.seek(0)
-        return discord.File(fp=image_binary, filename='server_stats.png')
-
 def check_bl_channel(channel: typing.Union[discord.TextChannel, discord.VoiceChannel, None]):
     if isinstance(channel, discord.TextChannel):
         msg_db = database.fetchone("*", "messages_db", "guild_id", channel.guild.id)
@@ -406,7 +266,37 @@ class SelectView(discord.ui.Select):
         if self.values[0] == "home":
             await interaction.message.edit(content="<a:loading:1215453200463958086>")
             view = View(self.bot, ctx)
-            file = await server_top(self.bot.user.display_avatar.url, ctx.guild)
+            api_url = botinfo.api_url+"/server_top"
+            if ctx.guild.icon:
+                icon = ctx.guild.icon.url
+            else:
+                icon = self.bot.user.display_avatar.url
+            if ctx.guild.banner:
+                banner = ctx.guild.banner.url
+            else:
+                banner = None
+            data = {
+                "guild_id": ctx.guild.id,
+                "guild_name": ctx.guild.name,
+                "icon": icon,
+                "mem_ids": [i.id for i in ctx.guild.members],
+                "chan_ids": [i.id for i in ctx.guild.channels],
+                "data": getdata(ctx.guild.id),
+                "guild_banner": banner
+            }
+            payload = json.dumps(data)
+
+            headers = {
+                "Content-Type": "application/json"
+            }
+
+            response = requests.post(api_url, data=payload, headers=headers)
+
+            if response.status_code == 200:
+                file = discord.File(fp=BytesIO(response.content), filename='server_stats.png')
+            else:
+                await interaction.message.delete()
+                return await ctx.send(f"Got some error while fetching the image.")
             await interaction.message.edit(content=None, attachments=[file], view=view)
             return
         elif self.values[0] == "memtext":
@@ -767,7 +657,34 @@ class Statistics(commands.Cog):
     @statistics.command(aliases=['s', 'sv'], description="Shows the server's activity statistics")
     async def server(self, ctx: commands.Context):
         view = View(self.bot, ctx)
-        file = await server_top(self.bot.user.display_avatar.url, ctx.guild)
+        api_url = botinfo.api_url+"/server_top"
+        if ctx.guild.icon:
+            icon = ctx.guild.icon.url
+        else:
+            icon = self.bot.user.display_avatar.url
+        if ctx.guild.banner:
+            banner = ctx.guild.banner.url
+        else:
+            banner = None
+        data = {
+            "guild_id": ctx.guild.id,
+            "guild_name": ctx.guild.name,
+            "icon": icon,
+            "mem_ids": [i.id for i in ctx.guild.members],
+            "chan_ids": [i.id for i in ctx.guild.channels],
+            "data": getdata(ctx.guild.id),
+            "guild_banner": banner
+        }
+        payload = json.dumps(data)
+
+        headers = {
+            "Content-Type": "application/json"
+        }
+        response = requests.post(api_url, data=payload, headers=headers)
+        if response.status_code == 200:
+            file = discord.File(fp=BytesIO(response.content), filename='server_stats.png')
+        else:
+            return await ctx.send(f"Got some error while fetching the image.")
         await ctx.send(file=file, view=view)
         await view.wait()
     
