@@ -47,9 +47,10 @@ class owner(commands.Cog):
                 await ctx.send("Git pull command executed successfully.")
                 count = 0
                 for i in self.bot.extensions:
+                    x = i
                     if i.replace(".", "/") in output:
                         count+=1
-                        self.bot.reload_extension(i)
+                        self.bot.reload_extension(x)
                 await ctx.send(f"Reloaded {count} cogs.")
             else:
                 error_message = result.stderr
