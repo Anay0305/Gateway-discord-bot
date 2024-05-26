@@ -22,6 +22,7 @@ import core.database as database
 import core.emojis as emojis
 import botinfo
 import asyncio
+import json
 
 def identify_code_language(code):
     # Define regular expressions for common programming languages
@@ -570,7 +571,6 @@ class general(commands.Cog):
     )
     async def profile(self, ctx, member: discord.Member = None):
             member = member or ctx.author
-            init = await ctx.reply(f"Building up the profile of {str(member)}...", mention_author=False)
             query = "SELECT * FROM  badges WHERE user_id = ?"
             val = (member.id,)
             with sqlite3.connect('./database.sqlite3') as db:
@@ -741,7 +741,37 @@ class general(commands.Cog):
                     n = str(g)+f"{count}"
                 xdd[n] = f_dic[i]
             f_dic = xdd
-            await profile(mem.display_avatar.url, mem.display_name, mem.id, bf_dic, totaltime, s_dic, f_dic, t_dic, p_ls, init, des, badge, cmd_runned, u_count, title)
+            data = {
+                "pfp": mem.display_avatar.url,
+                "user_name": mem.display_name,
+                "user_id": mem.id,
+                "bf_dic": bf_dic,
+                "totaltime": totaltime,
+                "s_dic": s_dic,
+                "f_dic": f_dic,
+                "t_dic": t_dic,
+                "p_ls": p_ls,
+                "bot_bdg": des,
+                "user_bdg": badge,
+                "total_cmd": cmd_runned,
+                "user_rank": u_count,
+                "title": title
+            }
+            api_url = botinfo.api_url+"/profile"
+            payload = json.dumps(data)
+
+            headers = {
+                "Content-Type": "application/json"
+            }
+
+            response = requests.post(api_url, data=payload, headers=headers)
+
+            if response.status_code == 200:
+                file = discord.File(fp=BytesIO(response.content), filename='server_stats.png')
+            else:
+                return await ctx.send(f"Got some error while fetching the image.")
+            await ctx.send(file=file)
+            return
 
     @profile.command(name="add", aliases=["a"], description="Gives the badge to user")
     async def badge_add(self, ctx, member: discord.User, *, badge):
