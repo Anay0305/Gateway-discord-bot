@@ -33,11 +33,15 @@ class PageChangeModal(discord.ui.Modal, title="Go to page"):
             )
         else:
             await interaction.message.edit(content="<a:loading:1215453200463958086>", attachments=[])
+            if self.interface.ctx.guild.banner:
+                banner = self.interface.ctx.guild.banner.url
+            else:
+                banner = None
             file_data = {
                 'guild_icon': self.interface.icon,
                 'guild_name': self.interface.ctx.guild.name,
                 'guild_id': self.interface.ctx.guild.id,
-                'guild_banner': self.interface.ctx.guild.banner,
+                'guild_banner': banner,
                 'requester': self.interface.ctx.author.display_name,
                 'mode': self.interface.mode,
                 'type': self.interface.typee,
@@ -111,11 +115,15 @@ class StatPaginationView(discord.ui.View):
         else:
             self.next.disabled = True
             self._last.disabled = True
+        if self.ctx.guild.banner:
+            banner = self.ctx.guild.banner.url
+        else:
+            banner = None
         file_data = {
             'guild_icon': self.icon,
             'guild_name': self.ctx.guild.name,
             'guild_id': self.ctx.guild.id,
-            'guild_banner': self.ctx.guild.banner,
+            'guild_banner': banner,
             'requester': self.ctx.author.display_name,
             'mode': self.mode,
             'type': self.typee,
@@ -168,12 +176,15 @@ class StatPaginationView(discord.ui.View):
             self.first.disabled = False
             button.disabled = False
 
-
+        if self.ctx.guild.banner:
+            banner = self.ctx.guild.banner.url
+        else:
+            banner = None
         file_data = {
             'guild_icon': self.icon,
             'guild_name': self.ctx.guild.name,
             'guild_id': self.ctx.guild.id,
-            'guild_banner': self.ctx.guild.banner,
+            'guild_banner': banner,
             'requester': self.ctx.author.display_name,
             'mode': self.mode,
             'type': self.typee,
@@ -226,11 +237,15 @@ class StatPaginationView(discord.ui.View):
             self.previous.disabled = True
             self.first.disabled = True
 
+        if self.ctx.guild.banner:
+            banner = self.ctx.guild.banner.url
+        else:
+            banner = None
         file_data = {
             'guild_icon': self.icon,
             'guild_name': self.ctx.guild.name,
             'guild_id': self.ctx.guild.id,
-            'guild_banner': self.ctx.guild.banner,
+            'guild_banner': banner,
             'requester': self.ctx.author.display_name,
             'mode': self.mode,
             'type': self.typee,
@@ -273,11 +288,15 @@ class StatPaginationView(discord.ui.View):
             self.first.disabled = True
             self.previous.disabled = True
 
+        if self.ctx.guild.banner:
+            banner = self.ctx.guild.banner.url
+        else:
+            banner = None
         file_data = {
             'guild_icon': self.icon,
             'guild_name': self.ctx.guild.name,
             'guild_id': self.ctx.guild.id,
-            'guild_banner': self.ctx.guild.banner,
+            'guild_banner': banner,
             'requester': self.ctx.author.display_name,
             'mode': self.mode,
             'type': self.typee,
@@ -313,11 +332,16 @@ class StatPaginationView(discord.ui.View):
     async def start(self, ctx: commands.Context, interaction: discord.Interaction=None, message: discord.Message=None):
         if message:
             await message.edit(content="<a:loading:1215453200463958086>", attachments=[])
+        
+        if self.ctx.guild.banner:
+            banner = self.ctx.guild.banner.url
+        else:
+            banner = None
         file_data = {
             'guild_icon': self.icon,
             'guild_name': self.ctx.guild.name,
             'guild_id': self.ctx.guild.id,
-            'guild_banner': self.ctx.guild.banner,
+            'guild_banner': banner,
             'requester': self.ctx.author.display_name,
             'mode': self.mode,
             'type': self.typee,
