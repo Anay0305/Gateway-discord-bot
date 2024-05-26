@@ -72,7 +72,7 @@ async def get_pre(bot, ctx):
 intents = discord.Intents.all()
 class Bot(commands.AutoShardedBot):
     def __init__(self, get_pre, intents) -> None:
-        super().__init__(command_prefix = get_pre, case_insensitive=True, intents=intents)
+        super().__init__(command_prefix = get_pre, case_insensitive=True, intents=intents, shard_count=2)
 
     async def setup_hook(self) -> None:
         nodes: list[wavelink.Node] = [wavelink.Node(uri=botinfo.wavelink_uri, password=botinfo.wavelink_pass)]
