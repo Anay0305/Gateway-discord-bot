@@ -741,11 +741,19 @@ class general(commands.Cog):
                     n = str(g)+f"{count}"
                 xdd[n] = f_dic[i]
             f_dic = xdd
+            count = 1
+            for i in bf_dic:
+                if mem.id == i:
+                    break
+                count +=1
+            if mem.id not in bf_dic:
+                xx = "Null"
+            else:
+                xx = f"#{count}"
             data = {
                 "pfp": mem.display_avatar.url,
                 "user_name": mem.display_name,
-                "user_id": mem.id,
-                "bf_dic": bf_dic,
+                "m_rank": xx,
                 "totaltime": totaltime,
                 "s_dic": s_dic,
                 "f_dic": f_dic,
