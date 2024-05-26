@@ -742,6 +742,7 @@ class general(commands.Cog):
                 xdd[n] = f_dic[i]
             f_dic = xdd
             count = 1
+            await ctx.send(bf_dic)
             for i in bf_dic:
                 if mem.id == i:
                     break
