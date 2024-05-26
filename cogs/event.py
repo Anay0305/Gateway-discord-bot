@@ -1,5 +1,5 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 import sqlite3
 from ast import literal_eval
 from botinfo import *
@@ -11,10 +11,12 @@ import core.database as database
 import core.emojis as emojis
 from cogs.music import interface
 from core.premium import check_upgraded
+from io import BytesIO
 import wavelink
 import asyncio
 import core.voice_db as voice_db
 import datetime
+import os
 
 async def loadmsetup(bot: commands.AutoShardedBot):
     msetup_db = database.fetchall1("*", "setup")
@@ -70,7 +72,29 @@ async def loadgw(bot: commands.AutoShardedBot):
 class event(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        
+    
+    @tasks.loop(minutes=5)
+    async def back(self):
+        database = []
+        for filename in os.listdir():
+            if filename.endswith('.sqlite3'):
+                database.append(filename)
+        g = discord.utils.get(self.bot.guilds, id=1036594185442177055)
+        x = discord.utils.get(g.categories, id=1036621345905188894)
+        for i in database:
+            c=discord.utils.get(g.channels, name=f"{i[:-8]}")
+            if c is None:
+                c=await g.create_text_channel(name=f"{i[:-8]}", category=x)
+                webhook = await c.create_webhook(name=f"{i[:-8]}")
+            else:
+                ls = await c.webhooks()
+                if len(ls) == 0:
+                    webhook = await c.create_webhook(name=f"{i[:-8]}")
+                else:
+                    webhook = ls[0]
+            with open(i, 'rb') as f:
+                await webhook.send(f"Time for backup - {datetime.datetime.now()}", file=discord.File(BytesIO(f.read()), i), username=f"{str(self.bot.user)} | {i[:-8]} Backup", avatar_url=self.bot.user.avatar.url)
+
     @commands.Cog.listener()
     async def on_shard_ready(self, shard_id):
         webhook = discord.SyncWebhook.from_url(webhook_shard_logs)

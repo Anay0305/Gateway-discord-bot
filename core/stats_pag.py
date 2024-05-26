@@ -363,7 +363,6 @@ class StatPaginationView(discord.ui.View):
         if response.status_code == 200:
             file = discord.File(fp=BytesIO(response.content), filename='server_stats.png')
         else:
-            await interaction.message.delete()
             return await interaction.message.channel.send(f"Got some error while fetching the image.")
         if len(self.file_list) != 1:
             if message is not None:

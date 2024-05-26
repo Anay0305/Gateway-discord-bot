@@ -678,7 +678,11 @@ class owner(commands.Cog):
                 c=await g.create_text_channel(name=f"{i[:-8]}", category=x)
                 webhook = await c.create_webhook(name=f"{i[:-8]}")
             else:
-                webhook = await c.create_webhook(name=f"{i[:-8]}")
+                ls = await c.webhooks()
+                if len(ls) == 0:
+                    webhook = await c.create_webhook(name=f"{i[:-8]}")
+                else:
+                    webhook = ls[0]
             with open(i, 'rb') as f:
                 await webhook.send(f"Instant backup by {str(ctx.author)} - {ctx.author.id}\nTime for backup - {datetime.datetime.now()}", file=discord.File(BytesIO(f.read()), i), username=f"{str(self.bot.user)} | {i[:-8]} Backup", avatar_url=self.bot.user.avatar.url)
         await ctx.message.add_reaction("✅")
