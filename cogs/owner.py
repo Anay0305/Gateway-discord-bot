@@ -27,8 +27,8 @@ class owner(commands.Cog):
             response = requests.get(api_url)
 
             if response.status_code == 200:
-                await ctx.reply("Git pull command executed successfully.")
-                await ctx.reply(f"Output: ```{response.json()['output']}```")
+                await ctx.send("Git pull command executed successfully.")
+                await ctx.send(f"Output: ```{response.json()['output']}```")
             else:
                 await ctx.reply(f"Error: {response.json()['error']}")
 
@@ -43,13 +43,13 @@ class owner(commands.Cog):
             
             if result.returncode == 0:
                 output = result.stdout
-                await ctx.reply("Git pull command executed successfully.")
+                await ctx.send("Git pull command executed successfully.")
                 count = 0
                 for i in self.bot.extensions:
                     if i.replace(".", "/") in output:
                         count+=1
                         self.bot.reload_extension(i)
-                await ctx.reply(f"Reloaded {count} cogs.")
+                await ctx.send(f"Reloaded {count} cogs.")
             else:
                 error_message = result.stderr
                 await ctx.reply(f"Error: {error_message}")
