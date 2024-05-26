@@ -11,7 +11,7 @@ from typing import Union
 import core.database as database
 import core.emojis as emojis
 import botinfo
-
+import wavelink
 class owner(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -232,9 +232,9 @@ class owner(commands.Cog):
             cc = 0
             for guild in self.bot.guilds:
                 if guild.shard_id == id:
-                    if self.bot.wavelink.get_player(guild):
+                    if wavelink.Pool.get_node().get_player(guild.id):
                         c += 1
-                        if self.bot.wavelink.get_player(guild).is_playing():
+                        if wavelink.Pool.get_node().get_player(guild.id).playing:
                             cc += 1
             em = discord.Embed(color=botinfo.root_color)
             em.title = "Shards information"
