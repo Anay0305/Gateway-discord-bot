@@ -45,13 +45,13 @@ class owner(commands.Cog):
             if result.returncode == 0:
                 output = result.stdout
                 await ctx.send("Git pull command executed successfully.")
-                count = 0
+                ls = []
                 for i in self.bot.extensions:
                     x = i
                     if i.replace(".", "/") in output:
-                        count+=1
-                        self.bot.reload_extension(x)
-                await ctx.send(f"Reloaded {count} cogs.")
+                        ls.append(x)
+                        await self.bot.reload_extension(x)
+                await ctx.send(f"Reloaded {', '.join(ls)} cogs.")
             else:
                 error_message = result.stderr
                 await ctx.reply(f"Error: {error_message}")
