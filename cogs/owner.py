@@ -51,6 +51,8 @@ class owner(commands.Cog):
                     if i.replace(".", "/") in output:
                         ls.append(x)
                         await self.bot.reload_extension(x)
+                if len(ls) == 0:
+                    ls.append(0)
                 await ctx.send(f"Reloaded {', '.join(ls)} cogs.")
             else:
                 error_message = result.stderr
