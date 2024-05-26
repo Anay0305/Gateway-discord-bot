@@ -126,6 +126,7 @@ class event(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         bot = self.bot
+        self.back.start()
         await bot.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.listening, name="/help"))
         t = round(datetime.datetime.now().timestamp())
         with sqlite3.connect('./database.sqlite3') as db:
