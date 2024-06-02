@@ -942,6 +942,7 @@ class music(commands.Cog):
                 await msg.edit(view=None)
         except:
             pass
+        await self.bot.main_owner.send(payload.reason)
         if payload.reason == "stopped" and payload.player.autoplay.value == 2:
             await stoppanel(self.bot, player)
             return
