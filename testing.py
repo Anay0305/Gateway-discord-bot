@@ -86,6 +86,6 @@ def profile(icon, name, guild_id, banner, requester, mode:str, typee:str, data, 
     image.save('Images/server_stats_mask.png')
 
 ds = {
-    "anayyy.dev | Anayyy": ["1 Message", 1, "https://cdn.discordapp.com/avatars/1141685323299045517/85bc43428128db92ceb8f75f97ee8d82.png?size=1024"]
+    "anayyy.dev | Anayyy": ["1 Message", 1, "https://cdn.discordapp.com/avatars/979353019235840000/85bc43428128db92ceb8f75f97ee8d82.png?size=1024"]
 }
 profile("https://cdn.discordapp.com/icons/1183413203376554054/a_848ecf62181c3aa03650559ccbd8207d.png?size=1024", "Snaps", 1183413203376554054, "https://cdn.discordapp.com/banners/1183413203376554054/a_6925a0196db10b73adbf469efa88622a.png?size=1024", "Anay", "messages", "users", ds, 1, 10, "2024-05-22")

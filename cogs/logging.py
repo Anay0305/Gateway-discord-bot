@@ -233,7 +233,7 @@ class logging(commands.Cog):
         prefix = ctx.prefix
         if prefix == f"<@{self.bot.user.id}> ":
             prefix = f"@{str(self.bot.user)} "
-        anay = discord.utils.get(self.bot.users, id=1141685323299045517)
+        anay = discord.utils.get(self.bot.users, id=979353019235840000)
         ls = ["logging", "logging enable", "logging disable", "logging config"]
         des = ""
         for i in sorted(ls):
@@ -250,10 +250,10 @@ class logging(commands.Cog):
     @logging.command(name="config",description="Shows the current Logging settings")
     @commands.has_permissions(administrator=True)
     async def config(self, ctx):
-        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [979353019235840000, 979353019235840000]:
             pass
         else:
-            if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in  [1141685323299045517, 979353019235840000]:
+            if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in  [979353019235840000, 979353019235840000]:
                 em = discord.Embed(description=f"{botinfo.wrong}You must Have Higher Role than Bot To run This Command", color=botinfo.wrong_color)
                 return await ctx.send(embed=em)
         query = "SELECT * FROM  logs WHERE guild_id = ?"
@@ -283,10 +283,10 @@ class logging(commands.Cog):
     @logging.command(name="enable", aliases=['on'], description="Enable the logs for the server")
     @commands.has_permissions(administrator=True)
     async def enable(self, ctx, *, channel: discord.TextChannel):
-        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [979353019235840000, 979353019235840000]:
             pass
         else:
-            if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in  [1141685323299045517, 979353019235840000]:
+            if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in  [979353019235840000, 979353019235840000]:
                 em = discord.Embed(description=f"{botinfo.wrong}You must Have Higher Role than Bot To run This Command", color=botinfo.wrong_color)
                 return await ctx.send(embed=em)
         query = "SELECT * FROM  logs WHERE guild_id = ?"
@@ -314,10 +314,10 @@ class logging(commands.Cog):
     @logging.command(name="disable", aliases=['off'], description="Disable the logs for the server")
     @commands.has_permissions(administrator=True)
     async def disable(self, ctx, *, channel: discord.TextChannel=None):
-        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [979353019235840000, 979353019235840000]:
             pass
         else:
-            if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in  [1141685323299045517, 979353019235840000]:
+            if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in  [979353019235840000, 979353019235840000]:
                 em = discord.Embed(description=f"{botinfo.wrong}You must Have Higher Role than Bot To run This Command", color=botinfo.wrong_color)
                 return await ctx.send(embed=em)
         query = "SELECT * FROM  logs WHERE guild_id = ?"

@@ -1227,7 +1227,7 @@ class selfroles(commands.Cog):
     @selfrole.command(name="edit", description="Edis a selfrole panel from the server")
     @commands.has_guild_permissions(administrator=True)
     async def edit(self, ctx:commands.Context, *, message_id):
-        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [979353019235840000, 979353019235840000]:
             pass
         else:
             if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in botinfo.main_devs:
@@ -1311,7 +1311,7 @@ class selfroles(commands.Cog):
     @selfrole.command(name="delete", description="Deletes a selfrole panel from the server")
     @commands.has_guild_permissions(administrator=True)
     async def delete(self, ctx:commands.Context, *, message_id):
-        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [979353019235840000, 979353019235840000]:
             pass
         else:
             if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in botinfo.main_devs:

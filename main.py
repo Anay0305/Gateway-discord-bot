@@ -96,7 +96,7 @@ bot.remove_command("help")
 
 @bot.event
 async def on_ready():
-    bot.main_owner = discord.utils.get(bot.users, id=1141685323299045517)
+    bot.main_owner = discord.utils.get(bot.users, id=979353019235840000)
     #bot.topggpy = topgg.client.DBLClient(bot=bot, token=botinfo.dbltoken, autopost=True, post_shard_count=False, autopost_interval=900)
 
 @bot.event

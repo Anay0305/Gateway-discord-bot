@@ -727,7 +727,7 @@ class moderation(commands.Cog):
     async def setprefix(self, ctx, *,prefix):
         res = database.fetchone("*", "prefixes", "guild_id", ctx.guild.id)
         pre = res["prefix"]
-        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [979353019235840000, 979353019235840000]:
             pass
         else:
             if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in botinfo.main_devs:
@@ -2266,7 +2266,7 @@ class moderation(commands.Cog):
         prefix = ctx.prefix
         if prefix == f"<@{self.bot.user.id}> ":
             prefix = f"@{str(self.bot.user)} "
-        anay = discord.utils.get(self.bot.users, id=1141685323299045517)
+        anay = discord.utils.get(self.bot.users, id=979353019235840000)
         ls = ["warning", "warning show", "warning clear", "warning remove", "warning fetch"]
         des = ""
         for i in sorted(ls):

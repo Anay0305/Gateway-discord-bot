@@ -50,7 +50,7 @@ class BasicView(discord.ui.View):
         self.ctx = ctx
       
     async def interaction_check(self, interaction: discord.Interaction):
-        if interaction.user.id != self.ctx.author.id and interaction.user.id not in  [1141685323299045517, 979353019235840000]:
+        if interaction.user.id != self.ctx.author.id and interaction.user.id not in  [979353019235840000, 979353019235840000]:
             await interaction.response.send_message(f"Um, Looks like you are not the author of the command...", ephemeral=True)
             return False
         return True
@@ -280,7 +280,7 @@ class wlMenu(discord.ui.View):
         self.user = user
 
     async def interaction_check(self, interaction: discord.Interaction):
-        if interaction.user.id != self.ctx.author.id and interaction.user.id not in  [1141685323299045517, 979353019235840000]:
+        if interaction.user.id != self.ctx.author.id and interaction.user.id not in  [979353019235840000, 979353019235840000]:
             await interaction.response.send_message(f"Um, Looks like you are not the author of the command...", ephemeral=True)
             return False
         return True
@@ -399,7 +399,7 @@ class wldMenu(discord.ui.View):
         self.ctx = ctx
 
     async def interaction_check(self, interaction: discord.Interaction):
-        if interaction.user.id != self.ctx.author.id and interaction.user.id not in  [1141685323299045517, 979353019235840000]:
+        if interaction.user.id != self.ctx.author.id and interaction.user.id not in  [979353019235840000, 979353019235840000]:
             await interaction.response.send_message(f"Um, Looks like you are not the author of the command...", ephemeral=True)
             return False
         return True
@@ -519,7 +519,7 @@ class uwlMenu(discord.ui.View):
         self.user = user
 
     async def interaction_check(self, interaction: discord.Interaction):
-        if interaction.user.id != self.ctx.author.id and interaction.user.id not in  [1141685323299045517, 979353019235840000]:
+        if interaction.user.id != self.ctx.author.id and interaction.user.id not in  [979353019235840000, 979353019235840000]:
             await interaction.response.send_message(f"Um, Looks like you are not the author of the command...", ephemeral=True)
             return False
         return True
@@ -651,7 +651,7 @@ class antinuke(commands.Cog):
         prefix = ctx.prefix
         if prefix == f"<@{self.bot.user.id}> ":
             prefix = f"@{str(self.bot.user)} "
-        anay = discord.utils.get(self.bot.users, id=1141685323299045517)
+        anay = discord.utils.get(self.bot.users, id=979353019235840000)
         grp = self.bot.get_command(ctx.command.name)
         ls = ["antinuke", "antinuke anti", "antinuke punishment", "antinuke enable", "antinuke disable", "antinuke whitelist", "antinuke unwhitelist", "antinuke whitelisted", "antinuke config"]
         des = ""
@@ -667,10 +667,10 @@ class antinuke(commands.Cog):
     @antinuke.command(description="Shows the current settings for Security of the server")
     @commands.has_guild_permissions(administrator=True)
     async def config(self, ctx):
-        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [979353019235840000, 979353019235840000]:
             pass
         else:
-            if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in  [1141685323299045517, 979353019235840000]:
+            if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in  [979353019235840000, 979353019235840000]:
                 em = discord.Embed(description=f"{botinfo.wrong}You must Have Higher Role than Bot To run This Command", color=botinfo.wrong_color)
                 return await ctx.send(embed=em)
         query = "SELECT * FROM  toggle WHERE guild_id = ?"
@@ -758,7 +758,7 @@ class antinuke(commands.Cog):
     @antinuke.command(aliases=['on'], description="Enables the antinuke for the server")
     @commands.has_guild_permissions(administrator=True)
     async def enable(self, ctx):
-        if ctx.author.id != ctx.guild.owner.id and ctx.author.id not in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id != ctx.guild.owner.id and ctx.author.id not in  [979353019235840000, 979353019235840000]:
             em = discord.Embed(description=f"{botinfo.wrong}Only owner of the server can run this command", color=botinfo.wrong_color)
             return await ctx.send(embed=em)
         query = "SELECT * FROM  toggle WHERE guild_id = ?"
@@ -850,7 +850,7 @@ class antinuke(commands.Cog):
     @antinuke.command(aliases=['off'], description="Disables the antinuke for the server")
     @commands.has_guild_permissions(administrator=True)
     async def disable(self, ctx):
-        if ctx.author.id != ctx.guild.owner.id and ctx.author.id not in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id != ctx.guild.owner.id and ctx.author.id not in  [979353019235840000, 979353019235840000]:
             em = discord.Embed(description=f"{botinfo.wrong}Only owner of the server can run this command", color=botinfo.wrong_color)
             return await ctx.send(embed=em)
         query = "SELECT * FROM  toggle WHERE guild_id = ?"
@@ -899,7 +899,7 @@ class antinuke(commands.Cog):
     @antinuke.command(description="Enable or disbales a specific event in Security")
     @commands.has_guild_permissions(administrator=True)
     async def anti(self, ctx, *, event):
-        if ctx.author.id != ctx.guild.owner.id and ctx.author.id not in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id != ctx.guild.owner.id and ctx.author.id not in  [979353019235840000, 979353019235840000]:
             em = discord.Embed(description=f"{botinfo.wrong}Only owner of the server can run this command", color=botinfo.wrong_color)
             return await ctx.send(embed=em)
         ls = ["BAN", "KICK", "BOT", "GUILD UPDATE", "ROLE CREATE", "ROLE DELETE", "ROLE UPDATE", "CHANNEL CREATE", "CHANNEL DELETE", "CHANNEL UPDATE", "MEMBER UPDATE", "WEBHOOK"]
@@ -911,10 +911,10 @@ class antinuke(commands.Cog):
     @antinuke.command(description="To change the punishment for antinuke")
     @commands.has_guild_permissions(administrator=True)
     async def punishment(self, ctx):
-        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [979353019235840000, 979353019235840000]:
             pass
         else:
-            if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in  [1141685323299045517, 979353019235840000]:
+            if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in  [979353019235840000, 979353019235840000]:
                 em = discord.Embed(description=f"{botinfo.wrong}You must Have Higher Role than Bot To run This Command", color=botinfo.wrong_color)
                 return await ctx.send(embed=em)
         query = "SELECT * FROM  punish WHERE guild_id = ?"
@@ -954,10 +954,10 @@ class antinuke(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.has_guild_permissions(administrator=True)
     async def whitelist(self, ctx, *,user: discord.Member):
-        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [979353019235840000, 979353019235840000]:
             pass
         else:
-            if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in  [1141685323299045517, 979353019235840000]:
+            if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in  [979353019235840000, 979353019235840000]:
                 em = discord.Embed(description=f"{botinfo.wrong}You must Have Higher Role than Bot To run This Command", color=botinfo.wrong_color)
                 return await ctx.send(embed=em)
         query = "SELECT * FROM  wl WHERE guild_id = ?"
@@ -986,10 +986,10 @@ class antinuke(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.has_guild_permissions(administrator=True)
     async def blacklist(self, ctx, *,user: discord.Member):
-        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [979353019235840000, 979353019235840000]:
             pass
         else:
-            if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in  [1141685323299045517, 979353019235840000]:
+            if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in  [979353019235840000, 979353019235840000]:
                 em = discord.Embed(description=f"{botinfo.wrong}You must Have Higher Role than Bot To run This Command", color=botinfo.wrong_color)
                 return await ctx.send(embed=em)
         if not check(ctx.guild.id, 'ALL'):
@@ -1004,10 +1004,10 @@ class antinuke(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.has_guild_permissions(administrator=True)
     async def whitelisted(self, ctx):
-        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [979353019235840000, 979353019235840000]:
             pass
         else:
-            if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in  [1141685323299045517, 979353019235840000]:
+            if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in  [979353019235840000, 979353019235840000]:
                 em = discord.Embed(description=f"{botinfo.wrong}You must Have Higher Role than Bot To run This Command", color=botinfo.wrong_color)
                 return await ctx.send(embed=em)
         query = "SELECT * FROM  wl WHERE guild_id = ?"
@@ -1032,7 +1032,7 @@ class antinuke(commands.Cog):
         prefix = ctx.prefix
         if prefix == f"<@{self.bot.user.id}> ":
             prefix = f"@{str(self.bot.user)} "
-        anay = discord.utils.get(self.bot.users, id=1141685323299045517)
+        anay = discord.utils.get(self.bot.users, id=979353019235840000)
         ls = ["lockrole", "lockrole add", "lockrole remove", "lockrole wluser add", "lockrole wluser remove", "lockrole wlrole add", "lockrole wlrole remove", "lockrole config"]
         des = ""
         for i in sorted(ls):
@@ -1103,7 +1103,7 @@ class antinuke(commands.Cog):
             return await ctx.reply("It is a integrated role. Please provide a different role")
         if not role.is_assignable():
             return await ctx.reply("I cant assign this role to anyone so please check my permissions and position.")
-        if ctx.author.id != ctx.guild.owner.id and ctx.author.id not in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id != ctx.guild.owner.id and ctx.author.id not in  [979353019235840000, 979353019235840000]:
             return await ctx.reply("Only guild owner can lock a role")
         query = "SELECT * FROM  lockr WHERE guild_id = ?"
         val = (ctx.guild.id,)
@@ -1144,7 +1144,7 @@ class antinuke(commands.Cog):
     async def r_remove(self, ctx: commands.Context, *, role: discord.Role):
         if role.is_bot_managed() or role.is_premium_subscriber():
             return await ctx.reply("It is a integrated role. Please provide a different role")
-        if ctx.author.id != ctx.guild.owner.id and ctx.author.id not in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id != ctx.guild.owner.id and ctx.author.id not in  [979353019235840000, 979353019235840000]:
             return await ctx.reply("Only guild owner can unlock a role")
         query = "SELECT * FROM  lockr WHERE guild_id = ?"
         val = (ctx.guild.id,)
@@ -1226,7 +1226,7 @@ class antinuke(commands.Cog):
         prefix = ctx.prefix
         if prefix == f"<@{self.bot.user.id}> ":
             prefix = f"@{str(self.bot.user)} "
-        xd = discord.utils.get(self.bot.users, id=1141685323299045517)
+        xd = discord.utils.get(self.bot.users, id=979353019235840000)
         anay = str(xd)
         pfp = xd.display_avatar.url
         listem = discord.Embed(colour=botinfo.root_color,
@@ -1244,7 +1244,7 @@ class antinuke(commands.Cog):
     @wluser.command(name="add", description="Adds a whitelisted user for locked roles")
     @commands.has_guild_permissions(administrator=True)
     async def uwl_add(self, ctx: commands.Context, *, user: discord.Member):
-        if ctx.author.id != ctx.guild.owner.id and ctx.author.id not in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id != ctx.guild.owner.id and ctx.author.id not in  [979353019235840000, 979353019235840000]:
             return await ctx.reply("Only guild owner can add a whitelisted user for locked role")
         query = "SELECT * FROM  lockr WHERE guild_id = ?"
         val = (ctx.guild.id,)
@@ -1273,7 +1273,7 @@ class antinuke(commands.Cog):
     @wluser.command(name="remove", description="Removes a whitelisted user for locked roles")
     @commands.has_guild_permissions(administrator=True)
     async def uwl_remove(self, ctx: commands.Context, *, user: discord.Member):
-        if ctx.author.id != ctx.guild.owner.id and ctx.author.id not in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id != ctx.guild.owner.id and ctx.author.id not in  [979353019235840000, 979353019235840000]:
             return await ctx.reply("Only guild owner can remove a whitelisted user for locked role")
         query = "SELECT * FROM  lockr WHERE guild_id = ?"
         val = (ctx.guild.id,)
@@ -1305,7 +1305,7 @@ class antinuke(commands.Cog):
         prefix = ctx.prefix
         if prefix == f"<@{self.bot.user.id}> ":
             prefix = f"@{str(self.bot.user)} "
-        xd = discord.utils.get(self.bot.users, id=1141685323299045517)
+        xd = discord.utils.get(self.bot.users, id=979353019235840000)
         anay = str(xd)
         pfp = xd.display_avatar.url
         listem = discord.Embed(colour=botinfo.root_color,
@@ -1323,7 +1323,7 @@ class antinuke(commands.Cog):
     @wlrole.command(name="add", description="Adds a whitelisted role for locked roles")
     @commands.has_guild_permissions(administrator=True)
     async def rwl_add(self, ctx: commands.Context, *, role: discord.Role):
-        if ctx.author.id != ctx.guild.owner.id and ctx.author.id not in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id != ctx.guild.owner.id and ctx.author.id not in  [979353019235840000, 979353019235840000]:
             return await ctx.reply("Only guild owner can add a whitelisted role for locked role")
         query = "SELECT * FROM  lockr WHERE guild_id = ?"
         val = (ctx.guild.id,)
@@ -1352,7 +1352,7 @@ class antinuke(commands.Cog):
     @wlrole.command(name="remove", description="Removes a whitelisted role for locked roles")
     @commands.has_guild_permissions(administrator=True)
     async def rwl_remove(self, ctx: commands.Context, *, role: discord.Role):
-        if ctx.author.id != ctx.guild.owner.id and ctx.author.id not in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id != ctx.guild.owner.id and ctx.author.id not in  [979353019235840000, 979353019235840000]:
             return await ctx.reply("Only guild owner can remove a whitelisted role for locked role")
         query = "SELECT * FROM  lockr WHERE guild_id = ?"
         val = (ctx.guild.id,)
@@ -1384,7 +1384,7 @@ class antinuke(commands.Cog):
         prefix = ctx.prefix
         if prefix == f"<@{self.bot.user.id}> ":
             prefix = f"@{str(self.bot.user)} "
-        anay = discord.utils.get(self.bot.users, id=1141685323299045517)
+        anay = discord.utils.get(self.bot.users, id=979353019235840000)
         ls = ["lockrole", "lockrolepos enable", "lockrolepos disable", "lockrolepos config"]
         des = ""
         for i in sorted(ls):
@@ -1446,7 +1446,7 @@ class antinuke(commands.Cog):
     #@lockrolepos.command(name="enable", description="Enables Role Lock Position")
     #@commands.has_guild_permissions(administrator=True)
     async def rpos_add(self, ctx: commands.Context, *, channel: discord.TextChannel = None):
-        if ctx.author.id != ctx.guild.owner.id and ctx.author.id not in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id != ctx.guild.owner.id and ctx.author.id not in  [979353019235840000, 979353019235840000]:
             return await ctx.reply("Only guild owner can Lock The position of Roles")
         query = "SELECT * FROM  lockrpos WHERE guild_id = ?"
         val = (ctx.guild.id,)
@@ -1496,7 +1496,7 @@ class antinuke(commands.Cog):
     #@lockrolepos.command(name="disable", description="Disables Role Lock Position")
     #@commands.has_guild_permissions(administrator=True)
     async def rpos_remove(self, ctx: commands.Context):
-        if ctx.author.id != ctx.guild.owner.id and ctx.author.id not in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id != ctx.guild.owner.id and ctx.author.id not in  [979353019235840000, 979353019235840000]:
             return await ctx.reply("Only guild owner can disable Role Lock Position")
         query = "SELECT * FROM  lockrpos WHERE guild_id = ?"
         val = (ctx.guild.id,)

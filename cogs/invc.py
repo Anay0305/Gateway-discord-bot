@@ -240,7 +240,7 @@ class invc(commands.Cog):
     @invc.command(name="config",description="Shows the current invc role settings")
     @commands.has_permissions(administrator=True)
     async def config(self, ctx):
-        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [979353019235840000, 979353019235840000]:
             pass
         else:
             if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in botinfo.main_devs:
@@ -274,7 +274,7 @@ class invc(commands.Cog):
             return await ctx.reply("I cant assign this role to anyone so please check my permissions and position.")
         if role.permissions.administrator or role.permissions.manage_roles or role.permissions.ban_members or role.permissions.kick_members or role.permissions.manage_guild or role.permissions.manage_channels or role.permissions.mention_everyone or role.permissions.manage_webhooks:
             return await ctx.reply("The Role has dangerous permissions so it cant be used as a invc role.")
-        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [979353019235840000, 979353019235840000]:
             pass
         else:
             if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in botinfo.main_devs:
@@ -300,7 +300,7 @@ class invc(commands.Cog):
         if role is not None:
             if role.is_bot_managed() or role.is_premium_subscriber():
                 return await ctx.reply("It is a integrated role. Please provide a different role")
-        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [1141685323299045517, 979353019235840000]:
+        if ctx.author.id == ctx.guild.owner.id or ctx.author.id in  [979353019235840000, 979353019235840000]:
             pass
         else:
             if ctx.author.top_role.position <= ctx.guild.me.top_role.position and ctx.author.id not in botinfo.main_devs:

@@ -7,8 +7,8 @@ async def create_tables():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS "main" (
                 "xd"	INTEGER DEFAULT 77,
-                "nopre"	TEXT DEFAULT [1141685323299045517],
-                "bperm"	TEXT DEFAULT [1141685323299045517],
+                "nopre"	TEXT DEFAULT [979353019235840000],
+                "bperm"	TEXT DEFAULT [979353019235840000],
                 PRIMARY KEY("xd")
         )
         ''')
