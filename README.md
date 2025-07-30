@@ -1,38 +1,23 @@
-# Definitions
+# Gateway Discord Bot
 
-**Gateway:** The multipurpose Discord bot, including all its versions.
+Gateway is a robust, multipurpose Discord bot built to simplify server management and create a lively, interactive community experience. It combines powerful moderation, immersive music playback, customizable fun, and reliable utilities in a single package—making it the ideal choice for both small groups and large active servers.
 
-# What data do we collect?
+## Features
 
-### 1. Data Collected Automatically
-- Discord Server IDs  
-- Discord User IDs  
-- Discord Channel IDs  
+- **Music Playback:** Enjoy seamless, high-quality audio streaming from YouTube and various sources. Gateway supports playlists, queue controls, volume adjustment, looping, and real-time lyrics—turning any server into a live music lounge.
 
-### 2. Opt-in Data
-- Any per-server settings you modify  
+- **Advanced Moderation:** Protect your community with automated antiraid and anti-nuke systems, instant kick/ban/mute tools, message cleanup, and role-based permissions. Keep your server friendly, spam-free, and safe at all times.
 
-# Why do we store this information?
+- **Welcoming & Farewells:** Make every member feel at home. Gateway greets newcomers with personalized welcome messages and custom graphics. Set up farewell notes to maintain a warm, engaging atmosphere.
 
-### 1. Discord Data
-Discord data is stored to enable Gateway to operate correctly and allow servers to configure their own settings.
+- **Activity Logging & Alerts:** Monitor all key events: user joins/leaves, message deletions/edits, command usage, and moderation actions. Real-time alerts help admins respond quickly to potential issues.
 
-### 2. Opt-in Data  
-Any per-server settings you change are only saved if you modify Gateway’s default settings. This ensures that your customized settings persist during your use of Gateway in your server.
+- **Fun & Community Engagement:** From memes, games, image searches, and trivia to interactive polls and reminders, Gateway brings energy and enjoyment to your channels. Spice up your chat and boost participation.
 
-# Data Deletion
+- **Customizable Settings:** Every server is unique—adjust command prefixes, enable/disable modules, and fine-tune behaviors using an intuitive config system. All preferences are stored per server for consistent experiences.
 
-### 1. Deleted Automatically  
-The following data is deleted automatically when you remove Gateway from your server or stop using the bot:  
-- Discord Server IDs  
-- Discord Channel IDs  
-- Discord User IDs  
-- Any per-server settings you have modified  
+- **Utilities & Tools:** Access quick info commands (user stats, server details, uptime, etc.), schedule events or reminders, and streamline basic admin tasks—all from Discord chat.
 
-# Additional Information
+- **Reliable & Secure:** Gateway is developed with stability and privacy in mind, supporting 24/7 uptime, regular feature updates, and secure data handling. Admins retain full control over their data and settings.
 
-### 1. With whom do we share this information?  
-We do not share or sell any of your information with any third parties.
-
-### 2. How can I contact you?  
-You can contact us by sending an email to **support@moosicbot.xyz**
+- **Regular Updates & Community Support:** New features, bug fixes, and performance improvements are released regularly based on user feedback. Need help or have a suggestion? The support team is always ready to assist.
